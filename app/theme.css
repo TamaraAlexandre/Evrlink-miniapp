@@ -1,0 +1,181 @@
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --app-background: #ffffff;
+  --app-foreground: #111111;
+  --app-foreground-muted: #6b7280;
+  --app-accent: #0052ff;
+  --app-accent-hover: #0047e1;
+  --app-accent-active: #003db8;
+  --app-accent-light: #e6edff;
+  --app-gray: #f9fafb;
+  --app-gray-dark: #f3f4f6;
+  --app-card-bg: rgba(255, 255, 255, 0.8);
+  --app-card-border: rgba(0, 0, 0, 0.05);
+  
+  /* Evrlink specific colors */
+  --evrlink-blue: #3b82f6;
+  --evrlink-blue-light: #dbeafe;
+  --evrlink-green: #10b981;
+  --evrlink-green-light: #d1fae5;
+  --evrlink-orange: #f97316;
+  --evrlink-orange-light: #fed7aa;
+  --evrlink-red: #ef4444;
+  --evrlink-red-light: #fecaca;
+  --evrlink-purple: #8b5cf6;
+  --evrlink-purple-light: #e9d5ff;
+  --evrlink-yellow: #eab308;
+  --evrlink-yellow-light: #fef3c7;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --app-background: #111111;
+    --app-foreground: #ffffff;
+    --app-foreground-muted: #9ca3af;
+    --app-accent: #0052ff;
+    --app-accent-hover: #0047e1;
+    --app-accent-active: #003db8;
+    --app-accent-light: #1e293b;
+    --app-gray: #1f2937;
+    --app-gray-dark: #374151;
+    --app-card-bg: rgba(17, 17, 17, 0.8);
+    --app-card-border: rgba(115, 115, 115, 0.2);
+    
+    /* Evrlink specific colors - adjusted for dark mode */
+    --evrlink-blue: #60a5fa;
+    --evrlink-blue-light: #1e3a8a;
+    --evrlink-green: #34d399;
+    --evrlink-green-light: #064e3b;
+    --evrlink-orange: #fb923c;
+    --evrlink-orange-light: #7c2d12;
+    --evrlink-red: #f87171;
+    --evrlink-red-light: #7f1d1d;
+    --evrlink-purple: #a78bfa;
+    --evrlink-purple-light: #581c87;
+    --evrlink-yellow: #fbbf24;
+    --evrlink-yellow-light: #78350f;
+  }
+}
+
+.mini-app-theme {
+  --ock-font-family: "Geist", sans-serif;
+  --ock-border-radius: 0.75rem;
+  --ock-border-radius-inner: 0.5rem;
+
+  /* Text colors */
+  --ock-text-inverse: var(--app-background);
+  --ock-text-foreground: var(--app-foreground);
+  --ock-text-foreground-muted: var(--app-foreground-muted);
+  --ock-text-error: #ef4444;
+  --ock-text-primary: var(--app-accent);
+  --ock-text-success: #22c55e;
+  --ock-text-warning: #f59e0b;
+  --ock-text-disabled: #a1a1aa;
+
+  /* Background colors */
+  --ock-bg-default: var(--app-background);
+  --ock-bg-default-hover: var(--app-gray);
+  --ock-bg-default-active: var(--app-gray-dark);
+  --ock-bg-alternate: var(--app-gray);
+  --ock-bg-alternate-hover: var(--app-gray-dark);
+  --ock-bg-alternate-active: var(--app-gray-dark);
+  --ock-bg-inverse: var(--app-foreground);
+  --ock-bg-inverse-hover: #2a2a2a;
+  --ock-bg-inverse-active: #3a3a3a;
+  --ock-bg-primary: var(--app-accent);
+  --ock-bg-primary-hover: var(--app-accent-hover);
+  --ock-bg-primary-active: var(--app-accent-active);
+  --ock-bg-primary-washed: var(--app-accent-light);
+  --ock-bg-primary-disabled: #80a8ff;
+  --ock-bg-secondary: var(--app-gray);
+  --ock-bg-secondary-hover: var(--app-gray-dark);
+  --ock-bg-secondary-active: #d1d1d1;
+  --ock-bg-error: #fee2e2;
+  --ock-bg-warning: #fef3c7;
+  --ock-bg-success: #dcfce7;
+  --ock-bg-default-reverse: var(--app-foreground);
+
+  /* Icon colors */
+  --ock-icon-color-primary: var(--app-accent);
+  --ock-icon-color-foreground: var(--app-foreground);
+  --ock-icon-color-foreground-muted: #71717a;
+  --ock-icon-color-inverse: var(--app-background);
+  --ock-icon-color-error: #ef4444;
+  --ock-icon-color-success: #22c55e;
+  --ock-icon-color-warning: #f59e0b;
+
+  /* Line colors */
+  --ock-line-primary: var(--app-accent);
+  --ock-line-default: var(--app-gray-dark);
+  --ock-line-heavy: #a1a1aa;
+  --ock-line-inverse: #d4d4d8;
+}
+
+* {
+  touch-action: manipulation;
+}
+
+body {
+  color: var(--app-foreground);
+  background: var(--app-background);
+  font-family: var(--font-geist-sans), sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* Evrlink specific utilities */
+  .evrlink-gradient {
+    background: linear-gradient(135deg, #e0f2fe 0%, #ccfbf1 100%);
+  }
+  
+  .evrlink-card {
+    background: var(--app-card-bg);
+    border: 1px solid var(--app-card-border);
+    backdrop-filter: blur(8px);
+  }
+  
+  .evrlink-shadow {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.animate-fade-out {
+  animation: fadeOut 3s forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
