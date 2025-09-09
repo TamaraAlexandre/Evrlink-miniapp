@@ -38,6 +38,7 @@ import friends from "../public/images/friends.svg";
 import degen from "../public/images/degen.svg";
 import motivation from "../public/images/motivation.svg";
 import base from "../public/images/base.svg";
+import others from "../public/images/others.svg";
 import loffy from "../public/images/loffy.png";
 import slider1 from "../public/images/slider1.png";
 
@@ -62,9 +63,9 @@ export default function App() {
       description: "A delightful birthday celebration card",
       byline: "by Loffyllama",
       cta: "Personalize",
-      paperImage: slider1,
-      overlayImage: loffy,
-      brandIcon: loffy,
+      paperImage: slider1.src,
+      overlayImage: loffy.src,
+      brandIcon: loffy.src,
     },
     {
       id: 2,
@@ -75,9 +76,9 @@ export default function App() {
       description: "Celebrate with Base ecosystem",
       byline: "by Base",
       cta: "Personalize",
-      paperImage: slider1,
-      overlayImage: loffy,
-      brandIcon: base,
+      paperImage: slider1.src,
+      overlayImage: loffy.src,
+      brandIcon: base.src,
     },
     {
       id: 3,
@@ -88,9 +89,9 @@ export default function App() {
       description: "The ultimate crypto party card",
       byline: "by Crypto",
       cta: "Personalize",
-      paperImage: loffy,
-      overlayImage: slider1,
-      brandIcon: birthdayImg,
+      paperImage: loffy.src,
+      overlayImage: slider1.src,
+      brandIcon: birthdayImg.src,
     },
   ];
 
@@ -103,9 +104,9 @@ export default function App() {
       tags: ["#birthday", "#celebration"],
       likes: 74,
       cta: "Mint Meep",
-      paperImage: slider1,
-      overlayImage: loffy,
-      brandIcon: birthdayImg,
+      paperImage: slider1.src,
+      overlayImage: loffy.src,
+      brandIcon: birthdayImg.src,
     },
   ];
 
@@ -332,7 +333,7 @@ export default function App() {
 
       {/* Categories Grid */}
       <div className="px-4 mb-6">
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-3 mb-3">
           {/* Row 1 */}
           <CategoryButton
             icon={categoryIcons.birthday}
@@ -390,6 +391,15 @@ export default function App() {
           />
           <CategoryButton icon={categoryIcons.base} label="Base" color="blue" />
         </div>
+        
+        {/* Full-width Others button */}
+        <CategoryButton
+          icon={categoryIcons.others}
+          label="Others"
+          color="purple"
+          onClick={() => console.log("Others clicked")}
+          fullWidth={true}
+        />
       </div>
 
       {/* Highlighted Projects Slider */}
@@ -599,6 +609,7 @@ const categoryIcons = {
   degen: degen,
   motivational: motivation,
   base: base,
+  others: others,
 };
 
 function CategoryButton({
@@ -606,11 +617,13 @@ function CategoryButton({
   label,
   color,
   onClick,
+  fullWidth = false,
 }: {
   icon: any;
   label: string;
   color: string;
   onClick?: () => void;
+  fullWidth?: boolean;
 }) {
   const colorClasses = {
     orange: "bg-orange-50 border-orange-100 text-orange-600",
@@ -624,7 +637,7 @@ function CategoryButton({
   return (
     <button
       onClick={onClick}
-      className={`evrlink-btn-event flex flex-col items-center justify-center p-4 rounded-xl border ${colorClasses[color as keyof typeof colorClasses]} hover:opacity-80 transition-opacity`}
+      className={`evrlink-btn-event flex flex-col items-center justify-center p-4 rounded-xl border ${colorClasses[color as keyof typeof colorClasses]} hover:opacity-80 transition-opacity ${fullWidth ? 'w-full' : ''}`}
     >
       <div className="w-6 h-6 flex items-center justify-center">
         <Image src={icon} alt={label} width={24} height={24} />
