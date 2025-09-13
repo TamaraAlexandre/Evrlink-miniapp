@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 /**
  * BirthdayCard (Figma → React/Tailwind)
@@ -19,6 +20,7 @@ type Props = {
     onClick?: () => void;
     paperImage?: string; // background photo inside the paper frame
     overlayImage?: string; // decorative overlay (optional)
+    brandIcon?: string; // brand/icon image for the header
 };
 
 export default function BirthdayCard({
@@ -30,6 +32,7 @@ export default function BirthdayCard({
     onClick,
     paperImage = "happy_birthday.png",
     overlayImage = "birthday_background.png",
+    brandIcon,
 }: Props) {
     return (
         <div className="w-[350px] h-[315px] flex flex-col gap-4" aria-label="card">
@@ -38,20 +41,31 @@ export default function BirthdayCard({
                 <div className="flex items-center gap-2.5 h-[43px]">
                     {/* Brand square */}
                     <div className="relative h-10 w-10 rounded-xl bg-[#E1E8E9] flex items-center justify-center">
-                        {/* Infinity/brand glyph placeholder */}
-                        <svg
-                            viewBox="0 0 28 14"
-                            className="h-[14px] w-[28px] text-teal-500"
-                            aria-hidden
-                        >
-                            <path
-                                d="M4 7c2.2-3.5 5.8-3.5 8 0 2.2 3.5 5.8 3.5 8 0"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
+                        {/* Brand icon */}
+                        {brandIcon ? (
+                            <Image 
+                                src={brandIcon} 
+                                alt="Brand icon" 
+                                width={28} 
+                                height={14}
+                                className="rounded"
                             />
-                        </svg>
+                        ) : (
+                            <svg
+                                viewBox="0 0 28 14"
+                                className="h-[14px] w-[28px] text-teal-500"
+                                aria-hidden
+                            >
+                                <path
+                                    d="M4 7c2.2-3.5 5.8-3.5 8 0 2.2 3.5 5.8 3.5 8 0"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                />
+                            </svg>
+                        )}
+                        
                     </div>
 
                     {/* Title + tags */}
