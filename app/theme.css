@@ -64,7 +64,7 @@
 }
 
 .mini-app-theme {
-  --ock-font-family: "Geist", sans-serif;
+  --ock-font-family: "Satoshi", "Geist", sans-serif;
   --ock-border-radius: 0.75rem;
   --ock-border-radius-inner: 0.5rem;
 
@@ -124,7 +124,7 @@
 body {
   color: var(--app-foreground);
   background: var(--app-background);
-  font-family: var(--font-geist-sans), sans-serif;
+  font-family: 'Satoshi', 'Geist', sans-serif;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;

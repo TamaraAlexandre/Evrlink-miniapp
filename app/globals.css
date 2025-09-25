@@ -2,6 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Satoshi Font Family */
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #111111;
@@ -17,9 +50,33 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: "Geist", sans-serif;
+  font-family: "Satoshi", "Geist", sans-serif;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
   font-size: 80%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Satoshi", "Geist", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  font-size: 24px;
+}
+
+p{
+  font-family: "Satoshi", "Geist", sans-serif;
+  font-weight: 400;
+}
+
+.fw-400 {
+  font-weight: 400;
+}
+
+.fw-500 {
+  font-weight: 500;
+}
+
+.fw-700 {
+  font-weight: 700;
 }
