@@ -21,6 +21,7 @@ type Props = {
     paperImage?: string; // background photo inside the paper frame
     overlayImage?: string; // decorative overlay (optional)
     brandIcon?: string; // brand/icon image for the header
+    tapeText?: string; // text to display on the tape label
 };
 
 export default function BirthdayCard({
@@ -33,6 +34,7 @@ export default function BirthdayCard({
     paperImage = "happy_birthday.png",
     overlayImage = "birthday_background.png",
     brandIcon,
+    tapeText = "HAPPY BIRTHDAY!!",
 }: Props) {
     return (
         <div className="w-[350px] h-[315px] flex flex-col gap-4" aria-label="card">
@@ -70,7 +72,7 @@ export default function BirthdayCard({
 
                     {/* Title + tags */}
                     <div className="flex flex-col gap-1 w-[200px]">
-                        <div className="text-[16px] leading-6 font-medium text-[#111827] truncate">
+                        <div className="text-[16px] leading-6 fw-400 text-[#111827] truncate">
                             {title} <span className="font-normal opacity-80">{byline}</span>
                         </div>
                         <div className="flex gap-1.5 text-[12px] leading-[15px] tracking-[-0.01em] text-[#6B7280]">
@@ -120,9 +122,12 @@ export default function BirthdayCard({
                     }}
                 >
                     <div className="text-[22.93px] leading-[25px] text-[#111827] text-center">
-                        HAPPY
-                        <br />
-                        BIRTHDAY!!
+                        {tapeText.split('\n').map((line, index) => (
+                            <React.Fragment key={index}>
+                                {line}
+                                {index < tapeText.split('\n').length - 1 && <br />}
+                            </React.Fragment>
+                        ))}
                     </div>
                 </div>
 
