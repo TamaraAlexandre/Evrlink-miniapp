@@ -23,8 +23,15 @@ import {
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { Button } from "./components/DemoComponents";
 import { Icon } from "./components/DemoComponents";
-import { FileUpload } from "./components/FileUpload";
 import BirthdayCard from "./components/GreetingCard";
+import {
+  getCategoryData,
+  type CategoryData,
+  type GreetingCardData,
+  highlightedCategoriesData,
+  sliderData,
+  recentlyCreatedData,
+} from "@/lib/greeting-cards-data";
 import "./styles/home.css";
 import birthdayImg from "../public/images/birthday.svg";
 import congrats from "../public/images/congrats.svg";
@@ -39,76 +46,42 @@ import degen from "../public/images/degen.svg";
 import motivation from "../public/images/motivation.svg";
 import base from "../public/images/base.svg";
 import others from "../public/images/others.svg";
-import loffy from "../public/images/loffy.png";
-import slider1 from "../public/images/slider1.png";
 
 export default function App() {
   const { setFrameReady, isFrameReady, context } = useMiniKit();
   const [frameAdded, setFrameAdded] = useState(false);
   const [currentScreen, setCurrentScreen] = useState("home");
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [likedItems, setLikedItems] = useState<Set<number>>(new Set());
+  const [currentHighlightedSlide, setCurrentHighlightedSlide] = useState(0);
+  const [likedItems, setLikedItems] = useState<Set<string | number>>(new Set());
+  const [selectedCard, setSelectedCard] = useState<GreetingCardData | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [basename, setBasename] = useState("");
+
+  const handleCardSelection = (card: GreetingCardData) => {
+    setSelectedCard(card);
+    setCurrentScreen("editor");
+  };
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setBasename("");
+  };
+
+  const handleGenerateMeep = () => {
+    // Handle the actual meep generation logic here
+    console.log("Generating meep with basename:", basename, "and card:", selectedCard);
+    closeModal();
+  };
 
   const addFrame = useAddFrame();
   const openUrl = useOpenUrl();
 
-  // Slider data
-  const sliderData = [
-    {
-      id: 1,
-      title: "Loffy by Loffyllama",
-      tags: ["#birthday", "#celebration"],
-      likes: 74,
-      image: slider1,
-      description: "A delightful birthday celebration card",
-      byline: "by Loffyllama",
-      cta: "Personalize",
-      paperImage: slider1.src,
-      overlayImage: loffy.src,
-      brandIcon: loffy.src,
-    },
-    {
-      id: 2,
-      title: "Base Birthday Bash",
-      tags: ["#base", "#party"],
-      likes: 42,
-      image: slider1,
-      description: "Celebrate with Base ecosystem",
-      byline: "by Base",
-      cta: "Personalize",
-      paperImage: slider1.src,
-      overlayImage: loffy.src,
-      brandIcon: base.src,
-    },
-    {
-      id: 3,
-      title: "Crypto Celebration",
-      tags: ["#crypto", "#fun"],
-      likes: 89,
-      image: loffy,
-      description: "The ultimate crypto party card",
-      byline: "by Crypto",
-      cta: "Personalize",
-      paperImage: loffy.src,
-      overlayImage: slider1.src,
-      brandIcon: birthdayImg.src,
-    },
-  ];
 
-  // Recently Created data
-  const recentlyCreatedData = [
-    {
-      id: 1,
-      title: "Birthday Bling",
-      byline: "by Evrlink",
-      tags: ["#birthday", "#celebration"],
-      likes: 74,
-      cta: "Mint Meep",
-      paperImage: slider1.src,
-      overlayImage: loffy.src,
-      brandIcon: birthdayImg.src,
-    },
-  ];
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % sliderData.length);
@@ -120,7 +93,15 @@ export default function App() {
     );
   };
 
-  const toggleLike = (itemId: number) => {
+  const nextHighlightedSlide = () => {
+    setCurrentHighlightedSlide((prev) => (prev + 1) % highlightedCategoriesData.length);
+  };
+
+  const prevHighlightedSlide = () => {
+    setCurrentHighlightedSlide((prev) => (prev - 1 + highlightedCategoriesData.length) % highlightedCategoriesData.length);
+  };
+
+  const toggleLike = (itemId: string | number) => {
     setLikedItems((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(itemId)) {
@@ -167,138 +148,37 @@ export default function App() {
     return null;
   }, [context, frameAdded, handleAddFrame]);
 
-  if (currentScreen === "birthday") {
-    return (
-      <BirthdayScreen
-        onBack={() => setCurrentScreen("home")}
-        onOpenEditor={() => setCurrentScreen("editor")}
-        setCurrentScreen={setCurrentScreen}
-      />
-    );
-  }
+  // Dynamic category screens
+  const categoryScreens = [
+    "birthday",
+    "congrats",
+    "love",
+    "work",
+    "thanks",
+    "sorry",
+    "holiday",
+    "situation",
+    "friendship",
+    "degen",
+    "motivational",
+    "base",
+    "others",
+  ];
 
-  if (currentScreen === "congrats") {
+  if (categoryScreens.includes(currentScreen)) {
     return (
-      <CongratsScreen
+      <DynamicCategoryScreen
+        category={currentScreen}
         onBack={() => setCurrentScreen("home")}
         onOpenEditor={() => setCurrentScreen("editor")}
         setCurrentScreen={setCurrentScreen}
-      />
-    );
-  }
-
-  if (currentScreen === "love") {
-    return (
-      <LoveScreen
-        onBack={() => setCurrentScreen("home")}
-        onOpenEditor={() => setCurrentScreen("editor")}
-        setCurrentScreen={setCurrentScreen}
-      />
-    );
-  }
-
-  if (currentScreen === "work") {
-    return (
-      <WorkScreen
-        onBack={() => setCurrentScreen("home")}
-        onOpenEditor={() => setCurrentScreen("editor")}
-        setCurrentScreen={setCurrentScreen}
-      />
-    );
-  }
-
-  if (currentScreen === "thanks") {
-    return (
-      <ThanksScreen
-        onBack={() => setCurrentScreen("home")}
-        onOpenEditor={() => setCurrentScreen("editor")}
-        setCurrentScreen={setCurrentScreen}
-      />
-    );
-  }
-
-  if (currentScreen === "sorry") {
-    return (
-      <SorryScreen
-        onBack={() => setCurrentScreen("home")}
-        onOpenEditor={() => setCurrentScreen("editor")}
-        setCurrentScreen={setCurrentScreen}
-      />
-    );
-  }
-
-  if (currentScreen === "holiday") {
-    return (
-      <HolidayScreen
-        onBack={() => setCurrentScreen("home")}
-        onOpenEditor={() => setCurrentScreen("editor")}
-        setCurrentScreen={setCurrentScreen}
-      />
-    );
-  }
-
-  if (currentScreen === "situation") {
-    return (
-      <SituationScreen
-        onBack={() => setCurrentScreen("home")}
-        onOpenEditor={() => setCurrentScreen("editor")}
-        setCurrentScreen={setCurrentScreen}
-      />
-    );
-  }
-
-  if (currentScreen === "friendship") {
-    return (
-      <FriendshipScreen
-        onBack={() => setCurrentScreen("home")}
-        onOpenEditor={() => setCurrentScreen("editor")}
-        setCurrentScreen={setCurrentScreen}
-      />
-    );
-  }
-
-  if (currentScreen === "degen") {
-    return (
-      <DegenScreen
-        onBack={() => setCurrentScreen("home")}
-        onOpenEditor={() => setCurrentScreen("editor")}
-        setCurrentScreen={setCurrentScreen}
-      />
-    );
-  }
-
-  if (currentScreen === "motivational") {
-    return (
-      <MotivationalScreen
-        onBack={() => setCurrentScreen("home")}
-        onOpenEditor={() => setCurrentScreen("editor")}
-        setCurrentScreen={setCurrentScreen}
-      />
-    );
-  }
-
-  if (currentScreen === "base") {
-    return (
-      <BaseScreen
-        onBack={() => setCurrentScreen("home")}
-        onOpenEditor={() => setCurrentScreen("editor")}
-        setCurrentScreen={setCurrentScreen}
-      />
-    );
-  }
-
-  if (currentScreen === "others") {
-    return (
-      <OthersScreen
-        onBack={() => setCurrentScreen("home")}
-        onOpenEditor={() => setCurrentScreen("editor")}
-        setCurrentScreen={setCurrentScreen}
+        onCardSelect={handleCardSelection}
       />
     );
   }
 
   if (currentScreen === "editor") {
-    return <GreetingCardEditor onBack={() => setCurrentScreen("birthday")} />;
+    return <GreetingCardEditor onBack={() => setCurrentScreen("birthday")} selectedCard={selectedCard} />;
   }
 
   return (
@@ -444,9 +324,7 @@ export default function App() {
 
       {/* Welcome Section */}
       <div className="px-4 mb-4">
-        <h2 className="text-lg fw-400 text-black mb-1">
-          Welcome to Evrlink!
-        </h2>
+        <h2 className="text-lg fw-400 text-black mb-1">Welcome to Evrlink!</h2>
         <p className="text-gray-500 text-sm">
           See some of our categories, and create a Meep.
         </p>
@@ -468,10 +346,10 @@ export default function App() {
             color="blue"
             onClick={() => setCurrentScreen("congrats")}
           />
-          <CategoryButton 
-            icon={categoryIcons.love} 
-            label="Love" 
-            color="red" 
+          <CategoryButton
+            icon={categoryIcons.love}
+            label="Love"
+            color="red"
             onClick={() => setCurrentScreen("love")}
           />
 
@@ -496,10 +374,10 @@ export default function App() {
           />
 
           {/* Row 3 */}
-          <CategoryButton 
-            icon={categoryIcons.irl} 
-            label="Holiday" 
-            color="yellow" 
+          <CategoryButton
+            icon={categoryIcons.irl}
+            label="Holiday"
+            color="yellow"
             onClick={() => setCurrentScreen("holiday")}
           />
           <CategoryButton
@@ -528,14 +406,14 @@ export default function App() {
             color="orange"
             onClick={() => setCurrentScreen("motivational")}
           />
-          <CategoryButton 
-            icon={categoryIcons.base} 
-            label="Base" 
-            color="blue" 
+          <CategoryButton
+            icon={categoryIcons.base}
+            label="Base"
+            color="blue"
             onClick={() => setCurrentScreen("base")}
           />
         </div>
-        
+
         {/* Full-width Others button */}
         <CategoryButton
           icon={categoryIcons.others}
@@ -546,11 +424,134 @@ export default function App() {
         />
       </div>
 
+      {/* Highlighted Categories Slider */}
+      <div className="evrlink-slider-section">
+        <div className="evrlink-slider-header">
+          <div>
+            <h2 className="evrlink-slider-title fw-400">Base Projects Cards</h2>
+            <p className="evrlink-slider-subtitle">
+              See some amazing Base projects. 
+            </p>
+          </div>
+        </div>
+
+        <div className="evrlink-slider-container">
+          {/* Slider Container */}
+          <div className="evrlink-slider-wrapper">
+            <div
+              className="evrlink-slider-track"
+              style={{ transform: `translateX(-${currentHighlightedSlide * 100}%)` }}
+            >
+              {highlightedCategoriesData.map((card, index) => (
+                <div key={card.id} className="evrlink-slide">
+                  <div className="evrlink-project-card">
+                    {/* Only GreetingCard - contains its own header, content, and footer */}
+                    <div className="evrlink-image-content">
+                      <BirthdayCard
+                        title={card.title}
+                        byline={card.byline}
+                        tags={card.tags}
+                        likes={card.likes}
+                        cta={card.cta}
+                        paperImage={card.paperImage}
+                        overlayImage={card.overlayImage}
+                        brandIcon={card.brandIcon}
+                        tapeText={card.tapeText}
+                        price={card.price}
+                        onClick={() => handleCardSelection(card)}
+                      />
+
+                      {/* Interactive Heart Button Overlay */}
+                      <div className="evrlink-heart-overlay">
+                        <button
+                          onClick={() => toggleLike(card.id)}
+                          className="evrlink-heart-btn"
+                        >
+                          <svg
+                            className={`evrlink-heart-icon ${likedItems.has(card.id) ? "evrlink-heart-filled" : "evrlink-heart-empty"}`}
+                            fill={
+                              likedItems.has(card.id) ? "currentColor" : "none"
+                            }
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Navigation Arrows */}
+          {currentHighlightedSlide > 0 && (
+            <button
+              onClick={prevHighlightedSlide}
+              className="evrlink-nav-btn evrlink-nav-prev"
+            >
+              <svg
+                className="evrlink-nav-icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+          )}
+
+          <button
+            onClick={nextHighlightedSlide}
+            className="evrlink-nav-btn evrlink-nav-next"
+          >
+            <svg
+              className="evrlink-nav-icon"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+
+          {/* Dots Indicator - Hidden */}
+          {/* <div className="evrlink-dots-container">
+            {highlightedCategoriesData.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentHighlightedSlide(index)}
+                className={`evrlink-dot ${index === currentHighlightedSlide ? 'evrlink-dot-active' : ''}`}
+              />
+            ))}
+          </div> */}
+        </div>
+      </div>
+
       {/* Highlighted Projects Slider */}
       <div className="evrlink-slider-section">
         <div className="evrlink-slider-header">
           <div>
-            <h2 className="evrlink-slider-title fw-400">Highlighted Base Projects</h2>
+            <h2 className="evrlink-slider-title fw-400">
+              Highlighted Base Projects
+            </h2>
             <p className="evrlink-slider-subtitle">
               See some amazing Base projects.
             </p>
@@ -578,6 +579,7 @@ export default function App() {
                         paperImage={item.paperImage}
                         overlayImage={item.overlayImage}
                         brandIcon={item.brandIcon}
+                        price={item.price}
                         onClick={() => console.log(`Personalize ${item.title}`)}
                       />
 
@@ -687,6 +689,7 @@ export default function App() {
                   paperImage={item.paperImage}
                   overlayImage={item.overlayImage}
                   brandIcon={item.brandIcon}
+                  price={item.price}
                   onClick={() => console.log(`Mint ${item.title}`)}
                 />
 
@@ -781,7 +784,7 @@ function CategoryButton({
   return (
     <button
       onClick={onClick}
-      className={`evrlink-btn-event flex flex-col items-center justify-center p-4 rounded-xl border ${colorClasses[color as keyof typeof colorClasses]} hover:opacity-80 transition-opacity ${fullWidth ? 'w-full' : ''}`}
+      className={`evrlink-btn-event flex flex-col items-center justify-center p-4 rounded-xl border ${colorClasses[color as keyof typeof colorClasses]} hover:opacity-80 transition-opacity ${fullWidth ? "w-full" : ""}`}
     >
       <div className="w-6 h-6 flex items-center justify-center">
         <Image src={icon} alt={label} width={24} height={24} />
@@ -796,10 +799,12 @@ function BirthdayScreen({
   onBack,
   onOpenEditor,
   setCurrentScreen,
+  onCardSelect,
 }: {
   onBack: () => void;
   onOpenEditor: () => void;
   setCurrentScreen: (screen: string) => void;
+  onCardSelect: (card: GreetingCardData) => void;
 }) {
   console.log("BirthdayScreen rendered");
   return (
@@ -910,7 +915,7 @@ function BirthdayScreen({
             <span className="font-medium greenC">Sent</span>
           </button>
           <button
-            onClick={onOpenEditor}
+            onClick={() => setCurrentScreen("home")}
             className="create-btn flex-1 flex items-center justify-center space-x-2 bg-teal-500 text-white py-3 px-4 rounded-xl hover:bg-teal-600 transition-colors"
           >
             <svg
@@ -943,7 +948,10 @@ function BirthdayScreen({
         {/* Category Tabs */}
         <div className="evrlink-category-tabs-container">
           <div className="evrlink-category-tabs-scroll">
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("birthday")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("birthday")}
+            >
               <div className="evrlink-chip-icon">
                 <Image
                   src={birthdayImg}
@@ -954,43 +962,64 @@ function BirthdayScreen({
               </div>
               <span className="evrlink-chip-text">Birthdays</span>
             </button>
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("congrats")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("congrats")}
+            >
               <div className="evrlink-chip-icon">
                 <Image src={congrats} alt="Congrats" width={20} height={20} />
               </div>
               <span className="evrlink-chip-text">Congrats</span>
             </button>
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("love")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("love")}
+            >
               <div className="evrlink-chip-icon">
                 <Image src={love} alt="Love" width={20} height={20} />
               </div>
               <span className="evrlink-chip-text">Love</span>
             </button>
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("work")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("work")}
+            >
               <div className="evrlink-chip-icon">
                 <Image src={work} alt="Work" width={20} height={20} />
               </div>
               <span className="evrlink-chip-text">Work</span>
             </button>
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("thanks")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("thanks")}
+            >
               <div className="evrlink-chip-icon">
                 <Image src={thanks} alt="Thank you" width={20} height={20} />
               </div>
               <span className="evrlink-chip-text">Thank you</span>
             </button>
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("sorry")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("sorry")}
+            >
               <div className="evrlink-chip-icon">
                 <Image src={sorry} alt="Sorry" width={20} height={20} />
               </div>
               <span className="evrlink-chip-text">Sorry</span>
             </button>
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("holiday")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("holiday")}
+            >
               <div className="evrlink-chip-icon">
                 <Image src={irl} alt="IRL" width={20} height={20} />
               </div>
               <span className="evrlink-chip-text">Holiday</span>
             </button>
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("situation")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("situation")}
+            >
               <div className="evrlink-chip-icon">
                 <Image
                   src={situation}
@@ -1001,19 +1030,28 @@ function BirthdayScreen({
               </div>
               <span className="evrlink-chip-text">Situationship</span>
             </button>
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("friendship")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("friendship")}
+            >
               <div className="evrlink-chip-icon">
                 <Image src={friends} alt="Friendship" width={20} height={20} />
               </div>
               <span className="evrlink-chip-text">Friendship</span>
             </button>
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("degen")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("degen")}
+            >
               <div className="evrlink-chip-icon">
                 <Image src={degen} alt="Degen" width={20} height={20} />
               </div>
               <span className="evrlink-chip-text">Degen</span>
             </button>
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("motivational")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("motivational")}
+            >
               <div className="evrlink-chip-icon">
                 <Image
                   src={motivation}
@@ -1024,13 +1062,19 @@ function BirthdayScreen({
               </div>
               <span className="evrlink-chip-text">Motivational</span>
             </button>
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("base")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("base")}
+            >
               <div className="evrlink-chip-icon">
                 <Image src={base} alt="Base" width={20} height={20} />
               </div>
               <span className="evrlink-chip-text">Base</span>
             </button>
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("others")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("others")}
+            >
               <div className="evrlink-chip-icon">
                 <Image src={others} alt="Others" width={20} height={20} />
               </div>
@@ -1043,13 +1087,14 @@ function BirthdayScreen({
       {/* Greeting Card */}
       <div className="px-4 mb-6">
         <BirthdayCard
-          title="Birthday Bling"
-          byline="by Evrlink"
-          tags={["#birthday", "#celebration"]}
-          likes={74}
-          cta="Mint for 0.02 ETH"
-          onClick={() => console.log("Mint clicked")}
-          tapeText="HAPPY BIRTHDAY!!"
+          title={recentlyCreatedData[0].title}
+          byline={recentlyCreatedData[0].byline}
+          tags={recentlyCreatedData[0].tags}
+          likes={recentlyCreatedData[0].likes}
+          cta={recentlyCreatedData[0].cta}
+          price={recentlyCreatedData[0].price}
+          onClick={() => onCardSelect(recentlyCreatedData[0])}
+          tapeText={recentlyCreatedData[0].tapeText}
         />
       </div>
 
@@ -1231,7 +1276,7 @@ function CategoryScreen({
             <span className="font-medium greenC">Sent</span>
           </button>
           <button
-            onClick={onOpenEditor}
+            onClick={() => setCurrentScreen("home")}
             className="create-btn flex-1 flex items-center justify-center space-x-2 bg-teal-500 text-white py-3 px-4 rounded-xl hover:bg-teal-600 transition-colors"
           >
             <svg
@@ -1262,7 +1307,10 @@ function CategoryScreen({
         {/* Category Tabs */}
         <div className="evrlink-category-tabs-container">
           <div className="evrlink-category-tabs-scroll">
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("birthday")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("birthday")}
+            >
               <div className="evrlink-chip-icon">
                 <Image
                   src={birthdayImg}
@@ -1273,43 +1321,64 @@ function CategoryScreen({
               </div>
               <span className="evrlink-chip-text">Birthdays</span>
             </button>
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("congrats")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("congrats")}
+            >
               <div className="evrlink-chip-icon">
                 <Image src={congrats} alt="Congrats" width={20} height={20} />
               </div>
               <span className="evrlink-chip-text">Congrats</span>
             </button>
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("love")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("love")}
+            >
               <div className="evrlink-chip-icon">
                 <Image src={love} alt="Love" width={20} height={20} />
               </div>
               <span className="evrlink-chip-text">Love</span>
             </button>
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("work")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("work")}
+            >
               <div className="evrlink-chip-icon">
                 <Image src={work} alt="Work" width={20} height={20} />
               </div>
               <span className="evrlink-chip-text">Work</span>
             </button>
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("thanks")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("thanks")}
+            >
               <div className="evrlink-chip-icon">
                 <Image src={thanks} alt="Thank you" width={20} height={20} />
               </div>
               <span className="evrlink-chip-text">Thank you</span>
             </button>
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("sorry")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("sorry")}
+            >
               <div className="evrlink-chip-icon">
                 <Image src={sorry} alt="Sorry" width={20} height={20} />
               </div>
               <span className="evrlink-chip-text">Sorry</span>
             </button>
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("holiday")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("holiday")}
+            >
               <div className="evrlink-chip-icon">
                 <Image src={irl} alt="IRL" width={20} height={20} />
               </div>
               <span className="evrlink-chip-text">Holiday</span>
             </button>
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("situation")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("situation")}
+            >
               <div className="evrlink-chip-icon">
                 <Image
                   src={situation}
@@ -1320,19 +1389,28 @@ function CategoryScreen({
               </div>
               <span className="evrlink-chip-text">Situationship</span>
             </button>
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("friendship")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("friendship")}
+            >
               <div className="evrlink-chip-icon">
                 <Image src={friends} alt="Friendship" width={20} height={20} />
               </div>
               <span className="evrlink-chip-text">Friendship</span>
             </button>
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("degen")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("degen")}
+            >
               <div className="evrlink-chip-icon">
                 <Image src={degen} alt="Degen" width={20} height={20} />
               </div>
               <span className="evrlink-chip-text">Degen</span>
             </button>
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("motivational")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("motivational")}
+            >
               <div className="evrlink-chip-icon">
                 <Image
                   src={motivation}
@@ -1343,13 +1421,19 @@ function CategoryScreen({
               </div>
               <span className="evrlink-chip-text">Motivational</span>
             </button>
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("base")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("base")}
+            >
               <div className="evrlink-chip-icon">
                 <Image src={base} alt="Base" width={20} height={20} />
               </div>
               <span className="evrlink-chip-text">Base</span>
             </button>
-            <button className="evrlink-category-chip" onClick={() => setCurrentScreen("others")}>
+            <button
+              className="evrlink-category-chip"
+              onClick={() => setCurrentScreen("others")}
+            >
               <div className="evrlink-chip-icon">
                 <Image src={others} alt="Others" width={20} height={20} />
               </div>
@@ -1367,6 +1451,7 @@ function CategoryScreen({
           tags={cardTags}
           likes={cardLikes}
           cta={cardCta}
+          price="0.02 ETH"
           onClick={() => console.log("Mint clicked")}
           tapeText={tapeText || cardTitle.toUpperCase()}
         />
@@ -1376,7 +1461,9 @@ function CategoryScreen({
       <div className="px-4 mb-6">
         <div className="evrlink-card rounded-xl p-4 evrlink-shadow">
           <div className="flex items-center space-x-3 mb-4">
-            <div className={`w-10 h-10 ${cardIconBg} rounded-full flex items-center justify-center`}>
+            <div
+              className={`w-10 h-10 ${cardIconBg} rounded-full flex items-center justify-center`}
+            >
               <Image src={cardIcon} alt={cardTitle} width={24} height={24} />
             </div>
             <div className="flex-1">
@@ -1384,7 +1471,9 @@ function CategoryScreen({
               <p className="text-gray-500 text-sm">{cardByline}</p>
               <div className="flex space-x-2 mt-1">
                 {cardTags.map((tag, index) => (
-                  <span key={index} className="text-xs text-gray-400">{tag}</span>
+                  <span key={index} className="text-xs text-gray-400">
+                    {tag}
+                  </span>
                 ))}
               </div>
             </div>
@@ -1401,8 +1490,269 @@ function CategoryScreen({
   );
 }
 
+// Dynamic Category Screen Component
+function DynamicCategoryScreen({
+  category,
+  onBack,
+  onOpenEditor,
+  setCurrentScreen,
+  onCardSelect,
+}: {
+  category: string;
+  onBack: () => void;
+  onOpenEditor: () => void;
+  setCurrentScreen: (screen: string) => void;
+  onCardSelect: (card: GreetingCardData) => void;
+}) {
+  // Get category data
+  const categoryData: CategoryData | null = getCategoryData(category);
+
+  if (!categoryData) {
+    return (
+      <div className="min-h-screen bg-white font-sans flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">
+            Category Not Found
+          </h1>
+          <p className="text-gray-600 mb-6">
+            The requested category does not exist.
+          </p>
+          <button
+            onClick={onBack}
+            className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const { title, subtitle, cards } = categoryData;
+
+  // Category icons mapping
+  const categoryIcons = {
+    birthday: birthdayImg,
+    congrats: congrats,
+    love: love,
+    work: work,
+    thanks: thanks,
+    sorry: sorry,
+    holiday: irl,
+    situation: situation,
+    friendship: friends,
+    degen: degen,
+    motivational: motivation,
+    base: base,
+    others: others,
+  };
+
+  return (
+    <div className="min-h-screen bg-white font-sans overflow-y-auto">
+      {/* Status Bar */}
+      <div className="flex justify-between items-center px-4 py-2 text-sm">
+        <span className="font-medium">09:41</span>
+        <div className="flex items-center space-x-1">
+          <div className="w-4 h-2 bg-black rounded-sm"></div>
+          <div className="w-4 h-2 bg-black rounded-sm"></div>
+          <div className="w-4 h-2 bg-black rounded-sm"></div>
+        </div>
+      </div>
+
+      {/* Header */}
+      <header className="px-4 py-3 border-b border-gray-100">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={onBack}
+              className="w-6 h-6 flex items-center justify-center"
+            >
+              <svg
+                className="w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+            <div className="w-6 h-6 flex items-center justify-center">
+              <svg
+                className="w-3 h-3 text-gray-400"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+          </div>
+
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-black">Evrlink</h1>
+            <p className="text-sm text-gray-500">by Snow</p>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <button className="w-6 h-6 flex items-center justify-center">
+              <svg
+                className="w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Action Buttons */}
+      <div className="px-4 py-4">
+        <div className="flex space-x-3">
+          <button className="flex-1 flex items-center justify-center space-x-2 bg-blue-50 text-blue-500 py-3 px-4 rounded-xl border border-blue-100 hover:bg-blue-100 transition-colors">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M20.25 6.75003H16.9613C16.9978 6.71909 17.0353 6.68909 17.0709 6.65628C17.3557 6.40332 17.5851 6.09433 17.745 5.74864C17.9049 5.40295 17.9917 5.02799 18 4.64721C18.0123 4.23066 17.9394 3.81598 17.7856 3.42864C17.6319 3.0413 17.4006 2.68947 17.106 2.39474C16.8113 2.10002 16.4596 1.86863 16.0723 1.71477C15.685 1.56091 15.2703 1.48784 14.8538 1.50003C14.4728 1.50823 14.0977 1.59498 13.7518 1.75485C13.406 1.91471 13.0968 2.14425 12.8438 2.42909C12.4936 2.83493 12.2089 3.29294 12 3.78659C11.7911 3.29294 11.5064 2.83493 11.1562 2.42909C10.9032 2.14425 10.594 1.91471 10.2482 1.75485C9.90232 1.59498 9.52718 1.50823 9.14625 1.50003C8.72969 1.48784 8.31503 1.56091 7.92774 1.71477C7.54044 1.86863 7.18868 2.10002 6.89405 2.39474C6.59941 2.68947 6.36812 3.0413 6.21438 3.42864C6.06064 3.81598 5.98768 4.23066 6 4.64721C6.00833 5.02799 6.09514 5.40295 6.255 5.74864C6.41486 6.09433 6.64434 6.40332 6.92906 6.65628C6.96469 6.68721 7.00219 6.71721 7.03875 6.75003H3.75C3.35218 6.75003 2.97064 6.90806 2.68934 7.18937C2.40804 7.47067 2.25 7.8522 2.25 8.25003V11.25C2.25 11.6479 2.40804 12.0294 2.68934 12.3107C2.97064 12.592 3.35218 12.75 3.75 12.75V18.75C3.75 19.1479 3.90804 19.5294 4.18934 19.8107C4.47064 20.092 4.85218 20.25 5.25 20.25H10.875C10.9745 20.25 11.0698 20.2105 11.1402 20.1402C11.2105 20.0699 11.25 19.9745 11.25 19.875V11.25H3.75V8.25003H11.25V11.25H12.75V8.25003H20.25V11.25H12.75V19.875C12.75 19.9745 12.7895 20.0699 12.8598 20.1402C12.9302 20.2105 13.0255 20.25 13.125 20.25H18.75C19.1478 20.25 19.5294 20.092 19.8107 19.8107C20.092 19.5294 20.25 19.1479 20.25 18.75V12.75C20.6478 12.75 21.0294 12.592 21.3107 12.3107C21.592 12.0294 21.75 11.6479 21.75 11.25V8.25003C21.75 7.8522 21.592 7.47067 21.3107 7.18937C21.0294 6.90806 20.6478 6.75003 20.25 6.75003ZM7.92281 5.53128C7.79168 5.41253 7.68651 5.26795 7.61391 5.10661C7.54131 4.94528 7.50285 4.77068 7.50094 4.59378C7.4962 4.3865 7.53287 4.18036 7.60881 3.98743C7.68476 3.79451 7.79844 3.61868 7.9432 3.47025C8.08796 3.32182 8.26089 3.20378 8.45186 3.12304C8.64282 3.04229 8.84798 3.00047 9.05531 3.00003H9.10125C9.27815 3.00194 9.45275 3.0404 9.61409 3.113C9.77542 3.1856 9.92 3.29077 10.0388 3.4219C10.8253 4.31065 11.1028 5.7844 11.2003 6.69565C10.2853 6.59909 8.8125 6.32159 7.92281 5.53128ZM16.0791 5.53128C15.1894 6.31878 13.7128 6.59628 12.7978 6.69378C12.9094 5.70846 13.2188 4.26565 13.9688 3.42284C14.0875 3.2917 14.2321 3.18653 14.3934 3.11393C14.5547 3.04133 14.7293 3.00287 14.9062 3.00096H14.9522C15.1595 3.00226 15.3645 3.04493 15.5552 3.12647C15.7458 3.20801 15.9183 3.32678 16.0624 3.47582C16.2066 3.62487 16.3195 3.80118 16.3947 3.99444C16.4698 4.18769 16.5056 4.394 16.5 4.60128C16.4969 4.77698 16.4578 4.95019 16.3851 5.11016C16.3124 5.27013 16.2076 5.41347 16.0772 5.53128H16.0791Z"
+                fill="#00B2C7"
+              />
+            </svg>
+            <span className="font-medium greenC">Received</span>
+          </button>
+          <button className="flex-1 flex items-center justify-center space-x-2 bg-blue-50 text-blue-500 py-3 px-4 rounded-xl border border-blue-100 hover:bg-blue-100 transition-colors">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M21.6937 4.15687C21.6937 4.15687 21.6937 4.16625 21.6937 4.17094L16.2375 22.1653C16.1549 22.4576 15.9849 22.7176 15.7503 22.9105C15.5157 23.1034 15.2277 23.2199 14.925 23.2444C14.8819 23.2481 14.8387 23.25 14.7956 23.25C14.5119 23.2509 14.2339 23.1706 13.9944 23.0186C13.7548 22.8666 13.5638 22.6492 13.4437 22.3922L10.0312 15.3891C9.99709 15.3189 9.98569 15.2398 9.99863 15.1628C10.0116 15.0859 10.0482 15.0148 10.1034 14.9597L15.5334 9.52969C15.6681 9.38789 15.7421 9.19908 15.7396 9.00351C15.7371 8.80794 15.6583 8.62108 15.52 8.48278C15.3817 8.34448 15.1949 8.26567 14.9993 8.26317C14.8037 8.26067 14.6149 8.33466 14.4731 8.46937L9.0403 13.8994C8.98514 13.9546 8.91413 13.9912 8.83716 14.0042C8.76019 14.0171 8.6811 14.0057 8.61092 13.9716L1.60123 10.56C1.32713 10.4285 1.09945 10.2168 0.948375 9.95298C0.797299 9.68915 0.729956 9.38565 0.755271 9.08269C0.780586 8.77972 0.897363 8.4916 1.09013 8.25651C1.28289 8.02141 1.54254 7.85044 1.83467 7.76625L19.829 2.31H19.8431C20.0993 2.23802 20.3701 2.2355 20.6276 2.30269C20.8851 2.36988 21.12 2.50437 21.3084 2.69235C21.4968 2.88034 21.6317 3.11506 21.6995 3.37242C21.7672 3.62978 21.7652 3.90053 21.6937 4.15687Z"
+                fill="#00B2C7"
+              />
+            </svg>
+            <span className="font-medium greenC">Sent</span>
+          </button>
+          <button
+            onClick={() => setCurrentScreen("home")}
+            className="create-btn flex-1 flex items-center justify-center space-x-2 bg-teal-500 text-white py-3 px-4 rounded-xl hover:bg-teal-600 transition-colors"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              />
+            </svg>
+            <span className="font-/">Create Meep</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Welcome Section */}
+      <div className="evrlink-section">
+        <div className="evrlink-section-header">
+          <h2 className="evrlink-section-title">{title}</h2>
+          <p className="evrlink-section-subtitle">{subtitle}</p>
+        </div>
+
+        {/* Category Tabs */}
+        <div className="evrlink-category-tabs-container">
+          <div className="evrlink-category-tabs-scroll">
+            {Object.entries(categoryIcons).map(([catKey, icon]) => (
+              <button
+                key={catKey}
+                className="evrlink-category-chip"
+                onClick={() => setCurrentScreen(catKey)}
+              >
+                <div className="evrlink-chip-icon">
+                  <Image src={icon} alt={catKey} width={20} height={20} />
+                </div>
+                <span className="evrlink-chip-text">
+                  {catKey === "motivational"
+                    ? "Motivational"
+                    : catKey === "holiday"
+                      ? "Holiday"
+                      : catKey === "situation"
+                        ? "Situationship"
+                        : catKey === "friendship"
+                          ? "Friendship"
+                          : catKey === "others"
+                            ? "All Purpose"
+                            : catKey.charAt(0).toUpperCase() + catKey.slice(1)}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+
+      {/* Cards List */}
+      <div className="px-4 pb-6">
+        {cards.map((card, index) => (
+          <div key={card.id} className="mb-6">
+            <BirthdayCard
+              title={card.title}
+              byline={card.byline}
+              tags={card.tags}
+              likes={card.likes}
+              cta={card.cta}
+              onClick={() => onCardSelect(card)}
+              tapeText={card.tapeText}
+              paperImage={card.paperImage}
+              overlayImage={card.overlayImage}
+              brandIcon={card.brandIcon}
+              price={card.price}
+            />
+          </div>
+        ))}
+      </div>
+
+
+      {/* Bottom padding to ensure scrolling */}
+      <div className="h-20"></div>
+    </div>
+  );
+}
+
 // Congrats Screen Component
-function CongratsScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack: () => void; onOpenEditor: () => void; setCurrentScreen: (screen: string) => void }) {
+function CongratsScreen({
+  onBack,
+  onOpenEditor,
+  setCurrentScreen,
+}: {
+  onBack: () => void;
+  onOpenEditor: () => void;
+  setCurrentScreen: (screen: string) => void;
+}) {
   return (
     <CategoryScreen
       onBack={onBack}
@@ -1415,7 +1765,7 @@ function CongratsScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack: ()
       cardByline="by Evrlink"
       cardTags={["#congrats", "#achievement"]}
       cardLikes={92}
-      cardCta="Mint for 0.02 ETH"
+      cardCta="Choose Card"
       cardIcon={congrats}
       cardIconBg="bg-blue-100"
       tapeText="CONGRATS!!"
@@ -1424,7 +1774,15 @@ function CongratsScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack: ()
 }
 
 // Love Screen Component
-function LoveScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack: () => void; onOpenEditor: () => void; setCurrentScreen: (screen: string) => void }) {
+function LoveScreen({
+  onBack,
+  onOpenEditor,
+  setCurrentScreen,
+}: {
+  onBack: () => void;
+  onOpenEditor: () => void;
+  setCurrentScreen: (screen: string) => void;
+}) {
   return (
     <CategoryScreen
       onBack={onBack}
@@ -1437,7 +1795,7 @@ function LoveScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack: () => 
       cardByline="by Evrlink"
       cardTags={["#love", "#romance"]}
       cardLikes={156}
-      cardCta="Mint for 0.02 ETH"
+      cardCta="Choose Card"
       cardIcon={love}
       cardIconBg="bg-red-100"
       tapeText="I LOVE
@@ -1447,7 +1805,15 @@ YOU!"
 }
 
 // Work Screen Component
-function WorkScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack: () => void; onOpenEditor: () => void; setCurrentScreen: (screen: string) => void }) {
+function WorkScreen({
+  onBack,
+  onOpenEditor,
+  setCurrentScreen,
+}: {
+  onBack: () => void;
+  onOpenEditor: () => void;
+  setCurrentScreen: (screen: string) => void;
+}) {
   return (
     <CategoryScreen
       onBack={onBack}
@@ -1460,7 +1826,7 @@ function WorkScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack: () => 
       cardByline="by Evrlink"
       cardTags={["#work", "#professional"]}
       cardLikes={67}
-      cardCta="Mint for 0.02 ETH"
+      cardCta="Choose Card"
       cardIcon={work}
       cardIconBg="bg-green-100"
       tapeText="GOOD
@@ -1470,7 +1836,15 @@ WORK!"
 }
 
 // Thanks Screen Component
-function ThanksScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack: () => void; onOpenEditor: () => void; setCurrentScreen: (screen: string) => void }) {
+function ThanksScreen({
+  onBack,
+  onOpenEditor,
+  setCurrentScreen,
+}: {
+  onBack: () => void;
+  onOpenEditor: () => void;
+  setCurrentScreen: (screen: string) => void;
+}) {
   return (
     <CategoryScreen
       onBack={onBack}
@@ -1483,7 +1857,7 @@ function ThanksScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack: () =
       cardByline="by Evrlink"
       cardTags={["#thanks", "#gratitude"]}
       cardLikes={84}
-      cardCta="Mint for 0.02 ETH"
+      cardCta="Choose Card"
       cardIcon={thanks}
       cardIconBg="bg-green-100"
       tapeText="THANK
@@ -1493,7 +1867,15 @@ YOU!"
 }
 
 // Sorry Screen Component
-function SorryScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack: () => void; onOpenEditor: () => void; setCurrentScreen: (screen: string) => void }) {
+function SorryScreen({
+  onBack,
+  onOpenEditor,
+  setCurrentScreen,
+}: {
+  onBack: () => void;
+  onOpenEditor: () => void;
+  setCurrentScreen: (screen: string) => void;
+}) {
   return (
     <CategoryScreen
       onBack={onBack}
@@ -1506,7 +1888,7 @@ function SorryScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack: () =>
       cardByline="by Evrlink"
       cardTags={["#sorry", "#apology"]}
       cardLikes={43}
-      cardCta="Mint for 0.02 ETH"
+      cardCta="Choose Card"
       cardIcon={sorry}
       cardIconBg="bg-purple-100"
       tapeText="I'M
@@ -1516,7 +1898,15 @@ SORRY"
 }
 
 // Holiday Screen Component
-function HolidayScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack: () => void; onOpenEditor: () => void; setCurrentScreen: (screen: string) => void }) {
+function HolidayScreen({
+  onBack,
+  onOpenEditor,
+  setCurrentScreen,
+}: {
+  onBack: () => void;
+  onOpenEditor: () => void;
+  setCurrentScreen: (screen: string) => void;
+}) {
   return (
     <CategoryScreen
       onBack={onBack}
@@ -1529,7 +1919,7 @@ function HolidayScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack: () 
       cardByline="by Evrlink"
       cardTags={["#holiday", "#celebration"]}
       cardLikes={128}
-      cardCta="Mint for 0.02 ETH"
+      cardCta="Choose Card"
       cardIcon={irl}
       cardIconBg="bg-yellow-100"
       tapeText="HOLIDAY
@@ -1539,7 +1929,15 @@ CHEER!"
 }
 
 // Situation Screen Component
-function SituationScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack: () => void; onOpenEditor: () => void; setCurrentScreen: (screen: string) => void }) {
+function SituationScreen({
+  onBack,
+  onOpenEditor,
+  setCurrentScreen,
+}: {
+  onBack: () => void;
+  onOpenEditor: () => void;
+  setCurrentScreen: (screen: string) => void;
+}) {
   return (
     <CategoryScreen
       onBack={onBack}
@@ -1552,7 +1950,7 @@ function SituationScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack: (
       cardByline="by Evrlink"
       cardTags={["#situationship", "#complicated"]}
       cardLikes={76}
-      cardCta="Mint for 0.02 ETH"
+      cardCta="Choose Card"
       cardIcon={situation}
       cardIconBg="bg-orange-100"
       tapeText="IT'S
@@ -1562,7 +1960,15 @@ COMPLICATED"
 }
 
 // Friendship Screen Component
-function FriendshipScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack: () => void; onOpenEditor: () => void; setCurrentScreen: (screen: string) => void }) {
+function FriendshipScreen({
+  onBack,
+  onOpenEditor,
+  setCurrentScreen,
+}: {
+  onBack: () => void;
+  onOpenEditor: () => void;
+  setCurrentScreen: (screen: string) => void;
+}) {
   return (
     <CategoryScreen
       onBack={onBack}
@@ -1575,7 +1981,7 @@ function FriendshipScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack: 
       cardByline="by Evrlink"
       cardTags={["#friendship", "#bff"]}
       cardLikes={103}
-      cardCta="Mint for 0.02 ETH"
+      cardCta="Choose Card"
       cardIcon={friends}
       cardIconBg="bg-yellow-100"
       tapeText="BEST
@@ -1585,7 +1991,15 @@ FRIENDS!"
 }
 
 // Degen Screen Component
-function DegenScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack: () => void; onOpenEditor: () => void; setCurrentScreen: (screen: string) => void }) {
+function DegenScreen({
+  onBack,
+  onOpenEditor,
+  setCurrentScreen,
+}: {
+  onBack: () => void;
+  onOpenEditor: () => void;
+  setCurrentScreen: (screen: string) => void;
+}) {
   return (
     <CategoryScreen
       onBack={onBack}
@@ -1598,7 +2012,7 @@ function DegenScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack: () =>
       cardByline="by Evrlink"
       cardTags={["#degen", "#crypto"]}
       cardLikes={89}
-      cardCta="Mint for 0.02 ETH"
+      cardCta="Choose Card"
       cardIcon={degen}
       cardIconBg="bg-green-100"
       tapeText="DEGEN
@@ -1608,7 +2022,15 @@ VIBES!"
 }
 
 // Motivational Screen Component
-function MotivationalScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack: () => void; onOpenEditor: () => void; setCurrentScreen: (screen: string) => void }) {
+function MotivationalScreen({
+  onBack,
+  onOpenEditor,
+  setCurrentScreen,
+}: {
+  onBack: () => void;
+  onOpenEditor: () => void;
+  setCurrentScreen: (screen: string) => void;
+}) {
   return (
     <CategoryScreen
       onBack={onBack}
@@ -1621,7 +2043,7 @@ function MotivationalScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack
       cardByline="by Evrlink"
       cardTags={["#motivation", "#inspiration"]}
       cardLikes={112}
-      cardCta="Mint for 0.02 ETH"
+      cardCta="Choose Card"
       cardIcon={motivation}
       cardIconBg="bg-orange-100"
       tapeText="RISE &
@@ -1631,7 +2053,15 @@ SHINE!"
 }
 
 // Base Screen Component
-function BaseScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack: () => void; onOpenEditor: () => void; setCurrentScreen: (screen: string) => void }) {
+function BaseScreen({
+  onBack,
+  onOpenEditor,
+  setCurrentScreen,
+}: {
+  onBack: () => void;
+  onOpenEditor: () => void;
+  setCurrentScreen: (screen: string) => void;
+}) {
   return (
     <CategoryScreen
       onBack={onBack}
@@ -1644,7 +2074,7 @@ function BaseScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack: () => 
       cardByline="by Evrlink"
       cardTags={["#base", "#ecosystem"]}
       cardLikes={95}
-      cardCta="Mint for 0.02 ETH"
+      cardCta="Choose Card"
       cardIcon={base}
       cardIconBg="bg-blue-100"
       tapeText="BASE
@@ -1654,7 +2084,15 @@ BUILDER!"
 }
 
 // Others Screen Component
-function OthersScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack: () => void; onOpenEditor: () => void; setCurrentScreen: (screen: string) => void }) {
+function OthersScreen({
+  onBack,
+  onOpenEditor,
+  setCurrentScreen,
+}: {
+  onBack: () => void;
+  onOpenEditor: () => void;
+  setCurrentScreen: (screen: string) => void;
+}) {
   return (
     <CategoryScreen
       onBack={onBack}
@@ -1667,7 +2105,7 @@ function OthersScreen({ onBack, onOpenEditor, setCurrentScreen }: { onBack: () =
       cardByline="by Evrlink"
       cardTags={["#versatile", "#all-purpose"]}
       cardLikes={89}
-      cardCta="Mint for 0.02 ETH"
+      cardCta="Choose Card"
       cardIcon={others}
       cardIconBg="bg-purple-100"
       tapeText="UNIVERSAL
@@ -1677,32 +2115,63 @@ VIBES!"
 }
 
 // Greeting Card Editor Component
-function GreetingCardEditor({ onBack }: { onBack: () => void }) {
-  const [activeTool, setActiveTool] = useState<string | null>(null);
-  const [uploadedImage, setUploadedImage] = useState<{
-    hash: string;
-    url: string;
-  } | null>(null);
-  const [textInput, setTextInput] = useState<string>("");
+function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; selectedCard: GreetingCardData | null }) {
+  const [isWriting, setIsWriting] = useState<boolean>(false);
+  const [messageText, setMessageText] = useState<string>("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [basename, setBasename] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [selectedCardIndex, setSelectedCardIndex] = useState(0); // 0 for original card, 1 for text card
 
-  const handleUploadSuccess = (result: { hash: string; url: string }) => {
-    setUploadedImage(result);
-    setActiveTool(null);
+  const handleWriteClick = () => {
+    setIsWriting(true);
   };
 
-  const handleUploadError = (error: string) => {
-    console.error("Upload error:", error);
-    // You could show a toast notification here
-  };
-
-  const handleAddText = () => {
-    if (textInput.trim()) {
-      console.log("Adding text:", textInput);
-      // Here you would typically add the text to the card
-      // For now, we'll just log it and clear the input
-      setTextInput("");
-      setActiveTool(null);
+  const handleSaveText = () => {
+    if (messageText.trim()) {
+      console.log("Message saved:", messageText);
+      setIsWriting(false);
     }
+  };
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setBasename("");
+  };
+
+  const handleGenerateMeep = () => {
+    // Prevent execution if no basename is provided
+    if (!basename.trim()) {
+      return;
+    }
+    
+    // Handle the actual meep generation logic here
+    console.log("Generating meep with basename:", basename, "and card:", selectedCard);
+    setIsModalOpen(false);
+    setShowSuccessModal(true);
+  };
+
+  const closeSuccessModal = () => {
+    setShowSuccessModal(false);
+    setBasename("");
+  };
+
+  const createAnotherMeep = () => {
+    setShowSuccessModal(false);
+    setBasename("");
+  };
+
+  const handleCardSelect = (index: number) => {
+    setSelectedCardIndex(index);
+  };
+
+  const handleCancelText = () => {
+    setMessageText("");
+    setIsWriting(false);
   };
   return (
     <div className="min-h-screen bg-white font-sans">
@@ -1824,122 +2293,71 @@ function GreetingCardEditor({ onBack }: { onBack: () => void }) {
         </div>
       </div>
 
-      {/* Editor Toolbar */}
-      <div className="px-4 py-4 bg-gray-50">
-        <div className="flex justify-between">
-          <ToolbarButton
-            icon="✏️"
-            label="Draw"
-            isActive={activeTool === "draw"}
-            onClick={() => setActiveTool(activeTool === "draw" ? null : "draw")}
-          />
-          <ToolbarButton
-            icon="T"
-            label="Text"
-            isActive={activeTool === "text"}
-            onClick={() => setActiveTool(activeTool === "text" ? null : "text")}
-          />
-          <ToolbarButton
-            icon="☁️"
-            label="Upload"
-            isActive={activeTool === "upload"}
-            onClick={() =>
-              setActiveTool(activeTool === "upload" ? null : "upload")
-            }
-          />
-          <ToolbarButton
-            icon="▦"
-            label="Background"
-            isActive={activeTool === "background"}
-            onClick={() =>
-              setActiveTool(activeTool === "background" ? null : "background")
-            }
-          />
-          <ToolbarButton
-            icon="◯"
-            label="Elements"
-            isActive={activeTool === "elements"}
-            onClick={() =>
-              setActiveTool(activeTool === "elements" ? null : "elements")
-            }
-          />
-          <ToolbarButton
-            icon="📄"
-            label="Templates"
-            isActive={activeTool === "templates"}
-            onClick={() =>
-              setActiveTool(activeTool === "templates" ? null : "templates")
-            }
-          />
-        </div>
-      </div>
-
-      {/* Tool Panels */}
-      {activeTool === "upload" && (
-        <div className="px-4 py-4 bg-white border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            Upload Image
-          </h3>
-          <FileUpload
-            onUploadSuccess={handleUploadSuccess}
-            onUploadError={handleUploadError}
-            multiple={false}
-            accept="image/png"
-            maxSize={10}
-          />
-        </div>
-      )}
-
-      {activeTool === "text" && (
-        <div className="px-4 py-4 bg-white border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Add Text</h3>
-          <div className="space-y-3">
-            <input
-              type="text"
-              placeholder="Enter your text..."
-              value={textInput}
-              onChange={(e) => setTextInput(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <div className="flex space-x-2">
-              <button 
-                onClick={handleAddText}
-                disabled={!textInput.trim()}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
-              >
-                Add Text
-              </button>
-              <button 
-                onClick={() => setTextInput("")}
-                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
-              >
-                Clear
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Main Card Editor Canvas */}
       <div className="px-4 py-6 mx-4 my-4">
-        <div className="grey-bg bg-amber-50 border-2 border-amber-200 rounded-2xl p-8 min-h-96 flex items-center justify-center relative overflow-hidden">
-          {uploadedImage ? (
-            <div className="w-full h-full flex items-center justify-center">
-              <img
-                src={uploadedImage.url}
-                alt="Uploaded greeting card"
-                className="max-w-full max-h-full object-contain rounded-lg"
+        <div 
+          className="grey-bg rounded-2xl p-8 min-h-96 flex items-center justify-center relative overflow-hidden"
+          style={{
+            backgroundImage: "url('/images/bgc.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat"
+          }}
+        >
+          {isWriting ? (
+            <div className="w-full max-w-md">
+              <textarea
+                value={messageText}
+                onChange={(e) => setMessageText(e.target.value)}
+                placeholder="Write your message here..."
+                className="w-full h-32 p-4 border-2 border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none text-black bg-white bg-opacity-80 backdrop-blur-sm font-handwriting"
+                style={{
+                  fontSize: '20px',
+                  lineHeight: '1.6'
+                }}
+                autoFocus
               />
-              <div className="absolute top-2 right-2 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                IPFS: {uploadedImage.hash.slice(0, 8)}...
+              <div className="flex space-x-2 mt-4">
+                <button
+                  onClick={handleSaveText}
+                  disabled={!messageText.trim()}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={handleCancelText}
+                  className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                >
+                  Cancel
+                </button>
               </div>
             </div>
+          ) : messageText ? (
+            <div className="w-full max-w-md">
+              <div className="relative">
+                <p className="text-lg text-gray-800 leading-relaxed font-handwriting" style={{
+                  fontSize: '22px',
+                  textShadow: '1px 1px 2px rgba(255,255,255,0.8)',
+                  lineHeight: '1.6'
+                }}>
+                  {messageText}
+                </p>
+              </div>
+              <button
+                onClick={handleWriteClick}
+                className="mt-4 text-blue-500 hover:text-blue-600 text-sm underline"
+              >
+                Edit message
+              </button>
+            </div>
           ) : (
-            <div className="text-center text-gray-500">
+            <div
+              className="text-center text-gray-500 cursor-pointer hover:text-gray-700 transition-colors"
+              onClick={handleWriteClick}
+            >
               <p className="text-lg">Write your message</p>
-              <p className="text-sm mt-2">
-                Use the toolbar above to add content
-              </p>
+              <p className="text-sm mt-2">Click here to start writing</p>
             </div>
           )}
         </div>
@@ -1949,22 +2367,42 @@ function GreetingCardEditor({ onBack }: { onBack: () => void }) {
       <div className="px-4 py-4 mx-4 my-4">
         <div className="flex space-x-4 mb-4">
           {/* Left Card Preview */}
-          <div className="min-h-96 flex justify-center items-center flex-1 bg-amber-50 border-2 border-amber-200 rounded-xl p-4 relative overflow-hidden">
-            {/* Balloon decorations */}
-            <div className="absolute top-1 left-2 w-4 h-6 bg-amber-800 rounded-full opacity-60"></div>
-            <div className="absolute top-2 right-3 w-3 h-5 bg-black rounded-full opacity-40"></div>
-            <div className="absolute top-1 right-6 w-2 h-4 bg-amber-900 rounded-full opacity-50"></div>
-            <div className="absolute top-3 left-4 w-2 h-3 bg-red-500 rounded-full"></div>
-            <div className="absolute top-2 left-6 w-1 h-2 bg-blue-500 rounded-full"></div>
-            <div className="absolute top-3 left-8 w-1 h-2 bg-yellow-500 rounded-full"></div>
-
-            {/* Main card content */}
-            <div className="bg-white rounded-lg p-3 text-center relative z-10 mt-4">
-              <div className="text-sm font-bold text-black mb-1">HAPPY</div>
-              <div className="text-sm font-bold text-black bg-yellow-200 px-2 py-1 rounded">
-                BIRTHDAY!!
+          <div className="min-h-96 flex justify-center items-center flex-1 bg-amber-50 border-2 border-amber-200 rounded-xl  relative overflow-hidden">
+            {selectedCard ? (
+              <div className="w-full h-full flex flex-col items-center justify-center">
+                {/* Selected Card Image */}
+                <div className="w-full max-w-xs mb-4">
+                  <img 
+                    src={selectedCard.paperImage} 
+                    alt={selectedCard.title}
+                    className="w-full h-[300px] rounded-lg shadow-lg"
+                  />
+                </div>
+                
+                {/* Card Info */}
+                {/* <div className="text-center">
+                  <h3 className="text-lg font-bold text-gray-800 mb-1">{selectedCard.title}</h3>
+                  <p className="text-sm text-gray-600 mb-2">{selectedCard.byline}</p>
+                  <div className="flex flex-wrap justify-center gap-1 mb-2">
+                    {selectedCard.tags.map((tag, index) => (
+                      <span key={index} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  {selectedCard.tapeText && (
+                    <div className="text-sm font-bold text-amber-800 bg-yellow-200 px-3 py-1 rounded">
+                      {selectedCard.tapeText}
+                    </div>
+                  )}
+                </div> */}
               </div>
-            </div>
+            ) : (
+              <div className="text-center text-gray-500">
+                <p className="text-lg mb-2">No card selected</p>
+                <p className="text-sm">Choose a card to see preview</p>
+              </div>
+            )}
           </div>
 
           {/* Right Card Preview */}
@@ -1976,44 +2414,251 @@ function GreetingCardEditor({ onBack }: { onBack: () => void }) {
         </div>
 
         {/* Dimensions annotation */}
-        <div className="text-center text-blue-600 text-xs mb-4">
+        {/* <div className="text-center text-blue-600 text-xs mb-4">
           <span className="bg-blue-100 px-2 py-1 rounded">
             350 Fill x 638.93 Hug
           </span>
-        </div>
+        </div> */}
       </div>
 
       {/* Generate Meep Button */}
       <div className="px-4 pb-6">
-        <button className="w-full bg-teal-500 text-white py-4 rounded-xl font-bold text-lg hover:bg-teal-600 transition-colors">
-          Generate Meep
+        <button 
+          onClick={openModal}
+          className="w-full bg-teal-500 text-white py-4 rounded-xl font-bold text-lg hover:bg-teal-600 transition-colors"
+        >
+          Generate Meep - {selectedCard?.price}
         </button>
       </div>
-    </div>
-  );
-}
 
-// Toolbar Button Component
-function ToolbarButton({
-  icon,
-  label,
-  isActive = false,
-  onClick,
-}: {
-  icon: string;
-  label: string;
-  isActive?: boolean;
-  onClick?: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-colors ${
-        isActive ? "bg-blue-100 text-blue-600" : "hover:bg-gray-100 text-black"
-      }`}
-    >
-      <span className="text-lg">{icon}</span>
-      <span className="text-xs font-medium">{label}</span>
-    </button>
+      {/* Generate Meep Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#E1E8E9] rounded-2xl max-w-sm w-full max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex justify-end p-4">
+              <button
+                onClick={closeModal}
+                className="w-6 h-6 flex items-center justify-center text-gray-500 hover:text-gray-700"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Card Preview Stack */}
+            <div className="px-6 pb-4">
+              <div className="relative flex justify-center" style={{ height: '250px' }}>
+                {/* Original Card */}
+                <div 
+                  className={`absolute w-full h-auto rounded-lg cursor-pointer transition-all duration-300 ${
+                    selectedCardIndex === 0 ? 'z-20 scale-105' : 'z-10 scale-95 opacity-70'
+                  }`}
+                  onClick={() => handleCardSelect(0)}
+                  style={{ 
+                    transform: selectedCardIndex === 0 ? 'rotate(2deg)' : 'rotate(1deg)',
+                    top: selectedCardIndex === 0 ? '0px' : '10px',
+                    left: selectedCardIndex === 0 ? '0px' : '10px'
+                  }}
+                >
+                  {selectedCard && (
+                    <div className="w-full h-full relative overflow-hidden rounded-lg">
+                       <div className="relative w-full h-[200px] rounded-[20px] border border-[#F3F4F6] overflow-hidden">
+                        {/* Back paper (tan) */}
+                        <div
+                          className="absolute left-[45px] top-[0px] w-[250px] h-[203.45px] rounded-[13.1px]"
+                          style={{
+                            transform: "rotate(2.67deg)",
+                            boxShadow: "1.64px 2.46px 3.28px rgba(0,0,0,0.15)",
+                            border: "13.1015px solid #F3F3F3",
+                          }}
+                        />
+
+                        {/* Front square paper photo */}
+                        <div
+                          className="absolute left-[59px] top-[20.22px] w-[250px] h-[250px] -translate-x-[calc(50%-8px)] rounded-[8.08px]"
+                          style={{
+                            transform: "rotate(-3.64deg)",
+                            backgroundImage: `url(${selectedCard.paperImage})`,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                            border: "9.69238px solid #FBFBFB",
+                            filter: "drop-shadow(1px 6px 5.2px rgba(0,0,0,0.16))",
+                          }}
+                        />
+
+                        {/* Optional soft overlay to mimic Figma blend layers */}
+                        <div
+                          className="absolute left-[94px] top-[110px] w-[156px] h-[67px] opacity-60"
+                          style={{
+                            transform: "rotate(2.67deg)",
+                            backgroundImage: `url(${selectedCard.overlayImage})`,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                            mixBlendMode: "soft-light" as any,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Text Card */}
+                <div 
+                  className={`absolute w-full h-auto rounded-lg cursor-pointer transition-all duration-300 ${
+                    selectedCardIndex === 1 ? 'z-20 scale-105' : 'z-10 scale-95 opacity-70'
+                  }`}
+                  onClick={() => handleCardSelect(1)}
+                  style={{ 
+                    transform: selectedCardIndex === 1 ? 'rotate(-2deg)' : 'rotate(-1deg)',
+                    top: selectedCardIndex === 1 ? '0px' : '10px',
+                    left: selectedCardIndex === 1 ? '0px' : '10px'
+                  }}
+                >
+                  <div className="w-full h-full relative overflow-hidden rounded-lg">
+                    <div 
+                      className="relative w-full h-[200px] rounded-[20px] border border-[#F3F4F6] overflow-hidden flex items-center justify-center"
+                      style={{
+                        backgroundImage: "url('/images/bgc.png')",
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        backgroundRepeat: "no-repeat"
+                      }}
+                    >
+                      {messageText && (
+                        <div className="p-4">
+                          <p className="text-lg text-gray-800 leading-relaxed font-handwriting" style={{
+                            fontSize: '18px',
+                            textShadow: '1px 1px 2px rgba(255,255,255,0.8)',
+                            lineHeight: '1.6'
+                          }}>
+                            {messageText}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Input Section */}
+            <div className="px-6 pb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Input a Basename to share this with: <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={basename}
+                onChange={(e) => setBasename(e.target.value)}
+                placeholder="Input a Basename"
+                required
+                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-colors text-black ${
+                  !basename.trim() && basename.length > 0
+                    ? 'border-red-300 bg-red-50'
+                    : 'border-gray-300'
+                }`}
+              />
+              {!basename.trim() && basename.length > 0 && (
+                <p className="text-red-500 text-xs mt-1">Basename is required</p>
+              )}
+            </div>
+
+            {/* Price Information */}
+            <div className="px-6 pb-4">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-gray-700">Mint Fee:</span>
+                <span className="text-sm font-bold text-gray-900">
+                  {selectedCard?.price} ($1.20 USDC)
+                </span>
+              </div>
+            </div>
+
+            {/* Generate Button */}
+            <div className="px-6 pb-6">
+              <button
+                onClick={handleGenerateMeep}
+                disabled={!basename.trim()}
+                className={`w-full py-4 rounded-xl font-bold text-lg transition-colors ${
+                  basename.trim() 
+                    ? 'bg-teal-500 text-white hover:bg-teal-600 cursor-pointer' 
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                Generate Meep
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#E1E8E9] rounded-2xl max-w-sm w-full max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex justify-end p-4">
+              <button
+                onClick={closeSuccessModal}
+                className="w-6 h-6 flex items-center justify-center text-gray-500 hover:text-gray-700"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Meep Character */}
+            <div className="px-6 pb-4 flex justify-center">
+              <div className="relative">
+                {/* Meep Body */}
+                <div className="w-32 h-32 rounded-2xl relative">
+                  <Image src="/images/meep.png" alt="Meep" width={200} height={200} />
+                </div>
+              </div>
+            </div>
+
+            {/* Success Message */}
+            <div className="px-6 pb-6 text-center">
+              <h2 className="text-lg font-semibold text-black mb-6">
+                Your meep was sent successfully!
+              </h2>
+
+              {/* Action Buttons */}
+              <div className="space-y-3">
+                {/* Create Another Meep Button */}
+                <button
+                  onClick={createAnotherMeep}
+                  className="w-full bg-teal-500 text-white py-3 rounded-xl font-semibold hover:bg-teal-600 transition-colors"
+                >
+                  Create another meep
+                </button>
+
+                {/* Share Buttons */}
+                <button className="w-full bg-[#E1E8E9] text-black py-3 rounded-xl font-medium hover:bg-gray-200 transition-colors flex items-center justify-center space-x-2">
+                  <span>Share on Farcaster</span>
+                  <div className="w-5 h-5 bg-purple-600 rounded flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">n</span>
+                  </div>
+                </button>
+
+                <button className="w-full bg-[#E1E8E9] text-black py-3 rounded-xl font-medium hover:bg-gray-200 transition-colors flex items-center justify-center space-x-2">
+                  <span>Share on Zora</span>
+                  <div className="w-5 h-5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+                </button>
+
+                <button className="w-full bg-[#E1E8E9] text-black py-3 rounded-xl font-medium hover:bg-gray-200 transition-colors flex items-center justify-center space-x-2">
+                  <span>Share on X</span>
+                  <div className="w-5 h-5 bg-black rounded flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">X</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
