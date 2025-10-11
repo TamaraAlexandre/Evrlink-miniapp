@@ -21,7 +21,7 @@ export async function GET() {
     "signature": "MHgxMGQwZGU4ZGYwZDUwZTdmMGIxN2YxMTU2NDI1MjRmZTY0MTUyZGU4ZGU1MWU0MThiYjU4ZjVmZmQxYjRjNDBiNGVlZTRhNDcwNmVmNjhlMzQ0ZGQ5MDBkYmQyMmNlMmVlZGY5ZGQ0N2JlNWRmNzMwYzUxNjE4OWVjZDJjY2Y0MDFj"
   },
   "baseBuilder": {
-    "allowedAddresses": ["0x..."]
+    "allowedAddresses": [""]
   },
   "miniapp": {
     "version": "1",
