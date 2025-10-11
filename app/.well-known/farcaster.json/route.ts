@@ -32,7 +32,7 @@ export async function GET() {
     "splashBackgroundColor": "#000000",
     "webhookUrl": "https://evrlink-miniapp.vercel.app/api/webhook",
     "subtitle": "Greeting Cards",
-    "description": "Better Greeting Cards.",
+    "description": "New and better greeting cards.",
     "screenshotUrls": [
       "https://ex.co/s1.png",
       "https://ex.co/s2.png",
