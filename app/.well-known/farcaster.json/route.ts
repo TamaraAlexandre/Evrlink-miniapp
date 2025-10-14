@@ -33,7 +33,7 @@ export async function GET() {
     "splashBackgroundColor": "#FFFFFF",
     "webhookUrl": "https://www.evrlinkapp.com/api/webhook",
     "description": "Greeting Cards ",
-    "subtitle": "Create Greeting Cards in Seconds ",
+    "subtitle": "Instant greeting cards",
     "primaryCategory": "social",
     "screenshotUrls": [
       "https://i.imgur.com/nhm1ph1.png"
@@ -41,7 +41,6 @@ export async function GET() {
     "heroImageUrl": "https://i.imgur.com/nhm1ph1.png",
     "tags": [
       "social",
-      "greeting cards",
       "cards"
     ],
     "tagline": "Instant Greeting Cards",
