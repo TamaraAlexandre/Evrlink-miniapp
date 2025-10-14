@@ -26,17 +26,17 @@ export async function GET() {
   "miniapp": {
     "version": "1",
     "name": "Evrlink",
-    "homeUrl": "https://evrlink-miniapp.vercel.app/",
-    "iconUrl": "https://ex.co/i.png",
-    "splashImageUrl": "https://ex.co/l.png",
-    "splashBackgroundColor": "#000000",
-    "webhookUrl": "https://evrlink-miniapp.vercel.app/api/webhook",
+    "homeUrl": "https://evrlinkapp.com/",
+    "iconUrl": "https://i.imgur.com/nhm1ph1.png",
+    "splashImageUrl": "https://i.imgur.com/nhm1ph1.png",
+    "splashBackgroundColor": "#FFFFFF",
+    "webhookUrl": "https://evrlinkapp.com/webhook",
     "subtitle": "Greeting Cards",
     "description": "New and better greeting cards.",
     "screenshotUrls": [
-      "https://ex.co/s1.png",
-      "https://ex.co/s2.png",
-      "https://ex.co/s3.png"
+      "https://i.imgur.com/nhm1ph1.png",
+      "https://i.imgur.com/nhm1ph1.png",
+      "https://i.imgur.com/nhm1ph1.png"
     ],
     "primaryCategory": "Consumer",
     "tags": ["Consumer"],
