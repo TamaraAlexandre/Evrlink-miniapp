@@ -16,9 +16,9 @@ export async function GET() {
 
   return Response.json({
   "accountAssociation": {
-    "header": "eyJmaWQiOjEzNjg3MDYsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgzOTNiNTdiODljNjczNDllMGZjMTg0YjdiNTdFNDRlMjhlRjNiMjlDIn0",
-    "payload": "eyJkb21haW4iOiJldnJsaW5rYXBwLmNvbSJ9",
-    "signature": "MHg4OGYzYTE2YzMwZjYwZDE5NTg2ZGNiNTYxMGFjYjZkMTEyNGFmZGFjMmQ4MjVmMGIzNTE4ZWIzMDhmNDA4MTkwMjk0NmY2ZWFkN2IzNWI1ZDdlY2M4YjFlMjJhYmM4YjYzMjJmYWM0NTg0MTM4ZjZkZjdhOGVkYjE4NWMyN2MzZjAx"
+    "header": "eyJmaWQiOjEzNjg3MDYsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhiNzAyNjEwMWEzNjIyNmY2RTE0MzU5ZTRDNEI2YjRCMWQ0YzBkNEZEIn0",
+    "payload": "eyJkb21haW4iOiJ3d3cuZXZybGlua2FwcC5jb20ifQ",
+    "signature": "HYwsmLgZBnP21PiXrtwY73XiW0tLO9alRREVXT9CiMgamSiCebpl5gIgjD4bsxnwJnkjekqNvKsBzGkJ1m/fLhw="
   },
   "baseBuilder": {
     "allowedAddresses": ["0xCD0D091030D3D4809e7c08a135B5ECae30537104"]
