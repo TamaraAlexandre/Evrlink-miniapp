@@ -24,27 +24,27 @@ export async function GET() {
     "allowedAddresses": ["0xCD0D091030D3D4809e7c08a135B5ECae30537104"]
   },
   "miniapp": {
-    "version": "1",
     "name": "Evrlink",
-    "homeUrl": "https://evrlinkapp.com/",
-    "iconUrl": "https://i.imgur.com/nhm1ph1.png",
+    "version": "1",
+    "iconUrl": "https://www.evrlinkapp.com/icon.png",
+    "homeUrl": "https://www.evrlinkapp.com",
+    "imageUrl": "https://www.evrlinkapp.com/image.png",
     "splashImageUrl": "https://i.imgur.com/nhm1ph1.png",
     "splashBackgroundColor": "#FFFFFF",
-    "webhookUrl": "https://evrlinkapp.com/webhook",
-    "subtitle": "Greeting Cards",
-    "description": "New and better greeting cards.",
+    "webhookUrl": "https://www.evrlinkapp.com/api/webhook",
+    "description": "Greeting Cards ",
+    "subtitle": "Create Greeting Cards in Seconds ",
+    "primaryCategory": "social",
     "screenshotUrls": [
-      "https://i.imgur.com/nhm1ph1.png",
-      "https://i.imgur.com/nhm1ph1.png",
       "https://i.imgur.com/nhm1ph1.png"
     ],
-    "primaryCategory": "Consumer",
-    "tags": ["Consumer"],
-    "heroImageUrl": "https://ex.co/og.png",
-    "tagline": "Create a Meep",
-    "ogTitle": "Example Mini App",
-    "ogDescription": "Easy to manage portfolio.",
-    "ogImageUrl": "https://ex.co/og.png",
+    "heroImageUrl": "https://i.imgur.com/nhm1ph1.png",
+    "tags": [
+      "social",
+      "greeting cards",
+      "cards"
+    ],
+    "tagline": "Instant Greeting Cards"
     "noindex": true
   }
   });
