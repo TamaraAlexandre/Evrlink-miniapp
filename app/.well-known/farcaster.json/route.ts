@@ -44,7 +44,7 @@ export async function GET() {
       "greeting cards",
       "cards"
     ],
-    "tagline": "Instant Greeting Cards"
+    "tagline": "Instant Greeting Cards",
     "noindex": true
   }
   });
