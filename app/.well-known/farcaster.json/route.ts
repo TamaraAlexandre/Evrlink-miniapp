@@ -16,12 +16,12 @@ export async function GET() {
 
   return Response.json({
   "accountAssociation": {
-    "header": "eyJmaWQiOjkxNTIsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgwMmVmNzkwRGQ3OTkzQTM1ZkQ4NDdDMDUzRURkQUU5NDBEMDU1NTk2In0",
-    "payload": "eyJkb21haW4iOiJhcHAuZXhhbXBsZS5jb20ifQ",
-    "signature": "MHgxMGQwZGU4ZGYwZDUwZTdmMGIxN2YxMTU2NDI1MjRmZTY0MTUyZGU4ZGU1MWU0MThiYjU4ZjVmZmQxYjRjNDBiNGVlZTRhNDcwNmVmNjhlMzQ0ZGQ5MDBkYmQyMmNlMmVlZGY5ZGQ0N2JlNWRmNzMwYzUxNjE4OWVjZDJjY2Y0MDFj"
+    "header": "eyJmaWQiOjEzNjg3MDYsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgzOTNiNTdiODljNjczNDllMGZjMTg0YjdiNTdFNDRlMjhlRjNiMjlDIn0",
+    "payload": "eyJkb21haW4iOiJldnJsaW5rYXBwLmNvbSJ9",
+    "signature": "MHg4OGYzYTE2YzMwZjYwZDE5NTg2ZGNiNTYxMGFjYjZkMTEyNGFmZGFjMmQ4MjVmMGIzNTE4ZWIzMDhmNDA4MTkwMjk0NmY2ZWFkN2IzNWI1ZDdlY2M4YjFlMjJhYmM4YjYzMjJmYWM0NTg0MTM4ZjZkZjdhOGVkYjE4NWMyN2MzZjAx"
   },
   "baseBuilder": {
-    "allowedAddresses": ["0x400384b6CA843519223eFE99c8899d363782f80c"]
+    "allowedAddresses": ["0x0x393b57b89c67349e0fc184b7b57e44e28ef3b29c"]
   },
   "miniapp": {
     "version": "1",
