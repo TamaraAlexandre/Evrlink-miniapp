@@ -10,7 +10,7 @@ export const viewport: Viewport = {
 };
 
 export async function generateMetadata(): Promise<Metadata> {
-  const URL = process.env.NEXT_PUBLIC_URL || "https://evrlinkapp.com";
+  const URL = process.env.NEXT_PUBLIC_URL || "https://www.evrlinkapp.com";
   const PROJECT_NAME = process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME || "EvrLink";
   const HERO_IMAGE = process.env.NEXT_PUBLIC_APP_HERO_IMAGE || "https://i.imgur.com/nhm1ph1.png";
   const SPLASH_IMAGE = process.env.NEXT_PUBLIC_SPLASH_IMAGE || "https://i.imgur.com/nhm1ph1.png";
