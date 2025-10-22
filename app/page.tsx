@@ -428,7 +428,7 @@ export default function App() {
       <div className="evrlink-slider-section">
         <div className="evrlink-slider-header">
           <div>
-            <h2 className="evrlink-slider-title fw-400">Base Projects Cards</h2>
+            <h2 className="evrlink-slider-title fw-400">Base Projects</h2>
             <p className="evrlink-slider-subtitle">
               See some amazing Base projects. 
             </p>
