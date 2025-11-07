@@ -26,7 +26,7 @@ type Props = {
 };
 
 export default function BirthdayCard({
-  title = "Birthday Bling",
+  title = "Birthday",
   byline = "by Everlink",
   tags = ["#birthday", "#celebration"],
   likes = 74,
@@ -150,7 +150,7 @@ export default function BirthdayCard({
         <button
           type="button"
           onClick={onClick}
-          className="inline-flex flex-col items-center justify-center h-12 px-4 rounded-lg bg-[#00B2C7] text-[#111827] text-[16px] leading-6 font-medium shadow-sm hover:brightness-95 active:brightness-90 transition"
+          className="inline-flex flex-col items-center justify-center h-12 px-4 rounded-lg bg-[#00B2C7] text-[16px] leading-6 font-medium shadow-sm hover:brightness-95 active:brightness-90 transition"
         >
           <span>{cta}</span>
           {/* <span className="text-xs font-normal opacity-80">{price}</span> */}
