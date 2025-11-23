@@ -46,6 +46,7 @@ import degen from "../public/images/degen.svg";
 import motivation from "../public/images/motivation.svg";
 import base from "../public/images/base.svg";
 import others from "../public/images/others.svg";
+import logo from "../public/images/logo.png";
 
 export default function App() {
   const { setFrameReady, isFrameReady, context } = useMiniKit();
@@ -184,14 +185,14 @@ export default function App() {
   return (
     <div className="min-h-screen bg-white font-sans">
       {/* Status Bar */}
-      <div className="flex justify-between items-center px-4 py-2 text-sm">
+      {/* <div className="flex justify-between items-center px-4 py-2 text-sm">
         <span className="font-medium">09:41</span>
         <div className="flex items-center space-x-1">
           <div className="w-4 h-2 bg-black rounded-sm"></div>
           <div className="w-4 h-2 bg-black rounded-sm"></div>
           <div className="w-4 h-2 bg-black rounded-sm"></div>
         </div>
-      </div>
+      </div> */}
 
       {/* Header */}
       <header className="px-4 py-3 border-b border-gray-100">
@@ -216,8 +217,8 @@ export default function App() {
           </div>
 
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-black">Evrlink</h1>
-            <p className="text-sm text-gray-500">by Snow</p>
+            {/* <h1 className="text-2xl font-bold text-black">Evrlink</h1> */}
+            <img src={logo.src} alt="Evrlink" className="w-20 h-auto" />
           </div>
 
           <div className="flex items-center space-x-2">
@@ -428,7 +429,7 @@ export default function App() {
       <div className="evrlink-slider-section">
         <div className="evrlink-slider-header">
           <div>
-            <h2 className="evrlink-slider-title fw-400">Base Projects Cards</h2>
+            <h2 className="evrlink-slider-title fw-400">Base Projects</h2>
             <p className="evrlink-slider-subtitle">
               See some amazing Base projects. 
             </p>
@@ -916,7 +917,7 @@ function BirthdayScreen({
           </button>
           <button
             onClick={() => setCurrentScreen("home")}
-            className="create-btn flex-1 flex items-center justify-center space-x-2 bg-teal-500 text-white py-3 px-4 rounded-xl hover:bg-teal-600 transition-colors"
+            className="create-btn flex-1 flex items-center justify-center space-x-2 bg-[#00B2C7] text-white py-3 px-4 rounded-xl hover:bg-[#00B2C7] transition-colors"
           >
             <svg
               className="w-5 h-5"
@@ -1277,7 +1278,7 @@ function CategoryScreen({
           </button>
           <button
             onClick={() => setCurrentScreen("home")}
-            className="create-btn flex-1 flex items-center justify-center space-x-2 bg-teal-500 text-white py-3 px-4 rounded-xl hover:bg-teal-600 transition-colors"
+            className="create-btn flex-1 flex items-center justify-center space-x-2 bg-[#00B2C7] text-white py-3 px-4 rounded-xl hover:bg-[#00B2C7] transition-colors"
           >
             <svg
               className="w-5 h-5"
@@ -1656,7 +1657,7 @@ function DynamicCategoryScreen({
           </button>
           <button
             onClick={() => setCurrentScreen("home")}
-            className="create-btn flex-1 flex items-center justify-center space-x-2 bg-teal-500 text-white py-3 px-4 rounded-xl hover:bg-teal-600 transition-colors"
+            className="create-btn flex-1 flex items-center justify-center space-x-2 bg-[#00B2C7] text-white py-3 px-4 rounded-xl hover:bg-[#00B2C7] transition-colors"
           >
             <svg
               className="w-5 h-5"
@@ -2367,11 +2368,11 @@ function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; sele
       <div className="px-4 py-4 mx-4 my-4">
         <div className="flex space-x-4 mb-4">
           {/* Left Card Preview */}
-          <div className="min-h-96 flex justify-center items-center flex-1 bg-amber-50 border-2 border-amber-200 rounded-xl  relative overflow-hidden">
+          <div className="min-h-96 flex justify-center items-center flex-1 rounded-xl  relative overflow-hidden">
             {selectedCard ? (
               <div className="w-full h-full flex flex-col items-center justify-center">
                 {/* Selected Card Image */}
-                <div className="w-full max-w-xs mb-4">
+                <div className="w-full">
                   <img 
                     src={selectedCard.paperImage} 
                     alt={selectedCard.title}
@@ -2425,7 +2426,7 @@ function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; sele
       <div className="px-4 pb-6">
         <button 
           onClick={openModal}
-          className="w-full bg-teal-500 text-white py-4 rounded-xl font-bold text-lg hover:bg-teal-600 transition-colors"
+          className="w-full bg-[#00B2C7] text-white py-4 rounded-xl font-bold text-lg hover:bg-[#00B2C7] transition-colors"
         >
           Generate Meep - {selectedCard?.price}
         </button>
@@ -2582,7 +2583,7 @@ function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; sele
                 disabled={!basename.trim()}
                 className={`w-full py-4 rounded-xl font-bold text-lg transition-colors ${
                   basename.trim() 
-                    ? 'bg-teal-500 text-white hover:bg-teal-600 cursor-pointer' 
+                    ? 'bg-[#00B2C7] text-white hover:bg-[#00B2C7] cursor-pointer' 
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
               >
@@ -2630,7 +2631,7 @@ function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; sele
                 {/* Create Another Meep Button */}
                 <button
                   onClick={createAnotherMeep}
-                  className="w-full bg-teal-500 text-white py-3 rounded-xl font-semibold hover:bg-teal-600 transition-colors"
+                  className="w-full bg-[#00B2C7] text-white py-3 rounded-xl font-semibold hover:bg-[#00B2C7] transition-colors"
                 >
                   Create another meep
                 </button>
