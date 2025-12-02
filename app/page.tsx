@@ -21,8 +21,12 @@ import {
   WalletDropdownDisconnect,
 } from "@coinbase/onchainkit/wallet";
 import { useEffect, useMemo, useState, useCallback } from "react";
+import { useAccount } from "wagmi";
 import { Button } from "./components/DemoComponents";
 import { Icon } from "./components/DemoComponents";
+import { validateAndResolveRecipient, type RecipientResolutionResult } from "@/lib/recipient-resolver";
+import { formatAddress } from "@/lib/basename-resolver";
+import { prepareGreetingCardForUpload } from "@/lib/image-composer";
 import BirthdayCard from "./components/GreetingCard";
 import {
   getCategoryData,
@@ -184,15 +188,32 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-white font-sans">
-      {/* Status Bar */}
-      {/* <div className="flex justify-between items-center px-4 py-2 text-sm">
-        <span className="font-medium">09:41</span>
-        <div className="flex items-center space-x-1">
-          <div className="w-4 h-2 bg-black rounded-sm"></div>
-          <div className="w-4 h-2 bg-black rounded-sm"></div>
-          <div className="w-4 h-2 bg-black rounded-sm"></div>
+      {/* Header with Connect Wallet */}
+      <div className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm">
+        <div className="flex justify-between items-center px-4 py-3">
+          <div className="flex items-center space-x-2">
+            <Image src={logo} alt="Logo" width={32} height={32} />
+            <span className="font-bold text-lg text-gray-800">EvrLink</span>
+          </div>
+          
+          {/* Connect Wallet Button */}
+          <Wallet>
+            <ConnectWallet>
+              <Avatar className="h-6 w-6" />
+              <Name className="font-medium text-sm" />
+            </ConnectWallet>
+            <WalletDropdown>
+              <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick>
+                <Avatar />
+                <Name />
+                <Address className="text-xs" />
+                <EthBalance />
+              </Identity>
+              <WalletDropdownDisconnect />
+            </WalletDropdown>
+          </Wallet>
         </div>
-      </div> */}
+      </div>
 
       {/* Header */}
       <header className="px-4 py-3 border-b border-gray-100">
@@ -721,23 +742,6 @@ export default function App() {
         </div>
       </div>
 
-      {/* Wallet Integration (Hidden but available) */}
-      <div className="hidden">
-        <Wallet className="z-10">
-          <ConnectWallet>
-            <Name className="text-inherit" />
-          </ConnectWallet>
-          <WalletDropdown>
-            <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick>
-              <Avatar />
-              <Name />
-              <Address />
-              <EthBalance />
-            </Identity>
-            <WalletDropdownDisconnect />
-          </WalletDropdown>
-        </Wallet>
-      </div>
     </div>
   );
 }
@@ -2117,12 +2121,34 @@ VIBES!"
 
 // Greeting Card Editor Component
 function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; selectedCard: GreetingCardData | null }) {
+  // Sender's wallet connection (for identity)
+  const { address: walletAddress, isConnected } = useAccount();
+  
+  // Debug wallet connection
+  useEffect(() => {
+    console.log('🔍 Wallet Debug:', {
+      isConnected,
+      walletAddress,
+      hasAddress: !!walletAddress,
+    });
+  }, [isConnected, walletAddress]);
+  
   const [isWriting, setIsWriting] = useState<boolean>(false);
   const [messageText, setMessageText] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [basename, setBasename] = useState("");
+  const [recipientInput, setRecipientInput] = useState("");
+  const [recipientResolution, setRecipientResolution] = useState<RecipientResolutionResult | null>(null);
+  const [isResolvingRecipient, setIsResolvingRecipient] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [selectedCardIndex, setSelectedCardIndex] = useState(0); // 0 for original card, 1 for text card
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedMeepUrl, setGeneratedMeepUrl] = useState<string | null>(null);
+  const [generatedMeepHash, setGeneratedMeepHash] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isMinting, setIsMinting] = useState(false);
+  const [mintError, setMintError] = useState<string | null>(null);
+  const [transactionHash, setTransactionHash] = useState<string | null>(null);
+  const [tokenId, setTokenId] = useState<string | null>(null);
 
   const handleWriteClick = () => {
     setIsWriting(true);
@@ -2135,35 +2161,183 @@ function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; sele
     }
   };
 
-  const openModal = () => {
-    setIsModalOpen(true);
+  // Handle Generate Meep button - compose image and upload to IPFS
+  const handleGenerateMeepClick = async () => {
+    if (!selectedCard) {
+      console.error("No card selected");
+      return;
+    }
+
+    try {
+      setIsGenerating(true);
+      setUploadError(null);
+
+      console.log("🎨 Composing greeting card image...");
+      const compositeFile = await prepareGreetingCardForUpload(
+        selectedCard,
+        messageText
+      );
+
+      console.log("📤 Uploading to IPFS via Pinata...");
+      const formData = new FormData();
+      formData.append("file", compositeFile);
+
+      const uploadRequest = await fetch("/api/files", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!uploadRequest.ok) {
+        const errorData = await uploadRequest.json();
+        throw new Error(errorData.error || "Upload failed");
+      }
+
+      const ipfsUrl = await uploadRequest.json();
+      const cidMatch = ipfsUrl.match(/\/ipfs\/([^/]+)/);
+      const cid = cidMatch ? cidMatch[1] : "";
+
+      setGeneratedMeepUrl(ipfsUrl);
+      setGeneratedMeepHash(cid);
+      console.log("✅ IPFS Upload successful:", ipfsUrl);
+
+      // Open modal for recipient input
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error("❌ Error generating meep:", error);
+      setUploadError(
+        error instanceof Error ? error.message : "Failed to generate meep"
+      );
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setBasename("");
+    setRecipientInput("");
+    setRecipientResolution(null);
+    setMintError(null);
   };
 
-  const handleGenerateMeep = () => {
-    // Prevent execution if no basename is provided
-    if (!basename.trim()) {
+  // Resolve recipient address when input changes
+  useEffect(() => {
+    const resolveRecipientAddress = async () => {
+      if (!recipientInput.trim()) {
+        setRecipientResolution(null);
+        return;
+      }
+
+      setIsResolvingRecipient(true);
+      try {
+        const result = await validateAndResolveRecipient(recipientInput);
+        setRecipientResolution(result);
+      } catch (error) {
+        console.error("Resolution error:", error);
+        setRecipientResolution({
+          success: false,
+          address: null,
+          originalInput: recipientInput,
+          resolvedFrom: null,
+          error: "Failed to resolve recipient",
+        });
+      } finally {
+        setIsResolvingRecipient(false);
+      }
+    };
+
+    const timeoutId = setTimeout(resolveRecipientAddress, 500);
+    return () => clearTimeout(timeoutId);
+  }, [recipientInput]);
+
+  // Handle final submit - mint NFT to recipient
+  const handleFinalSubmit = async () => {
+    if (!recipientInput.trim()) {
+      setMintError("Recipient is required");
       return;
     }
-    
-    // Handle the actual meep generation logic here
-    console.log("Generating meep with basename:", basename, "and card:", selectedCard);
-    setIsModalOpen(false);
-    setShowSuccessModal(true);
+
+    if (!recipientResolution?.success || !recipientResolution.address) {
+      setMintError(recipientResolution?.error || "Could not resolve recipient address");
+      return;
+    }
+
+    if (!generatedMeepUrl) {
+      setMintError("No IPFS URL available");
+      return;
+    }
+
+    if (!isConnected || !walletAddress) {
+      setMintError("Please connect your wallet to send a greeting card");
+      return;
+    }
+
+    try {
+      setIsMinting(true);
+      setMintError(null);
+
+      console.log("🎁 Sending greeting card NFT...");
+      console.log("Sender:", walletAddress);
+      console.log("Recipient:", recipientInput);
+      console.log("Recipient Address:", recipientResolution.address);
+
+      const mintResponse = await fetch("/api/mint", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          tokenURI: generatedMeepUrl,
+          recipient: recipientResolution.address, // RECIPIENT gets NFT
+          basename: recipientInput,
+          sender: walletAddress,
+        }),
+      });
+
+      if (!mintResponse.ok) {
+        const errorData = await mintResponse.json();
+        throw new Error(errorData.error || "Minting failed");
+      }
+
+      const mintResult = await mintResponse.json();
+
+      console.log("✅ Greeting card NFT sent successfully!");
+      setTransactionHash(mintResult.transactionHash);
+      setTokenId(mintResult.tokenId);
+
+      setIsModalOpen(false);
+      setShowSuccessModal(true);
+    } catch (error) {
+      console.error("❌ Minting error:", error);
+      setMintError(
+        error instanceof Error ? error.message : "Failed to mint NFT"
+      );
+    } finally {
+      setIsMinting(false);
+    }
   };
 
   const closeSuccessModal = () => {
     setShowSuccessModal(false);
-    setBasename("");
+    setRecipientInput("");
+    setRecipientResolution(null);
+    setGeneratedMeepUrl(null);
+    setGeneratedMeepHash(null);
+    setMessageText("");
+    setTransactionHash(null);
+    setTokenId(null);
+    setMintError(null);
   };
 
   const createAnotherMeep = () => {
     setShowSuccessModal(false);
-    setBasename("");
+    setRecipientInput("");
+    setRecipientResolution(null);
+    setGeneratedMeepUrl(null);
+    setGeneratedMeepHash(null);
+    setMessageText("");
+    setTransactionHash(null);
+    setTokenId(null);
+    setMintError(null);
   };
 
   const handleCardSelect = (index: number) => {
@@ -2424,11 +2598,28 @@ function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; sele
 
       {/* Generate Meep Button */}
       <div className="px-4 pb-6">
+        {uploadError && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-600 text-sm">{uploadError}</p>
+          </div>
+        )}
         <button 
-          onClick={openModal}
-          className="w-full bg-[#00B2C7] text-white py-4 rounded-xl font-bold text-lg hover:bg-[#00B2C7] transition-colors"
+          onClick={handleGenerateMeepClick}
+          disabled={isGenerating}
+          className={`w-full py-4 rounded-xl font-bold text-lg transition-colors ${
+            isGenerating 
+              ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
+              : 'bg-[#00B2C7] text-white hover:bg-[#009eb3]'
+          }`}
         >
-          Generate Meep - {selectedCard?.price}
+          {isGenerating ? (
+            <div className="flex items-center justify-center space-x-2">
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <span>Generating & Uploading...</span>
+            </div>
+          ) : (
+            `Generate Meep - ${selectedCard?.price}`
+          )}
         </button>
       </div>
 
@@ -2544,25 +2735,52 @@ function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; sele
               </div>
             </div>
 
-            {/* Input Section */}
+            {/* Recipient Input Section */}
             <div className="px-6 pb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Input a Basename to share this with: <span className="text-red-500">*</span>
+                🎁 Send this greeting card to: <span className="text-red-500">*</span>
               </label>
-              <input
-                type="text"
-                value={basename}
-                onChange={(e) => setBasename(e.target.value)}
-                placeholder="Input a Basename"
-                required
-                className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-colors text-black ${
-                  !basename.trim() && basename.length > 0
-                    ? 'border-red-300 bg-red-50'
-                    : 'border-gray-300'
-                }`}
-              />
-              {!basename.trim() && basename.length > 0 && (
-                <p className="text-red-500 text-xs mt-1">Basename is required</p>
+              <p className="text-xs text-gray-500 mb-2">
+                Enter: basename (alice.base.eth), ENS (vitalik.eth), Farcaster (@dwr), or wallet address
+              </p>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={recipientInput}
+                  onChange={(e) => setRecipientInput(e.target.value)}
+                  placeholder="alice.base.eth or @farcaster or 0x..."
+                  required
+                  className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-colors text-black ${
+                    recipientResolution && !recipientResolution.success
+                      ? 'border-red-300 bg-red-50'
+                      : recipientResolution && recipientResolution.success
+                      ? 'border-green-300 bg-green-50'
+                      : 'border-gray-300'
+                  }`}
+                />
+                {isResolvingRecipient && (
+                  <div className="absolute right-3 top-3.5">
+                    <div className="w-5 h-5 border-2 border-teal-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Resolution Success */}
+              {recipientResolution && recipientResolution.success && recipientResolution.address && (
+                <div className="mt-2 bg-green-50 border border-green-200 rounded-lg p-2">
+                  <p className="text-xs text-green-800 font-medium">✓ Recipient found</p>
+                  <p className="text-xs text-green-600 break-all font-mono">{recipientResolution.address}</p>
+                  <p className="text-xs text-green-500 mt-1">
+                    Resolved from: {recipientResolution.resolvedFrom}
+                  </p>
+                </div>
+              )}
+              
+              {/* Resolution Error */}
+              {recipientResolution && !recipientResolution.success && recipientInput.trim() && (
+                <div className="mt-2 bg-red-50 border border-red-200 rounded-lg p-2">
+                  <p className="text-xs text-red-600">{recipientResolution.error}</p>
+                </div>
               )}
             </div>
 
@@ -2571,23 +2789,87 @@ function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; sele
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-700">Mint Fee:</span>
                 <span className="text-sm font-bold text-gray-900">
-                  {selectedCard?.price} ($1.20 USDC)
+                  {selectedCard?.price} (Sponsored - Free for you!)
                 </span>
               </div>
             </div>
 
-            {/* Generate Button */}
+            {/* IPFS Info */}
+            {generatedMeepUrl && (
+              <div className="px-6 pb-4">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                  <p className="text-xs text-green-800 font-medium mb-1">✓ Uploaded to IPFS</p>
+                  <p className="text-xs text-green-600 break-all">{generatedMeepHash}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Mint Error */}
+            {mintError && (
+              <div className="px-6 pb-4">
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <p className="text-xs text-red-800 font-medium mb-1">❌ Minting Error</p>
+                  <p className="text-xs text-red-600">{mintError}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Wallet Connection Warning */}
+            {!isConnected && (
+              <div className="px-6 pb-4">
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                  <p className="text-xs text-yellow-800 font-medium mb-1">⚠️ Wallet Required</p>
+                  <p className="text-xs text-yellow-600">Please connect your wallet using the button in the top-right corner</p>
+                </div>
+              </div>
+            )}
+            
+            {/* Connected Wallet Info (Sender) */}
+            {isConnected && walletAddress && (
+              <div className="px-6 pb-4">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <p className="text-xs text-blue-800 font-medium mb-1">👤 Your Wallet (Sender)</p>
+                  <p className="text-xs text-blue-600 break-all">
+                    {walletAddress.substring(0, 6)}...{walletAddress.substring(walletAddress.length - 4)}
+                  </p>
+                  <p className="text-xs text-blue-500 mt-1">
+                    You're sending this card as a gift (free for you!)
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Send Gift Button */}
             <div className="px-6 pb-6">
               <button
-                onClick={handleGenerateMeep}
-                disabled={!basename.trim()}
+                onClick={handleFinalSubmit}
+                disabled={
+                  !recipientInput.trim() || 
+                  !recipientResolution?.success || 
+                  isMinting || 
+                  !isConnected ||
+                  isResolvingRecipient
+                }
                 className={`w-full py-4 rounded-xl font-bold text-lg transition-colors ${
-                  basename.trim() 
-                    ? 'bg-[#00B2C7] text-white hover:bg-[#00B2C7] cursor-pointer' 
+                  recipientInput.trim() && recipientResolution?.success && !isMinting && isConnected && !isResolvingRecipient
+                    ? 'bg-[#00B2C7] text-white hover:bg-[#009eb3] cursor-pointer' 
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
               >
-                Generate Meep
+                {isMinting ? (
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Sending Gift...</span>
+                  </div>
+                ) : !isConnected ? (
+                  "Connect Wallet to Send Gift"
+                ) : isResolvingRecipient ? (
+                  "Resolving Recipient..."
+                ) : !recipientResolution?.success ? (
+                  "Enter Valid Recipient"
+                ) : (
+                  "🎁 Send Greeting Card Gift"
+                )}
               </button>
             </div>
           </div>
@@ -2622,9 +2904,32 @@ function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; sele
 
             {/* Success Message */}
             <div className="px-6 pb-6 text-center">
-              <h2 className="text-lg font-semibold text-black mb-6">
-                Your meep was sent successfully!
+              <h2 className="text-lg font-semibold text-black mb-2">
+                Your greeting card gift was sent successfully!
               </h2>
+              
+              {/* Transaction Details */}
+              {transactionHash && (
+                <div className="mb-6 p-3 bg-green-50 rounded-lg text-left">
+                  <p className="text-xs font-medium text-green-800 mb-1">Transaction Details:</p>
+                  <p className="text-xs text-green-600 break-all mb-2">
+                    <span className="font-medium">Tx Hash:</span> {transactionHash.substring(0, 10)}...{transactionHash.substring(transactionHash.length - 8)}
+                  </p>
+                  {tokenId && (
+                    <p className="text-xs text-green-600 mb-2">
+                      <span className="font-medium">Token ID:</span> #{tokenId}
+                    </p>
+                  )}
+                  <a 
+                    href={`https://basescan.org/tx/${transactionHash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-600 hover:text-blue-800 underline"
+                  >
+                    View on BaseScan →
+                  </a>
+                </div>
+              )}
 
               {/* Action Buttons */}
               <div className="space-y-3">
