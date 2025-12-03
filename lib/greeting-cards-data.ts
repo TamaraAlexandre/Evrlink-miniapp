@@ -14,6 +14,8 @@ export interface GreetingCardData {
   tapeText: string;
   description?: string;
   price: string;
+  useImageBackground?: boolean; // If true, use backgroundImage instead of background color
+  backgroundImage?: string; // Image URL to use as background when useImageBackground is true
 }
 
 export interface CategoryData {
@@ -586,7 +588,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         tags: ["#situationship", "#complicated"],
         likes: 0,
         cta: "Choose Card",
-        paperImage: "/images/slider1.png",
+        paperImage: "/images/categories/situationship/situationship1.png",
         overlayImage: "/images/loffy.png",
         brandIcon: "/images/situation.svg",
         tapeText: "IT'S\nCOMPLICATED",
@@ -600,7 +602,119 @@ export const greetingCardsData: Record<string, CategoryData> = {
         tags: ["#situationship", "#mixed"],
         likes: 0,
         cta: "Choose Card",
-        paperImage: "/images/slider1.png",
+        paperImage: "/images/categories/situationship/situationship2.png",
+        overlayImage: "/images/loffy.png",
+        brandIcon: "/images/situation.svg",
+        tapeText: "MIXED\nSIGNALS",
+        description: "Navigating unclear waters",
+        price: "0.02 ETH"
+      },
+      {
+        id: "situation-3",
+        title: "Situationship",
+        byline: "by Evrlink",
+        tags: ["#situationship", "#mixed"],
+        likes: 0,
+        cta: "Choose Card",
+        paperImage: "/images/categories/situationship/situationship3.png",
+        overlayImage: "/images/loffy.png",
+        brandIcon: "/images/situation.svg",
+        tapeText: "MIXED\nSIGNALS",
+        description: "Navigating unclear waters",
+        price: "0.02 ETH"
+      },
+      {
+        id: "situation-4",
+        title: "Situationship",
+        byline: "by Evrlink",
+        tags: ["#situationship", "#mixed"],
+        likes: 0,
+        cta: "Choose Card",
+        paperImage: "/images/categories/situationship/situationship4.png",
+        overlayImage: "/images/loffy.png",
+        brandIcon: "/images/situation.svg",
+        tapeText: "MIXED\nSIGNALS",
+        description: "Navigating unclear waters",
+        price: "0.02 ETH"
+      },
+      {
+        id: "situation-5",
+        title: "Situationship",
+        byline: "by Evrlink",
+        tags: ["#situationship", "#mixed"],
+        likes: 0,
+        cta: "Choose Card",
+        paperImage: "/images/categories/situationship/situationship5.png",
+        overlayImage: "/images/loffy.png",
+        brandIcon: "/images/situation.svg",
+        tapeText: "MIXED\nSIGNALS",
+        description: "Navigating unclear waters",
+        price: "0.02 ETH"
+      },
+      {
+        id: "situation-6",
+        title: "Situationship",
+        byline: "by Evrlink",
+        tags: ["#situationship", "#mixed"],
+        likes: 0,
+        cta: "Choose Card",
+        paperImage: "/images/categories/situationship/situationship6.png",
+        overlayImage: "/images/loffy.png",
+        brandIcon: "/images/situation.svg",
+        tapeText: "MIXED\nSIGNALS",
+        description: "Navigating unclear waters",
+        price: "0.02 ETH"
+      },
+      {
+        id: "situation-7",
+        title: "Situationship",
+        byline: "by Evrlink",
+        tags: ["#situationship", "#mixed"],
+        likes: 0,
+        cta: "Choose Card",
+        paperImage: "/images/categories/situationship/situationship7.png",
+        overlayImage: "/images/loffy.png",
+        brandIcon: "/images/situation.svg",
+        tapeText: "MIXED\nSIGNALS",
+        description: "Navigating unclear waters",
+        price: "0.02 ETH"
+      },
+      {
+        id: "situation-8",
+        title: "Situationship",
+        byline: "by Evrlink",
+        tags: ["#situationship", "#mixed"],
+        likes: 0,
+        cta: "Choose Card",
+        paperImage: "/images/categories/situationship/situationship8.png",
+        overlayImage: "/images/loffy.png",
+        brandIcon: "/images/situation.svg",
+        tapeText: "MIXED\nSIGNALS",
+        description: "Navigating unclear waters",
+        price: "0.02 ETH"
+      },
+      {
+        id: "situation-9",
+        title: "Situationship",
+        byline: "by Evrlink",
+        tags: ["#situationship", "#mixed"],
+        likes: 0,
+        cta: "Choose Card",
+        paperImage: "/images/categories/situationship/situationship9.png",
+        overlayImage: "/images/loffy.png",
+        brandIcon: "/images/situation.svg",
+        tapeText: "MIXED\nSIGNALS",
+        description: "Navigating unclear waters",
+        price: "0.02 ETH"
+      },
+      {
+        id: "situation-10",
+        title: "Situationship",
+        byline: "by Evrlink",
+        tags: ["#situationship", "#mixed"],
+        likes: 0,
+        cta: "Choose Card",
+        paperImage: "/images/categories/situationship/situationship10.png",
         overlayImage: "/images/loffy.png",
         brandIcon: "/images/situation.svg",
         tapeText: "MIXED\nSIGNALS",
@@ -1022,6 +1136,22 @@ export const highlightedCategoriesData: GreetingCardData[] = [
 export const sliderData: GreetingCardData[] = [
   {
     id: "slider-1",
+    title: "Mingles",
+    tags: ["#crypto", "#fun"],
+    likes: 0,
+    description: "The ultimate crypto party card",
+    byline: "by Mr Mingles",
+    cta: "Choose Card",
+    paperImage: "/images/categories/mingles/mingles1.png",
+    overlayImage: "/images/slider1.png",
+    brandIcon: "/images/birthday.svg",
+    tapeText: "CRYPTO\nPARTY!",
+    price: "0.02 ETH",
+    useImageBackground: true,
+    backgroundImage: "/images/categories/mingles/mingles2.png"
+  },
+  {
+    id: "slider-3",
     title: "Loffy",
     tags: ["#loffy", "#loffylama"],
     likes: 0,
@@ -1035,7 +1165,7 @@ export const sliderData: GreetingCardData[] = [
     price: "0.02 ETH"
   },
   {
-    id: "slider-2",
+    id: "slider-4",
     title: "Base Birthday Bash",
     tags: ["#base", "#party"],
     likes: 0,
@@ -1048,20 +1178,6 @@ export const sliderData: GreetingCardData[] = [
     tapeText: "BASE\nBIRTHDAY!",
     price: "0.02 ETH"
   },
-  {
-    id: "slider-3",
-    title: "Crypto Celebration",
-    tags: ["#crypto", "#fun"],
-    likes: 0,
-    description: "The ultimate crypto party card",
-    byline: "by Crypto",
-    cta: "Choose Card",
-    paperImage: "/images/loffy.png",
-    overlayImage: "/images/slider1.png",
-    brandIcon: "/images/birthday.svg",
-    tapeText: "CRYPTO\nPARTY!",
-    price: "0.02 ETH"
-  }
 ];
 
 // Recently Created data for the home page
