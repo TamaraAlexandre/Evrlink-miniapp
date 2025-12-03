@@ -1,5 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 /**
  * API Route to mint greeting card NFT
  * Forwards request to backend NFT minting service

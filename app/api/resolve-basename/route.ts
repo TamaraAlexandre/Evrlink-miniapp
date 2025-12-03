@@ -3,6 +3,10 @@ import { createPublicClient, http, namehash } from "viem";
 import { normalize } from "viem/ens";
 import { base, mainnet } from "viem/chains";
 
+// Force dynamic rendering (not static)
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs"; // Use Node.js runtime, not Edge
+
 // Base L2 Resolver Address
 const L2_RESOLVER_ADDRESS =
     "0xC6d566A56A1aFf6508b41f6c90ff131615583BCD" as const;

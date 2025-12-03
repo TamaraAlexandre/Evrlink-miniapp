@@ -1,6 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { pinata } from "@/utils/config"
 
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 /**
  * API Route for uploading files to IPFS via Pinata
  */
