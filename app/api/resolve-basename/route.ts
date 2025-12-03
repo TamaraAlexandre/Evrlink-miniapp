@@ -53,13 +53,19 @@ function normalizeBasenameInput(raw: string): {
  */
 async function resolveViaL2Resolver(name: string): Promise<string | null> {
     try {
+        console.log("🔗 Calling L2 Resolver for:", name);
+        
         const publicClient = createPublicClient({
             chain: base,
-            transport: http("https://mainnet.base.org"),
+            transport: http("https://mainnet.base.org", {
+                timeout: 30000, // 30 second timeout
+                retryCount: 3,
+            }),
         });
 
         // ENS standard: normalize then namehash
         const node = namehash(normalize(name));
+        console.log("📝 Namehash:", node);
 
         const address = await publicClient.readContract({
             address: L2_RESOLVER_ADDRESS,
@@ -67,6 +73,8 @@ async function resolveViaL2Resolver(name: string): Promise<string | null> {
             functionName: "addr",
             args: [node],
         });
+
+        console.log("📬 L2 Resolver returned:", address);
 
         if (
             address &&
@@ -81,6 +89,28 @@ async function resolveViaL2Resolver(name: string): Promise<string | null> {
         console.error("L2 Resolver contract call failed:", error);
         return null;
     }
+}
+
+/**
+ * GET handler for testing
+ */
+export async function GET(request: NextRequest) {
+    const { searchParams } = new URL(request.url);
+    const name = searchParams.get("name");
+    
+    if (!name) {
+        return NextResponse.json({
+            error: "Name is required. Usage: /api/resolve-basename?name=jesse",
+            status: "API is working"
+        }, { status: 400 });
+    }
+    
+    // Reuse POST logic by creating a fake request
+    const fakeRequest = {
+        json: async () => ({ name }),
+    } as NextRequest;
+    
+    return POST(fakeRequest);
 }
 
 /**
