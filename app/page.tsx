@@ -219,7 +219,7 @@ export default function App() {
       <header className="px-4 py-3 border-b border-gray-100">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 flex items-center justify-center">
+            {/* <div className="w-6 h-6 flex items-center justify-center">
               <div className="w-4 h-4 bg-gray-400 rounded"></div>
             </div>
             <div className="w-4 h-4 flex items-center justify-center">
@@ -234,7 +234,7 @@ export default function App() {
                   clipRule="evenodd"
                 />
               </svg>
-            </div>
+            </div> */}
           </div>
 
           <div className="text-center">
@@ -244,7 +244,7 @@ export default function App() {
 
           <div className="flex items-center space-x-2">
             {saveFrameButton}
-            <button className="w-6 h-6 flex items-center justify-center">
+            {/* <button className="w-6 h-6 flex items-center justify-center">
               <svg
                 className="w-5 h-5 text-gray-400"
                 fill="none"
@@ -258,7 +258,7 @@ export default function App() {
                   d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
-            </button>
+            </button> */}
           </div>
         </div>
       </header>
@@ -482,30 +482,6 @@ export default function App() {
                         price={card.price}
                         onClick={() => handleCardSelection(card)}
                       />
-
-                      {/* Interactive Heart Button Overlay */}
-                      <div className="evrlink-heart-overlay">
-                        <button
-                          onClick={() => toggleLike(card.id)}
-                          className="evrlink-heart-btn"
-                        >
-                          <svg
-                            className={`evrlink-heart-icon ${likedItems.has(card.id) ? "evrlink-heart-filled" : "evrlink-heart-empty"}`}
-                            fill={
-                              likedItems.has(card.id) ? "currentColor" : "none"
-                            }
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                            />
-                          </svg>
-                        </button>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -553,17 +529,6 @@ export default function App() {
               />
             </svg>
           </button>
-
-          {/* Dots Indicator - Hidden */}
-          {/* <div className="evrlink-dots-container">
-            {highlightedCategoriesData.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentHighlightedSlide(index)}
-                className={`evrlink-dot ${index === currentHighlightedSlide ? 'evrlink-dot-active' : ''}`}
-              />
-            ))}
-          </div> */}
         </div>
       </div>
 
@@ -602,32 +567,8 @@ export default function App() {
                         overlayImage={item.overlayImage}
                         brandIcon={item.brandIcon}
                         price={item.price}
-                        onClick={() => console.log(`Personalize ${item.title}`)}
+                        onClick={() => handleCardSelection(item)}
                       />
-
-                      {/* Interactive Heart Button Overlay */}
-                      <div className="evrlink-heart-overlay">
-                        <button
-                          onClick={() => toggleLike(item.id)}
-                          className="evrlink-heart-btn"
-                        >
-                          <svg
-                            className={`evrlink-heart-icon ${likedItems.has(item.id) ? "evrlink-heart-filled" : "evrlink-heart-empty"}`}
-                            fill={
-                              likedItems.has(item.id) ? "currentColor" : "none"
-                            }
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                            />
-                          </svg>
-                        </button>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -716,7 +657,7 @@ export default function App() {
                 />
 
                 {/* Interactive Heart Button Overlay */}
-                <div className="evrlink-heart-overlay">
+                {/* <div className="evrlink-heart-overlay">
                   <button
                     onClick={() => toggleLike(item.id)}
                     className="evrlink-heart-btn"
@@ -735,7 +676,7 @@ export default function App() {
                       />
                     </svg>
                   </button>
-                </div>
+                </div> */}
               </div>
             </div>
           ))}
@@ -815,14 +756,14 @@ function BirthdayScreen({
   return (
     <div className="min-h-screen bg-white font-sans overflow-y-auto">
       {/* Status Bar */}
-      <div className="flex justify-between items-center px-4 py-2 text-sm">
+      {/* <div className="flex justify-between items-center px-4 py-2 text-sm">
         <span className="font-medium">09:41</span>
         <div className="flex items-center space-x-1">
           <div className="w-4 h-2 bg-black rounded-sm"></div>
           <div className="w-4 h-2 bg-black rounded-sm"></div>
           <div className="w-4 h-2 bg-black rounded-sm"></div>
         </div>
-      </div>
+      </div> */}
 
       {/* Header */}
       <header className="px-4 py-3 border-b border-gray-100">
@@ -846,7 +787,7 @@ function BirthdayScreen({
                 />
               </svg>
             </button>
-            <div className="w-6 h-6 flex items-center justify-center">
+            {/* <div className="w-6 h-6 flex items-center justify-center">
               <svg
                 className="w-3 h-3 text-gray-400"
                 fill="currentColor"
@@ -858,16 +799,17 @@ function BirthdayScreen({
                   clipRule="evenodd"
                 />
               </svg>
-            </div>
+            </div> */}
           </div>
 
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-black">Evrlink</h1>
-            <p className="text-sm text-gray-500">by Snow</p>
+            {/* <h1 className="text-2xl font-bold text-black">Evrlink</h1>
+            <p className="text-sm text-gray-500">by Snow</p> */}
+            <img src={logo.src} alt="Evrlink" className="w-20 h-auto" />
           </div>
 
           <div className="flex items-center space-x-2">
-            <button className="w-6 h-6 flex items-center justify-center">
+            {/* <button className="w-6 h-6 flex items-center justify-center">
               <svg
                 className="w-5 h-5 text-gray-400"
                 fill="none"
@@ -881,7 +823,7 @@ function BirthdayScreen({
                   d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
-            </button>
+            </button> */}
           </div>
         </div>
       </header>
@@ -1176,14 +1118,14 @@ function CategoryScreen({
   return (
     <div className="min-h-screen bg-white font-sans overflow-y-auto">
       {/* Status Bar */}
-      <div className="flex justify-between items-center px-4 py-2 text-sm">
+      {/* <div className="flex justify-between items-center px-4 py-2 text-sm">
         <span className="font-medium">09:41</span>
         <div className="flex items-center space-x-1">
           <div className="w-4 h-2 bg-black rounded-sm"></div>
           <div className="w-4 h-2 bg-black rounded-sm"></div>
           <div className="w-4 h-2 bg-black rounded-sm"></div>
         </div>
-      </div>
+      </div> */}
 
       {/* Header */}
       <header className="px-4 py-3 border-b border-gray-100">
@@ -1207,7 +1149,7 @@ function CategoryScreen({
                 />
               </svg>
             </button>
-            <div className="w-6 h-6 flex items-center justify-center">
+            {/* <div className="w-6 h-6 flex items-center justify-center">
               <svg
                 className="w-3 h-3 text-gray-400"
                 fill="currentColor"
@@ -1219,16 +1161,17 @@ function CategoryScreen({
                   clipRule="evenodd"
                 />
               </svg>
-            </div>
+            </div> */}
           </div>
 
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-black">Evrlink</h1>
-            <p className="text-sm text-gray-500">by Snow</p>
+            {/* <h1 className="text-2xl font-bold text-black">Evrlink</h1>
+            <p className="text-sm text-gray-500">by Snow</p> */}
+            <img src={logo.src} alt="Evrlink" className="w-20 h-auto" />
           </div>
 
           <div className="flex items-center space-x-2">
-            <button className="w-6 h-6 flex items-center justify-center">
+            {/* <button className="w-6 h-6 flex items-center justify-center">
               <svg
                 className="w-5 h-5 text-gray-400"
                 fill="none"
@@ -1242,7 +1185,7 @@ function CategoryScreen({
                   d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
-            </button>
+            </button> */}
           </div>
         </div>
       </header>
@@ -1555,14 +1498,14 @@ function DynamicCategoryScreen({
   return (
     <div className="min-h-screen bg-white font-sans overflow-y-auto">
       {/* Status Bar */}
-      <div className="flex justify-between items-center px-4 py-2 text-sm">
+      {/* <div className="flex justify-between items-center px-4 py-2 text-sm">
         <span className="font-medium">09:41</span>
         <div className="flex items-center space-x-1">
           <div className="w-4 h-2 bg-black rounded-sm"></div>
           <div className="w-4 h-2 bg-black rounded-sm"></div>
           <div className="w-4 h-2 bg-black rounded-sm"></div>
         </div>
-      </div>
+      </div> */}
 
       {/* Header */}
       <header className="px-4 py-3 border-b border-gray-100">
@@ -1586,7 +1529,7 @@ function DynamicCategoryScreen({
                 />
               </svg>
             </button>
-            <div className="w-6 h-6 flex items-center justify-center">
+            {/* <div className="w-6 h-6 flex items-center justify-center">
               <svg
                 className="w-3 h-3 text-gray-400"
                 fill="currentColor"
@@ -1598,16 +1541,17 @@ function DynamicCategoryScreen({
                   clipRule="evenodd"
                 />
               </svg>
-            </div>
+            </div> */}
           </div>
 
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-black">Evrlink</h1>
-            <p className="text-sm text-gray-500">by Snow</p>
+              {/* <h1 className="text-2xl font-bold text-black">Evrlink</h1>
+              <p className="text-sm text-gray-500">by Snow</p> */}
+              <img src={logo.src} alt="Evrlink" className="w-20 h-auto" />
           </div>
 
           <div className="flex items-center space-x-2">
-            <button className="w-6 h-6 flex items-center justify-center">
+            {/* <button className="w-6 h-6 flex items-center justify-center">
               <svg
                 className="w-5 h-5 text-gray-400"
                 fill="none"
@@ -1621,7 +1565,7 @@ function DynamicCategoryScreen({
                   d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
-            </button>
+            </button> */}
           </div>
         </div>
       </header>
@@ -2151,6 +2095,10 @@ function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; sele
   const [tokenId, setTokenId] = useState<string | null>(null);
 
   const handleWriteClick = () => {
+    // Don't allow writing if useImageBackground is true
+    if (selectedCard?.useImageBackground) {
+      return;
+    }
     setIsWriting(true);
   };
 
@@ -2341,8 +2289,20 @@ function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; sele
   };
 
   const handleCardSelect = (index: number) => {
+    // Prevent switching to text card (index 1) if useImageBackground is true
+    if (selectedCard?.useImageBackground && index === 1) {
+      return;
+    }
     setSelectedCardIndex(index);
   };
+
+  // Lock card to image view (index 0) when useImageBackground is true
+  useEffect(() => {
+    if (selectedCard?.useImageBackground) {
+      setSelectedCardIndex(0);
+      setMessageText(""); // Clear any text since it's not editable
+    }
+  }, [selectedCard?.useImageBackground]);
 
   const handleCancelText = () => {
     setMessageText("");
@@ -2351,23 +2311,23 @@ function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; sele
   return (
     <div className="min-h-screen bg-white font-sans">
       {/* Status Bar */}
-      <div className="flex justify-between items-center px-4 py-2 text-sm">
+      {/* <div className="flex justify-between items-center px-4 py-2 text-sm">
         <span className="font-medium">09:41</span>
         <div className="flex items-center space-x-1">
           <div className="w-4 h-2 bg-black rounded-sm"></div>
           <div className="w-4 h-2 bg-black rounded-sm"></div>
           <div className="w-4 h-2 bg-black rounded-sm"></div>
         </div>
-      </div>
+      </div> */}
 
       {/* Header */}
       <header className="px-4 py-3 border-b border-gray-100">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <div className="w-6 h-6 flex items-center justify-center">
+            {/* <div className="w-6 h-6 flex items-center justify-center">
               <div className="w-4 h-4 bg-gray-400 rounded"></div>
-            </div>
-            <div className="w-4 h-4 flex items-center justify-center">
+            </div> */}
+            {/* <div className="w-4 h-4 flex items-center justify-center">
               <svg
                 className="w-3 h-3 text-gray-400"
                 fill="currentColor"
@@ -2379,16 +2339,17 @@ function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; sele
                   clipRule="evenodd"
                 />
               </svg>
-            </div>
+            </div> */}
           </div>
 
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-black">Evrlink</h1>
-            <p className="text-sm text-gray-500">by Snow</p>
+            {/* <h1 className="text-2xl font-bold text-black">Evrlink</h1>
+            <p className="text-sm text-gray-500">by Snow</p> */}
+            <img src={logo.src} alt="Evrlink" className="w-20 h-auto" />
           </div>
 
           <div className="flex items-center space-x-2">
-            <button className="w-6 h-6 flex items-center justify-center">
+            {/* <button className="w-6 h-6 flex items-center justify-center">
               <svg
                 className="w-5 h-5 text-gray-400"
                 fill="none"
@@ -2402,7 +2363,7 @@ function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; sele
                   d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
-            </button>
+            </button> */}
           </div>
         </div>
       </header>
@@ -2433,38 +2394,6 @@ function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; sele
               Greeting Card Editor
             </h2>
           </div>
-          <div className="flex items-center space-x-2">
-            <button className="w-8 h-8 flex items-center justify-center">
-              <svg
-                className="w-4 h-4 text-gray-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
-                />
-              </svg>
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center">
-              <svg
-                className="w-4 h-4 text-gray-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 10h-10a8 8 0 00-8 8v2m18-10l-6 6m6-6l-6-6"
-                />
-              </svg>
-            </button>
-          </div>
         </div>
       </div>
 
@@ -2473,67 +2402,74 @@ function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; sele
         <div 
           className="grey-bg rounded-2xl p-8 min-h-96 flex items-center justify-center relative overflow-hidden"
           style={{
-            backgroundImage: "url('/images/bgc.png')",
+            backgroundImage: selectedCard?.useImageBackground && selectedCard?.backgroundImage
+              ? `url("${selectedCard.backgroundImage}")`
+              : "url('/images/bgc.png')",
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat"
           }}
         >
-          {isWriting ? (
-            <div className="w-full max-w-md">
-              <textarea
-                value={messageText}
-                onChange={(e) => setMessageText(e.target.value)}
-                placeholder="Write your message here..."
-                className="w-full h-32 p-4 border-2 border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none text-black bg-white bg-opacity-80 backdrop-blur-sm font-handwriting"
-                style={{
-                  fontSize: '20px',
-                  lineHeight: '1.6'
-                }}
-                autoFocus
-              />
-              <div className="flex space-x-2 mt-4">
-                <button
-                  onClick={handleSaveText}
-                  disabled={!messageText.trim()}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+          {/* Only show text editing UI if useImageBackground is false */}
+          {!selectedCard?.useImageBackground && (
+            <>
+              {isWriting ? (
+                <div className="w-full max-w-md">
+                  <textarea
+                    value={messageText}
+                    onChange={(e) => setMessageText(e.target.value)}
+                    placeholder="Write your message here..."
+                    className="w-full h-32 p-4 border-2 border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none text-black bg-white bg-opacity-80 backdrop-blur-sm font-handwriting"
+                    style={{
+                      fontSize: '20px',
+                      lineHeight: '1.6'
+                    }}
+                    autoFocus
+                  />
+                  <div className="flex space-x-2 mt-4">
+                    <button
+                      onClick={handleSaveText}
+                      disabled={!messageText.trim()}
+                      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={handleCancelText}
+                      className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : messageText ? (
+                <div className="w-full max-w-md">
+                  <div className="relative">
+                    <p className="text-lg text-gray-800 leading-relaxed font-handwriting" style={{
+                      fontSize: '22px',
+                      textShadow: '1px 1px 2px rgba(255,255,255,0.8)',
+                      lineHeight: '1.6'
+                    }}>
+                      {messageText}
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleWriteClick}
+                    className="mt-4 text-blue-500 hover:text-blue-600 text-sm underline"
+                  >
+                    Edit message
+                  </button>
+                </div>
+              ) : (
+                <div
+                  className="text-center text-gray-500 cursor-pointer hover:text-gray-700 transition-colors"
+                  onClick={handleWriteClick}
                 >
-                  Save
-                </button>
-                <button
-                  onClick={handleCancelText}
-                  className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          ) : messageText ? (
-            <div className="w-full max-w-md">
-              <div className="relative">
-                <p className="text-lg text-gray-800 leading-relaxed font-handwriting" style={{
-                  fontSize: '22px',
-                  textShadow: '1px 1px 2px rgba(255,255,255,0.8)',
-                  lineHeight: '1.6'
-                }}>
-                  {messageText}
-                </p>
-              </div>
-              <button
-                onClick={handleWriteClick}
-                className="mt-4 text-blue-500 hover:text-blue-600 text-sm underline"
-              >
-                Edit message
-              </button>
-            </div>
-          ) : (
-            <div
-              className="text-center text-gray-500 cursor-pointer hover:text-gray-700 transition-colors"
-              onClick={handleWriteClick}
-            >
-              <p className="text-lg">Write your message</p>
-              <p className="text-sm mt-2">Click here to start writing</p>
-            </div>
+                  <p className="text-lg">Write your message</p>
+                  <p className="text-sm mt-2">Click here to start writing</p>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -2701,24 +2637,34 @@ function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; sele
                   className={`absolute w-full h-auto rounded-lg cursor-pointer transition-all duration-300 ${
                     selectedCardIndex === 1 ? 'z-20 scale-105' : 'z-10 scale-95 opacity-70'
                   }`}
-                  onClick={() => handleCardSelect(1)}
+                  onClick={() => {
+                    // Only allow selection if useImageBackground is false
+                    if (!selectedCard?.useImageBackground) {
+                      handleCardSelect(1);
+                    }
+                  }}
                   style={{ 
                     transform: selectedCardIndex === 1 ? 'rotate(-2deg)' : 'rotate(-1deg)',
                     top: selectedCardIndex === 1 ? '0px' : '10px',
-                    left: selectedCardIndex === 1 ? '0px' : '10px'
+                    left: selectedCardIndex === 1 ? '0px' : '10px',
+                    cursor: selectedCard?.useImageBackground ? 'default' : 'pointer',
+                    opacity: selectedCard?.useImageBackground ? 0.5 : undefined
                   }}
                 >
                   <div className="w-full h-full relative overflow-hidden rounded-lg">
                     <div 
                       className="relative w-full h-[200px] rounded-[20px] border border-[#F3F4F6] overflow-hidden flex items-center justify-center"
                       style={{
-                        backgroundImage: "url('/images/bgc.png')",
+                        backgroundImage: selectedCard?.useImageBackground && selectedCard?.backgroundImage
+                          ? `url("${selectedCard.backgroundImage}")`
+                          : "url('/images/bgc.png')",
                         backgroundSize: "cover",
                         backgroundPosition: "center",
                         backgroundRepeat: "no-repeat"
                       }}
                     >
-                      {messageText && (
+                      {/* Only show text if useImageBackground is false */}
+                      {!selectedCard?.useImageBackground && messageText && (
                         <div className="p-4">
                           <p className="text-lg text-gray-800 leading-relaxed font-handwriting" style={{
                             fontSize: '18px',
