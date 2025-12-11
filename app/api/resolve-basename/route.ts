@@ -157,14 +157,30 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Strategy 1: Basename API for .base.eth
+        // Strategy 1: Direct L2 Resolver Contract Call (primary method, like example code)
         if (kind === "basename") {
+            try {
+                const address = await resolveViaL2Resolver(fullName);
+                if (address) {
+                    console.log("✅ Resolved via L2 Resolver:", address);
+                    return NextResponse.json({
+                        success: true,
+                        address,
+                        resolvedFrom: "l2-resolver",
+                        name: fullName,
+                    });
+                }
+            } catch (error) {
+                console.error("L2 Resolver error:", error);
+            }
+
+            // Strategy 2: Basename API (fallback if contract call fails)
             try {
                 // Basename API expects the *label* without .base.eth
                 const label = fullName.replace(/\.base\.eth$/, "");
                 const apiUrl = `https://resolver-api.basename.app/v1/basenames/${label}`;
 
-                console.log("📡 Calling Basename API:", apiUrl);
+                console.log("📡 Calling Basename API (fallback):", apiUrl);
 
                 const response = await fetch(apiUrl, {
                     method: "GET",
@@ -190,22 +206,6 @@ export async function POST(request: NextRequest) {
                 }
             } catch (error) {
                 console.error("Basename API error:", error);
-            }
-
-            // Strategy 2: Direct L2 Resolver Contract Call (fallback)
-            try {
-                const address = await resolveViaL2Resolver(fullName);
-                if (address) {
-                    console.log("✅ Resolved via L2 Resolver:", address);
-                    return NextResponse.json({
-                        success: true,
-                        address,
-                        resolvedFrom: "l2-resolver",
-                        name: fullName,
-                    });
-                }
-            } catch (error) {
-                console.error("L2 Resolver error:", error);
             }
         }
 

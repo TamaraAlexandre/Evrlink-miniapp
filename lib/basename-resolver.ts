@@ -6,6 +6,36 @@ import { createPublicClient, http } from 'viem';
 import { base, mainnet } from 'viem/chains';
 
 /**
+ * Validate if a string is a valid BaseName format
+ * Only supports .base.eth names (e.g., "alice.base.eth")
+ */
+export function isValidBaseName(name: string): boolean {
+  if (!name || typeof name !== 'string') return false;
+  // Only support .base.eth names: alphanumeric characters followed by .base.eth
+  return /^[a-zA-Z0-9]+\.base\.eth$/.test(name);
+}
+
+/**
+ * Check if a string looks like a basename (with or without .base.eth extension)
+ */
+export function isBasenameInput(input: string): boolean {
+  if (!input || typeof input !== 'string') return false;
+  const normalized = input.toLowerCase().trim();
+  
+  // Already has .base.eth extension
+  if (normalized.endsWith('.base.eth')) {
+    return isValidBaseName(normalized);
+  }
+  
+  // No extension - could be a basename label (alphanumeric only, no dots)
+  if (!normalized.includes('.')) {
+    return /^[a-zA-Z0-9]+$/.test(normalized);
+  }
+  
+  return false;
+}
+
+/**
  * Resolve a basename or ENS name to an Ethereum address
  */
 export async function resolveBasename(name: string): Promise<string | null> {
@@ -17,19 +47,29 @@ export async function resolveBasename(name: string): Promise<string | null> {
       return normalizedName;
     }
 
-    // If it's a .base.eth name, resolve using Base
+    // Validate and resolve .base.eth names
     if (normalizedName.endsWith('.base.eth')) {
+      if (!isValidBaseName(normalizedName)) {
+        console.warn(`Invalid BaseName format: ${name}`);
+        return null;
+      }
       return await resolveBasenameOnBase(normalizedName);
     }
 
     // If it's a .eth name (ENS), resolve on mainnet
-    if (normalizedName.endsWith('.eth')) {
+    if (normalizedName.endsWith('.eth') && !normalizedName.endsWith('.base.eth')) {
       return await resolveENSName(normalizedName);
     }
 
-    // If no extension, try adding .base.eth
-    const withExtension = `${normalizedName}.base.eth`;
-    return await resolveBasenameOnBase(withExtension);
+    // If no extension and looks like a basename label, try adding .base.eth
+    if (!normalizedName.includes('.')) {
+      const withExtension = `${normalizedName}.base.eth`;
+      if (isValidBaseName(withExtension)) {
+        return await resolveBasenameOnBase(withExtension);
+      }
+    }
+
+    return null;
   } catch (error) {
     console.error('Error resolving basename:', error);
     return null;
