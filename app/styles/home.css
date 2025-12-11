@@ -31,8 +31,14 @@
 
 /* Slider Section Styles */
 .evrlink-slider-section {
-  padding: 0 1rem;
+  padding: 0;
   margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .evrlink-slider-section {
+    margin-bottom: 2rem;
+  }
 }
 
 .evrlink-slider-header {
@@ -47,6 +53,18 @@
   font-weight: bold;
   color: #000000;
   margin-bottom: 0.25rem;
+}
+
+@media (min-width: 768px) {
+  .evrlink-slider-title {
+    font-size: 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .evrlink-slider-title {
+    font-size: 1.5rem;
+  }
 }
 
 .evrlink-slider-subtitle {
@@ -71,12 +89,29 @@
 .evrlink-slide {
   width: 100%;
   flex-shrink: 0;
+  padding: 0 0.5rem;
+  box-sizing: border-box;
+}
+
+/* Desktop: Show 3 cards at once */
+@media (min-width: 1024px) {
+  .evrlink-slide {
+    width: 33.333%;
+    min-width: 33.333%;
+    padding: 0 0.75rem;
+    box-sizing: border-box;
+  }
+  
+  .evrlink-slider-wrapper {
+    padding: 0 0.5rem;
+  }
 }
 
 .evrlink-project-card {
   background-color: #ffffff;
   border-radius: 0.75rem;
   overflow: hidden;
+  transition: transform 200ms ease-in-out, box-shadow 200ms ease-in-out;
   /* padding: 1rem; */
 }
 
@@ -216,8 +251,10 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 2rem;
-  height: 2rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  min-width: 44px;
+  min-height: 44px;
   background-color: #ffffff;
   border-radius: 50%;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -229,8 +266,39 @@
   transition: background-color 150ms ease-in-out;
 }
 
-.evrlink-nav-btn:hover {
+@media (min-width: 768px) {
+  .evrlink-nav-btn {
+    width: 3rem;
+    height: 3rem;
+  }
+}
+
+.evrlink-nav-btn:hover:not(:disabled) {
   background-color: #f9fafb;
+}
+
+.evrlink-nav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@media (hover: hover) {
+  .evrlink-nav-btn:hover {
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+  
+  .evrlink-project-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    transition: transform 200ms ease-in-out, box-shadow 200ms ease-in-out;
+  }
+  
+  .evrlink-recently-created-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transition: transform 200ms ease-in-out, box-shadow 200ms ease-in-out;
+  }
 }
 
 .evrlink-nav-prev {
@@ -284,6 +352,20 @@
   border: 1px solid var(--Neutral-3, #D1D5DB);
   background: #FFF;
   color: #000;
+  min-height: 44px;
+}
+
+@media (min-width: 768px) {
+  .evrlink-category-chip {
+    padding: 0.625rem 1.25rem;
+  }
+}
+
+@media (hover: hover) {
+  .evrlink-category-chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
 }
 
 .evrlink-chip-icon {
@@ -299,8 +381,14 @@
 
 /* Recently Created Section */
 .evrlink-section {
-  padding: 1rem 1rem 3rem 1rem;
+  padding: 0;
   margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .evrlink-section {
+    margin-bottom: 2rem;
+  }
 }
 
 .evrlink-section-header {
@@ -312,6 +400,18 @@
   font-weight: bold;
   color: #000;
   margin-bottom: 0.25rem;
+}
+
+@media (min-width: 768px) {
+  .evrlink-section-title {
+    font-size: 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .evrlink-section-title {
+    font-size: 1.5rem;
+  }
 }
 
 .evrlink-section-subtitle {
@@ -330,6 +430,7 @@
   border-radius: 0.75rem;
   overflow: hidden;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  transition: transform 200ms ease-in-out, box-shadow 200ms ease-in-out;
 }
 
 .evrlink-recently-created-content {
@@ -801,15 +902,30 @@
 
 /* custom classes */
 button.evrlink-btn-event {
-    height: 50px;
+    min-height: 50px;
     display: flex;
-    flex-direction: row;
-    gap: 5px;
-    justify-content: flex-start;
+    flex-direction: column;
+    gap: 0.5rem;
+    justify-content: center;
     align-items: center;
     background-color: #FAFAFA;
     color: #000;
     border-color: #D1D5DB;
+    transition: all 200ms ease-in-out;
+}
+
+@media (min-width: 768px) {
+  button.evrlink-btn-event {
+    min-height: 60px;
+    gap: 0.625rem;
+  }
+}
+
+@media (hover: hover) {
+  button.evrlink-btn-event:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
 }
 
 .greenC{

@@ -2,6 +2,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap");
 
 :root {
+  /* Colors */
   --app-background: #ffffff;
   --app-foreground: #111111;
   --app-foreground-muted: #6b7280;
@@ -13,6 +14,48 @@
   --app-gray-dark: #f3f4f6;
   --app-card-bg: rgba(255, 255, 255, 0.8);
   --app-card-border: rgba(0, 0, 0, 0.05);
+  
+  /* Primary Brand Colors */
+  --color-primary: #00B2C7;
+  --color-primary-hover: #009eb3;
+  --color-primary-light: rgba(0, 178, 199, 0.08);
+  --color-secondary: #0052FF;
+  
+  /* Spacing System (4px base) */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  
+  /* Typography Scale */
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;      /* 16px */
+  --font-size-lg: 1.125rem;    /* 18px */
+  --font-size-xl: 1.25rem;     /* 20px */
+  --font-size-2xl: 1.5rem;     /* 24px */
+  
+  /* Layout */
+  --container-max-width: 1200px;
+  --container-padding-mobile: 1rem;
+  --container-padding-desktop: 2rem;
+  
+  /* Border Radius */
+  --radius-sm: 0.375rem;   /* 6px */
+  --radius-md: 0.5rem;      /* 8px */
+  --radius-lg: 0.75rem;     /* 12px */
+  --radius-xl: 1rem;        /* 16px */
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  
+  /* Transitions */
+  --transition-fast: 150ms ease-in-out;
+  --transition-base: 200ms ease-in-out;
   
   /* Evrlink specific colors */
   --evrlink-blue: #3b82f6;
@@ -126,6 +169,28 @@ body {
   font-style: normal;
 }
 
+/* Responsive Container */
+.container-responsive {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding-mobile);
+  padding-right: var(--container-padding-mobile);
+}
+
+@media (min-width: 768px) {
+  .container-responsive {
+    padding-left: var(--container-padding-desktop);
+    padding-right: var(--container-padding-desktop);
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-responsive {
+    max-width: var(--container-max-width);
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
@@ -144,6 +209,12 @@ body {
   
   .evrlink-shadow {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+  
+  /* Touch targets for mobile */
+  .touch-target {
+    min-width: 44px;
+    min-height: 44px;
   }
 }
 
