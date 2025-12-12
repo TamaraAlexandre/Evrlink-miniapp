@@ -21,7 +21,9 @@ import {
   WalletDropdownDisconnect,
 } from "@coinbase/onchainkit/wallet";
 import { useEffect, useMemo, useState, useCallback } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { parseEther } from "viem";
+import nftAbi from "@/lib/Abi.json";
 import { Button } from "./components/DemoComponents";
 import { Icon } from "./components/DemoComponents";
 import { validateAndResolveRecipient, type RecipientResolutionResult } from "@/lib/recipient-resolver";
@@ -2116,6 +2118,12 @@ function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; sele
   // Sender's wallet connection (for identity)
   const { address: walletAddress, isConnected } = useAccount();
   
+  // Contract write hooks for minting
+  const { writeContract, data: hash, isPending: isWritingContract, error: writeError } = useWriteContract();
+  const { isLoading: isConfirming, isSuccess, data: receipt } = useWaitForTransactionReceipt({
+    hash,
+  });
+  
   // Debug wallet connection
   useEffect(() => {
     console.log('🔍 Wallet Debug:', {
@@ -2241,7 +2249,7 @@ function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; sele
     return () => clearTimeout(timeoutId);
   }, [recipientInput]);
 
-  // Handle final submit - mint NFT to recipient
+  // Handle final submit - mint NFT to recipient using user's wallet
   const handleFinalSubmit = async () => {
     if (!recipientInput.trim()) {
       setMintError("Recipient is required");
@@ -2263,50 +2271,113 @@ function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; sele
       return;
     }
 
+    const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
+    if (!contractAddress) {
+      setMintError("Contract address not configured");
+      return;
+    }
+
     try {
       setIsMinting(true);
       setMintError(null);
 
-      console.log("🎁 Sending greeting card NFT...");
+      console.log("🎁 Minting greeting card NFT...");
       console.log("Sender:", walletAddress);
       console.log("Recipient:", recipientInput);
       console.log("Recipient Address:", recipientResolution.address);
+      console.log("Token URI:", generatedMeepUrl);
+      console.log("Contract Address:", contractAddress);
 
-      const mintResponse = await fetch("/api/mint", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          tokenURI: generatedMeepUrl,
-          recipient: recipientResolution.address, // RECIPIENT gets NFT
-          basename: recipientInput,
-          sender: walletAddress,
-        }),
+      // Call contract directly - user's wallet will sign
+      writeContract({
+        address: contractAddress as `0x${string}`,
+        abi: nftAbi.abi as any,
+        functionName: 'mintGreetingCard',
+        args: [generatedMeepUrl, recipientResolution.address],
+        value: parseEther('0.0002'), // Mint price: 0.0002 ETH
       });
-
-      if (!mintResponse.ok) {
-        const errorData = await mintResponse.json();
-        throw new Error(errorData.error || "Minting failed");
-      }
-
-      const mintResult = await mintResponse.json();
-
-      console.log("✅ Greeting card NFT sent successfully!");
-      setTransactionHash(mintResult.transactionHash);
-      setTokenId(mintResult.tokenId);
-
-      setIsModalOpen(false);
-      setShowSuccessModal(true);
     } catch (error) {
       console.error("❌ Minting error:", error);
       setMintError(
         error instanceof Error ? error.message : "Failed to mint NFT"
       );
-    } finally {
       setIsMinting(false);
     }
   };
+
+  // Handle write contract errors
+  useEffect(() => {
+    if (writeError) {
+      console.error("❌ Contract write error:", writeError);
+      let errorMessage = "Transaction failed";
+      
+      if (writeError.message.includes("User rejected")) {
+        errorMessage = "Transaction rejected by user";
+      } else if (writeError.message.includes("insufficient funds")) {
+        errorMessage = "Insufficient balance for mint price + gas";
+      } else if (writeError.message) {
+        errorMessage = writeError.message;
+      }
+      
+      setMintError(errorMessage);
+      setIsMinting(false);
+    }
+  }, [writeError]);
+
+  // Handle transaction confirmation and extract token ID
+  useEffect(() => {
+    if (isSuccess && receipt && hash) {
+      console.log("✅ Transaction confirmed!");
+      console.log("Transaction Hash:", hash);
+      console.log("Receipt:", receipt);
+      
+      setTransactionHash(hash);
+      
+      // Extract token ID from transaction logs
+      // The contract emits GreetingCardMinted(uint256 tokenId, address owner, string tokenURI)
+      try {
+        const mintEvent = receipt.logs.find((log: any) => {
+          // Look for the GreetingCardMinted event
+          // Event signature: keccak256("GreetingCardMinted(uint256,address,string)")
+          return log.topics && log.topics.length > 0;
+        });
+        
+        if (mintEvent && mintEvent.topics && mintEvent.topics.length > 1) {
+          // Token ID is in topics[1] (indexed parameter)
+          const tokenIdHex = mintEvent.topics[1];
+          if (tokenIdHex) {
+            const tokenId = BigInt(tokenIdHex).toString();
+            setTokenId(tokenId);
+            console.log("Token ID extracted:", tokenId);
+          } else {
+            console.warn("Token ID hex is undefined");
+            setTokenId(null);
+          }
+        } else {
+          // Fallback: try to read from contract or use a placeholder
+          console.warn("Could not extract token ID from logs, using transaction hash");
+          setTokenId(null);
+        }
+      } catch (error) {
+        console.error("Error extracting token ID:", error);
+        setTokenId(null);
+      }
+
+      setIsModalOpen(false);
+      setShowSuccessModal(true);
+      setIsMinting(false);
+    }
+  }, [isSuccess, receipt, hash]);
+
+  // Update minting state based on transaction status
+  useEffect(() => {
+    if (isWritingContract || isConfirming) {
+      setIsMinting(true);
+    } else if (!isSuccess && !writeError && hash) {
+      // Transaction submitted but not confirmed yet
+      setIsMinting(true);
+    }
+  }, [isWritingContract, isConfirming, isSuccess, writeError, hash]);
 
   const closeSuccessModal = () => {
     setShowSuccessModal(false);

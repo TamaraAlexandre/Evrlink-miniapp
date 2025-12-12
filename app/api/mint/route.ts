@@ -56,26 +56,79 @@ export async function POST(request: NextRequest) {
 
     // Call the mint API service
     // Note: mintApiUrl should already include the full URL
-    const mintResponse = await fetch(mintApiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": mintApiKey,
-      },
-      body: JSON.stringify({
-        tokenURI,
-        recipient,
-        contractAddress,
-      }),
-    });
+    // Add timeout and better error handling
+    const controller = new AbortController();
+    const timeoutMs = 30000; // 30 seconds timeout
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-    if (!mintResponse.ok) {
-      const errorText = await mintResponse.text();
-      console.error("Mint API error:", errorText);
-      throw new Error(`Minting failed: ${mintResponse.status} ${errorText}`);
+    let mintResponse;
+    try {
+      mintResponse = await fetch(mintApiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": mintApiKey,
+        },
+        body: JSON.stringify({
+          tokenURI,
+          recipient,
+          contractAddress,
+        }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+    } catch (fetchError) {
+      clearTimeout(timeoutId);
+      
+      // Handle specific timeout errors
+      if (fetchError instanceof Error) {
+        if (fetchError.name === 'AbortError' || fetchError.message.includes('timeout')) {
+          throw new Error(
+            `Connection timeout: Unable to reach mint service at ${mintApiUrl} within ${timeoutMs}ms. ` +
+            `Please check if the service is running and accessible.`
+          );
+        }
+        if (fetchError.message.includes('ECONNREFUSED') || fetchError.message.includes('ENOTFOUND')) {
+          throw new Error(
+            `Connection refused: Cannot connect to mint service at ${mintApiUrl}. ` +
+            `Please verify the MINT_API_URL is correct and the service is running.`
+          );
+        }
+      }
+      throw fetchError;
     }
 
-    const mintResult = await mintResponse.json();
+    if (!mintResponse.ok) {
+      let errorMessage;
+      try {
+        const errorData = await mintResponse.json();
+        errorMessage = errorData.error || errorData.message || `HTTP ${mintResponse.status}`;
+      } catch {
+        const errorText = await mintResponse.text();
+        errorMessage = errorText || `HTTP ${mintResponse.status}`;
+      }
+      console.error("Mint API error:", {
+        status: mintResponse.status,
+        statusText: mintResponse.statusText,
+        error: errorMessage,
+        url: mintApiUrl,
+      });
+      throw new Error(`Minting failed: ${mintResponse.status} - ${errorMessage}`);
+    }
+
+    let mintResult;
+    try {
+      mintResult = await mintResponse.json();
+    } catch (jsonError) {
+      const responseText = await mintResponse.text();
+      console.error("Failed to parse mint API response as JSON:", responseText);
+      throw new Error(`Invalid response format from mint service: ${responseText.substring(0, 100)}`);
+    }
+
+    // Validate required response fields
+    if (!mintResult.transactionHash) {
+      throw new Error("Mint API response missing transactionHash");
+    }
 
     console.log("✅ Greeting card NFT sent successfully:", {
       transactionHash: mintResult.transactionHash,
