@@ -3,7 +3,7 @@
  * Resolves basename, ENS, Farcaster, or address to Ethereum address
  */
 
-import { resolveBasenameWithCache, isValidAddress } from './basename-resolver';
+import { resolveBasenameWithCache, isValidAddress, isBasenameInput, isValidBaseName } from './basename-resolver';
 import { resolveFarcasterUsername, isFarcasterUsername } from './farcaster-resolver';
 
 export interface RecipientResolutionResult {
@@ -40,7 +40,50 @@ export async function resolveRecipient(input: string): Promise<RecipientResoluti
     };
   }
 
-  // 2. Check if it looks like a Farcaster username
+  // 2. Check if it's a basename input (prioritize basename resolution)
+  if (isBasenameInput(trimmedInput)) {
+    try {
+      // Normalize basename input
+      const normalizedBasename = trimmedInput.toLowerCase().trim();
+      const basenameToResolve = normalizedBasename.endsWith('.base.eth') 
+        ? normalizedBasename 
+        : `${normalizedBasename}.base.eth`;
+      
+      // Validate format before attempting resolution
+      if (isValidBaseName(basenameToResolve)) {
+        console.log(`🔍 Resolving basename: ${basenameToResolve}`);
+        const address = await resolveBasenameWithCache(basenameToResolve);
+        if (address) {
+          console.log(`✅ Resolved basename ${basenameToResolve} to ${address}`);
+          return {
+            success: true,
+            address,
+            originalInput: input,
+            resolvedFrom: 'basename',
+          };
+        } else {
+          return {
+            success: false,
+            address: null,
+            originalInput: input,
+            resolvedFrom: 'basename',
+            error: `Basename "${basenameToResolve}" is not registered or has no address record`,
+          };
+        }
+      }
+    } catch (error) {
+      console.error('Basename resolution error:', error);
+      return {
+        success: false,
+        address: null,
+        originalInput: input,
+        resolvedFrom: 'basename',
+        error: error instanceof Error ? error.message : 'Failed to resolve basename',
+      };
+    }
+  }
+
+  // 3. Check if it looks like a Farcaster username
   if (isFarcasterUsername(trimmedInput)) {
     try {
       const address = await resolveFarcasterUsername(trimmedInput);
@@ -53,30 +96,28 @@ export async function resolveRecipient(input: string): Promise<RecipientResoluti
         };
       }
     } catch (error) {
-      console.error('Farcaster resolution failed, trying basename:', error);
+      console.error('Farcaster resolution failed, trying ENS:', error);
     }
   }
 
-  // 3. Try as basename/ENS
-  try {
-    const address = await resolveBasenameWithCache(trimmedInput);
-    if (address) {
-      const resolvedFrom = trimmedInput.includes('.eth') 
-        ? trimmedInput.includes('.base.eth') ? 'basename' : 'ens'
-        : 'basename';
-      
-      return {
-        success: true,
-        address,
-        originalInput: input,
-        resolvedFrom,
-      };
+  // 4. Try as ENS (only if it ends with .eth and is NOT .base.eth)
+  if (trimmedInput.toLowerCase().endsWith('.eth') && !trimmedInput.toLowerCase().endsWith('.base.eth')) {
+    try {
+      const address = await resolveBasenameWithCache(trimmedInput);
+      if (address) {
+        return {
+          success: true,
+          address,
+          originalInput: input,
+          resolvedFrom: 'ens',
+        };
+      }
+    } catch (error) {
+      console.error('ENS resolution failed:', error);
     }
-  } catch (error) {
-    console.error('Basename/ENS resolution failed:', error);
   }
 
-  // 4. Resolution failed
+  // 5. Resolution failed
   return {
     success: false,
     address: null,

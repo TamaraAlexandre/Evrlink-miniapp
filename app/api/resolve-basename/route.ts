@@ -3,6 +3,10 @@ import { createPublicClient, http, namehash } from "viem";
 import { normalize } from "viem/ens";
 import { base, mainnet } from "viem/chains";
 
+// Force dynamic rendering (not static)
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs"; // Use Node.js runtime, not Edge
+
 // Base L2 Resolver Address
 const L2_RESOLVER_ADDRESS =
     "0xC6d566A56A1aFf6508b41f6c90ff131615583BCD" as const;
@@ -49,13 +53,19 @@ function normalizeBasenameInput(raw: string): {
  */
 async function resolveViaL2Resolver(name: string): Promise<string | null> {
     try {
+        console.log("🔗 Calling L2 Resolver for:", name);
+        
         const publicClient = createPublicClient({
             chain: base,
-            transport: http("https://mainnet.base.org"),
+            transport: http("https://mainnet.base.org", {
+                timeout: 30000, // 30 second timeout
+                retryCount: 3,
+            }),
         });
 
         // ENS standard: normalize then namehash
         const node = namehash(normalize(name));
+        console.log("📝 Namehash:", node);
 
         const address = await publicClient.readContract({
             address: L2_RESOLVER_ADDRESS,
@@ -63,6 +73,8 @@ async function resolveViaL2Resolver(name: string): Promise<string | null> {
             functionName: "addr",
             args: [node],
         });
+
+        console.log("📬 L2 Resolver returned:", address);
 
         if (
             address &&
@@ -77,6 +89,28 @@ async function resolveViaL2Resolver(name: string): Promise<string | null> {
         console.error("L2 Resolver contract call failed:", error);
         return null;
     }
+}
+
+/**
+ * GET handler for testing
+ */
+export async function GET(request: NextRequest) {
+    const { searchParams } = new URL(request.url);
+    const name = searchParams.get("name");
+    
+    if (!name) {
+        return NextResponse.json({
+            error: "Name is required. Usage: /api/resolve-basename?name=jesse",
+            status: "API is working"
+        }, { status: 400 });
+    }
+    
+    // Reuse POST logic by creating a fake request
+    const fakeRequest = {
+        json: async () => ({ name }),
+    } as NextRequest;
+    
+    return POST(fakeRequest);
 }
 
 /**
@@ -123,14 +157,30 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Strategy 1: Basename API for .base.eth
+        // Strategy 1: Direct L2 Resolver Contract Call (primary method, like example code)
         if (kind === "basename") {
+            try {
+                const address = await resolveViaL2Resolver(fullName);
+                if (address) {
+                    console.log("✅ Resolved via L2 Resolver:", address);
+                    return NextResponse.json({
+                        success: true,
+                        address,
+                        resolvedFrom: "l2-resolver",
+                        name: fullName,
+                    });
+                }
+            } catch (error) {
+                console.error("L2 Resolver error:", error);
+            }
+
+            // Strategy 2: Basename API (fallback if contract call fails)
             try {
                 // Basename API expects the *label* without .base.eth
                 const label = fullName.replace(/\.base\.eth$/, "");
                 const apiUrl = `https://resolver-api.basename.app/v1/basenames/${label}`;
 
-                console.log("📡 Calling Basename API:", apiUrl);
+                console.log("📡 Calling Basename API (fallback):", apiUrl);
 
                 const response = await fetch(apiUrl, {
                     method: "GET",
@@ -156,22 +206,6 @@ export async function POST(request: NextRequest) {
                 }
             } catch (error) {
                 console.error("Basename API error:", error);
-            }
-
-            // Strategy 2: Direct L2 Resolver Contract Call (fallback)
-            try {
-                const address = await resolveViaL2Resolver(fullName);
-                if (address) {
-                    console.log("✅ Resolved via L2 Resolver:", address);
-                    return NextResponse.json({
-                        success: true,
-                        address,
-                        resolvedFrom: "l2-resolver",
-                        name: fullName,
-                    });
-                }
-            } catch (error) {
-                console.error("L2 Resolver error:", error);
             }
         }
 

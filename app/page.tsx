@@ -88,22 +88,35 @@ export default function App() {
 
 
 
+  // Detect if we're on desktop (3 cards per view) or mobile (1 card per view)
+  const [cardsPerView, setCardsPerView] = useState(1);
+  
+  useEffect(() => {
+    const updateCardsPerView = () => {
+      setCardsPerView(window.innerWidth >= 1024 ? 3 : 1);
+    };
+    
+    updateCardsPerView();
+    window.addEventListener('resize', updateCardsPerView);
+    return () => window.removeEventListener('resize', updateCardsPerView);
+  }, []);
+
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % sliderData.length);
+    const maxSlide = Math.max(0, sliderData.length - cardsPerView);
+    setCurrentSlide((prev) => Math.min(prev + cardsPerView, maxSlide));
   };
 
   const prevSlide = () => {
-    setCurrentSlide(
-      (prev) => (prev - 1 + sliderData.length) % sliderData.length
-    );
+    setCurrentSlide((prev) => Math.max(prev - cardsPerView, 0));
   };
 
   const nextHighlightedSlide = () => {
-    setCurrentHighlightedSlide((prev) => (prev + 1) % highlightedCategoriesData.length);
+    const maxSlide = Math.max(0, highlightedCategoriesData.length - cardsPerView);
+    setCurrentHighlightedSlide((prev) => Math.min(prev + cardsPerView, maxSlide));
   };
 
   const prevHighlightedSlide = () => {
-    setCurrentHighlightedSlide((prev) => (prev - 1 + highlightedCategoriesData.length) % highlightedCategoriesData.length);
+    setCurrentHighlightedSlide((prev) => Math.max(prev - cardsPerView, 0));
   };
 
   const toggleLike = (itemId: string | number) => {
@@ -263,10 +276,12 @@ export default function App() {
         </div>
       </header>
 
+      {/* Main Content Container */}
+      <main className="container-responsive py-4 md:py-6 lg:py-8">
       {/* Action Buttons */}
-      <div className="px-4 py-4">
-        <div className="flex justify-between">
-          <button className="flex flex-row items-center p-[6px_8px] gap-[6px] w-[108px] h-[44px] bg-[rgba(0,178,199,0.08)] rounded-lg flex-none order-0 flex-grow-0">
+      <div className="mb-4 md:mb-6">
+        <div className="flex justify-between gap-3">
+          <button className="flex flex-row items-center px-3 py-2.5 md:px-4 md:py-3 gap-1.5 md:gap-2 min-w-[100px] md:min-w-[120px] bg-[rgba(0,178,199,0.08)] rounded-lg touch-target hover:bg-[rgba(0,178,199,0.12)] transition-colors">
             <div className="w-6 h-6 flex-none order-0 flex-grow-0 relative">
               <svg
                 width="25"
@@ -281,11 +296,11 @@ export default function App() {
                 />
               </svg>
             </div>
-            <span className="w-[62px] h-[20px] font-medium text-[14px] leading-[20px] text-center text-[#00B2C7] flex-none order-1 flex-grow-0">
+            <span className="font-medium text-sm md:text-base text-center text-[#00B2C7] whitespace-nowrap">
               Received
             </span>
           </button>
-          <button className="flex flex-row items-center p-[6px_8px] gap-[6px] w-[100px] h-[44px] bg-[rgba(0,178,199,0.08)] rounded-lg flex-none order-0 flex-grow-0">
+          <button className="flex flex-row items-center px-3 py-2.5 md:px-4 md:py-3 gap-1.5 md:gap-2 min-w-[100px] md:min-w-[120px] bg-[rgba(0,178,199,0.08)] rounded-lg touch-target hover:bg-[rgba(0,178,199,0.12)] transition-colors">
             <div className="w-6 h-6 flex-none order-0 flex-grow-0 relative">
               <svg
                 width="22"
@@ -300,7 +315,7 @@ export default function App() {
                 />
               </svg>
             </div>
-            <span className="w-[50px] h-[20px] font-medium text-[14px] leading-[20px] text-left text-[#00B2C7] flex-none order-1 flex-grow-0">
+            <span className="font-medium text-sm md:text-base text-left text-[#00B2C7] whitespace-nowrap">
               Sent
             </span>
           </button>
@@ -308,8 +323,8 @@ export default function App() {
       </div>
 
       {/* Earn as a Creator Card */}
-      <div className="px-4 mb-6">
-        <div className="w-full h-[159px] bg-gradient-to-b from-[#00FFFF] to-[rgba(255,255,255,0.75)] border-b border-[#6B7280] rounded-[16px] flex-none order-1 flex-grow-0 relative overflow-hidden">
+      <div className="mb-6 md:mb-8">
+        <div className="w-full h-[159px] md:h-[180px] bg-gradient-to-b from-[#00FFFF] to-[rgba(255,255,255,0.75)] border-b border-[#6B7280] rounded-xl md:rounded-2xl flex-none order-1 flex-grow-0 relative overflow-hidden">
           {/* Decorative elements */}
           <div className="absolute w-[14.58px] h-[11.07px] left-[126.04px] top-[108.75px]">
             <div className="absolute w-[3.76px] h-[3.52px] left-[130.7px] top-[114.91px] transform -rotate-[64.87deg]">
@@ -325,18 +340,18 @@ export default function App() {
           </div>
 
           {/* Content */}
-          <div className="absolute w-[320px] h-[122px] left-6 top-[calc(50%-122px/2+0.5px)] flex flex-col items-start gap-6">
-            <div className="w-[320px] h-[60px] flex flex-col items-start gap-3 flex-none order-0 self-stretch flex-grow-0">
-              <h2 className="w-[320px] h-[28px] font-bold text-[24px] leading-[28px] text-[#010206] flex-none order-0 self-stretch flex-grow-0">
+          <div className="absolute w-full max-w-[320px] md:max-w-[400px] h-[122px] left-4 md:left-6 lg:left-8 top-[calc(50%-122px/2+0.5px)] flex flex-col items-start gap-4 md:gap-6 px-4">
+            <div className="w-full flex flex-col items-start gap-2 md:gap-3 flex-none order-0 self-stretch flex-grow-0">
+              <h2 className="font-bold text-xl md:text-2xl lg:text-3xl leading-tight text-[#010206]">
                 Earn as a Creator
               </h2>
-              <p className="w-[320px] h-[20px] font-medium text-[14px] leading-[20px] text-[#010206] flex-none order-1 self-stretch flex-grow-0">
+              <p className="font-medium text-sm md:text-base text-[#010206]">
                 Create your own greeting cards and earn.
               </p>
             </div>
 
-            <div className="main-btn flex flex-row justify-center items-center p-[10px] gap-2 w-[99px] h-[38px] bg-[#111827] rounded-lg flex-none order-1 flex-grow-0">
-              <span className="m-auto w-[79px] h-[18px] font-medium text-[12px] leading-[18px] text-center text-white flex-none order-0 flex-grow-0 -mt-1.5">
+            <div className="main-btn flex flex-row justify-center items-center px-4 py-2.5 md:px-5 md:py-3 min-w-[99px] md:min-w-[120px] bg-[#111827] rounded-lg touch-target hover:bg-[#1f2937] transition-colors">
+              <span className="font-medium text-xs md:text-sm text-center text-white">
                 Coming soon
               </span>
             </div>
@@ -345,16 +360,16 @@ export default function App() {
       </div>
 
       {/* Welcome Section */}
-      <div className="px-4 mb-4">
-        <h2 className="text-lg fw-400 text-black mb-1">Welcome to Evrlink!</h2>
-        <p className="text-gray-500 text-sm">
+      <div className="mb-4 md:mb-6">
+        <h2 className="text-lg md:text-xl fw-400 text-black mb-1 md:mb-2">Welcome to Evrlink!</h2>
+        <p className="text-gray-500 text-sm md:text-base">
           See some of our categories, and create a Meep.
         </p>
       </div>
 
       {/* Categories Grid */}
-      <div className="px-4 mb-6">
-        <div className="grid grid-cols-3 gap-3 mb-3">
+      <div className="mb-6 md:mb-8">
+        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4 mb-3 md:mb-4">
           {/* Row 1 */}
           <CategoryButton
             icon={categoryIcons.birthday}
@@ -437,18 +452,20 @@ export default function App() {
         </div>
 
         {/* Full-width Others button */}
-        <CategoryButton
-          icon={categoryIcons.others}
-          label="All Purpose"
-          color="purple"
-          onClick={() => setCurrentScreen("others")}
-          fullWidth={true}
-        />
+        <div className="col-span-3 sm:col-span-4 lg:col-span-6 mt-2">
+          <CategoryButton
+            icon={categoryIcons.others}
+            label="All Purpose"
+            color="purple"
+            onClick={() => setCurrentScreen("others")}
+            fullWidth={true}
+          />
+        </div>
       </div>
 
       {/* Highlighted Categories Slider */}
-      <div className="evrlink-slider-section">
-        <div className="evrlink-slider-header">
+      <div className="evrlink-slider-section mb-6 md:mb-8">
+        <div className="evrlink-slider-header mb-4 md:mb-6">
           <div>
             <h2 className="evrlink-slider-title fw-400">Base Projects</h2>
             <p className="evrlink-slider-subtitle">
@@ -462,7 +479,9 @@ export default function App() {
           <div className="evrlink-slider-wrapper">
             <div
               className="evrlink-slider-track"
-              style={{ transform: `translateX(-${currentHighlightedSlide * 100}%)` }}
+              style={{ 
+                transform: `translateX(-${currentHighlightedSlide * (100 / cardsPerView)}%)` 
+              }}
             >
               {highlightedCategoriesData.map((card, index) => (
                 <div key={card.id} className="evrlink-slide">
@@ -494,6 +513,7 @@ export default function App() {
             <button
               onClick={prevHighlightedSlide}
               className="evrlink-nav-btn evrlink-nav-prev"
+              aria-label="Previous slide"
             >
               <svg
                 className="evrlink-nav-icon"
@@ -514,6 +534,8 @@ export default function App() {
           <button
             onClick={nextHighlightedSlide}
             className="evrlink-nav-btn evrlink-nav-next"
+            disabled={currentHighlightedSlide >= highlightedCategoriesData.length - cardsPerView}
+            aria-label="Next slide"
           >
             <svg
               className="evrlink-nav-icon"
@@ -533,8 +555,8 @@ export default function App() {
       </div>
 
       {/* Highlighted Projects Slider */}
-      <div className="evrlink-slider-section">
-        <div className="evrlink-slider-header">
+      <div className="evrlink-slider-section mb-6 md:mb-8">
+        <div className="evrlink-slider-header mb-4 md:mb-6">
           <div>
             <h2 className="evrlink-slider-title fw-400">
               Highlighted Base Projects
@@ -550,7 +572,9 @@ export default function App() {
           <div className="evrlink-slider-wrapper">
             <div
               className="evrlink-slider-track"
-              style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+              style={{ 
+                transform: `translateX(-${currentSlide * (100 / cardsPerView)}%)` 
+              }}
             >
               {sliderData.map((item, index) => (
                 <div key={item.id} className="evrlink-slide">
@@ -581,6 +605,7 @@ export default function App() {
             <button
               onClick={prevSlide}
               className="evrlink-nav-btn evrlink-nav-prev"
+              aria-label="Previous slide"
             >
               <svg
                 className="evrlink-nav-icon"
@@ -601,6 +626,8 @@ export default function App() {
           <button
             onClick={nextSlide}
             className="evrlink-nav-btn evrlink-nav-next"
+            disabled={currentSlide >= sliderData.length - cardsPerView}
+            aria-label="Next slide"
           >
             <svg
               className="evrlink-nav-icon"
@@ -631,10 +658,10 @@ export default function App() {
       </div>
 
       {/* Recently Created Section */}
-      <div className="evrlink-section">
-        <div className="evrlink-section-header">
-          <h2 className="evrlink-section-title">Recently Created</h2>
-          <p className="evrlink-section-subtitle">
+      <div className="evrlink-section mb-6 md:mb-8">
+        <div className="evrlink-section-header mb-4 md:mb-6">
+          <h2 className="evrlink-section-title text-lg md:text-xl lg:text-2xl">Recently Created</h2>
+          <p className="evrlink-section-subtitle text-sm md:text-base">
             Some Meeps created very recently...
           </p>
         </div>
@@ -682,7 +709,7 @@ export default function App() {
           ))}
         </div>
       </div>
-
+      </main>
     </div>
   );
 }
@@ -730,7 +757,7 @@ function CategoryButton({
   return (
     <button
       onClick={onClick}
-      className={`evrlink-btn-event flex flex-col items-center justify-center p-4 rounded-xl border ${colorClasses[color as keyof typeof colorClasses]} hover:opacity-80 transition-opacity ${fullWidth ? "w-full" : ""}`}
+      className={`evrlink-btn-event flex flex-col items-center justify-center p-3 md:p-4 rounded-xl border ${colorClasses[color as keyof typeof colorClasses]} hover:opacity-80 transition-opacity touch-target ${fullWidth ? "w-full" : ""}`}
     >
       <div className="w-6 h-6 flex items-center justify-center">
         <Image src={icon} alt={label} width={24} height={24} />
