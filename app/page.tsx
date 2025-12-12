@@ -15,13 +15,13 @@ import {
   EthBalance,
 } from "@coinbase/onchainkit/identity";
 import {
-  ConnectWallet,
-  Wallet,
   WalletDropdown,
   WalletDropdownDisconnect,
 } from "@coinbase/onchainkit/wallet";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { SignInWithBaseButton } from "@base-org/account-ui/react";
+import { createBaseAccountSDK } from "@base-org/account";
 import { parseEther } from "viem";
 import nftAbi from "@/lib/Abi.json";
 import { Button } from "./components/DemoComponents";
@@ -64,6 +64,36 @@ export default function App() {
   const [selectedCard, setSelectedCard] = useState<GreetingCardData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [basename, setBasename] = useState("");
+  const [baseAccountSDK, setBaseAccountSDK] = useState<any>(null);
+  
+  // Initialize Base Account SDK (client-side only)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const sdk = createBaseAccountSDK({
+          appName: process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME || "EvrLink",
+          appLogoUrl: process.env.NEXT_PUBLIC_ICON_URL || "https://i.imgur.com/nhm1ph1.png",
+        });
+        setBaseAccountSDK(sdk);
+      } catch (error) {
+        console.error("Failed to initialize Base Account SDK:", error);
+      }
+    }
+  }, []);
+  
+  // Handle Base Account sign in
+  const handleBaseSignIn = useCallback(async () => {
+    if (!baseAccountSDK) {
+      console.error("Base Account SDK not initialized");
+      return;
+    }
+    try {
+      await baseAccountSDK.getProvider().request({ method: 'wallet_connect' });
+      console.log("✅ Signed in with Base Account");
+    } catch (error) {
+      console.error("❌ Base Account sign in failed:", error);
+    }
+  }, [baseAccountSDK]);
 
   const handleCardSelection = (card: GreetingCardData) => {
     setSelectedCard(card);
@@ -222,21 +252,12 @@ export default function App() {
             
             {/* Right: Wallet + Actions */}
             <div className="flex items-center gap-2">
-              <Wallet>
-                <ConnectWallet>
-                  <Avatar className="h-7 w-7 md:h-8 md:w-8" />
-                  <Name className="font-medium text-xs md:text-sm hidden md:inline" />
-                </ConnectWallet>
-                <WalletDropdown>
-                  <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick>
-                    <Avatar />
-                    <Name />
-                    <Address className="text-xs" />
-                    <EthBalance />
-                  </Identity>
-                  <WalletDropdownDisconnect />
-                </WalletDropdown>
-              </Wallet>
+              <SignInWithBaseButton
+                align="center"
+                variant="solid"
+                colorScheme="light"
+                onClick={handleBaseSignIn}
+              />
               {saveFrameButton}
             </div>
           </div>
