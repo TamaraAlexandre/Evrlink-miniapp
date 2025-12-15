@@ -13,7 +13,7 @@ const config = createConfig({
   connectors: [
     coinbaseWallet({
       appName: process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME || "EvrLink",
-      preference: "all", // 'smartWalletOnly' | 'eoaOnly' | 'all'
+      preference: "smartWalletOnly", // Use Base Account smart wallets only, not Coinbase Wallet extension
     }),
   ],
   transports: {
