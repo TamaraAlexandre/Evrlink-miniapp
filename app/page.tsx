@@ -15,11 +15,13 @@ import {
   EthBalance,
 } from "@coinbase/onchainkit/identity";
 import {
+  ConnectWallet,
+  Wallet,
   WalletDropdown,
   WalletDropdownDisconnect,
 } from "@coinbase/onchainkit/wallet";
 import { useEffect, useMemo, useState, useCallback } from "react";
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useConnect } from "wagmi";
 import { SignInWithBaseButton } from "@base-org/account-ui/react";
 import { createBaseAccountSDK } from "@base-org/account";
 import { parseEther } from "viem";
@@ -64,36 +66,71 @@ export default function App() {
   const [selectedCard, setSelectedCard] = useState<GreetingCardData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [basename, setBasename] = useState("");
-  const [baseAccountSDK, setBaseAccountSDK] = useState<any>(null);
+  const { isConnected, address } = useAccount();
+  const { connectAsync, connectors } = useConnect();
   
-  // Initialize Base Account SDK (client-side only)
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const sdk = createBaseAccountSDK({
-          appName: process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME || "EvrLink",
-          appLogoUrl: process.env.NEXT_PUBLIC_ICON_URL || "https://i.imgur.com/nhm1ph1.png",
-        });
-        setBaseAccountSDK(sdk);
-      } catch (error) {
-        console.error("Failed to initialize Base Account SDK:", error);
-      }
+  // Initialize Base Account SDK (client-side only) - for UI button
+  const baseAccountSDK = useMemo(() => {
+    if (typeof window === 'undefined') return null;
+    try {
+      return createBaseAccountSDK({
+        appName: process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME || "EvrLink",
+        appLogoUrl: process.env.NEXT_PUBLIC_ICON_URL || "https://i.imgur.com/nhm1ph1.png",
+      });
+    } catch (error) {
+      console.error("Failed to initialize Base Account SDK:", error);
+      return null;
     }
   }, []);
   
-  // Handle Base Account sign in
+  // Debug connection state
+  useEffect(() => {
+    console.log("🔍 Connection State:", { isConnected, address, connectors: connectors.length });
+  }, [isConnected, address, connectors]);
+  
+  // Handle Base Account sign in - connect via wagmi (works with Base Account)
   const handleBaseSignIn = useCallback(async () => {
-    if (!baseAccountSDK) {
-      console.error("Base Account SDK not initialized");
-      return;
-    }
     try {
-      await baseAccountSDK.getProvider().request({ method: 'wallet_connect' });
-      console.log("✅ Signed in with Base Account");
-    } catch (error) {
-      console.error("❌ Base Account sign in failed:", error);
+      console.log("🚀 Starting wallet connection...");
+      
+      // Find the Coinbase Wallet connector (works with Base Account)
+      const coinbaseConnector = connectors.find(c => 
+        c.id === 'coinbaseWallet' || 
+        c.id === 'coinbaseSDK' ||
+        c.name?.toLowerCase().includes('coinbase')
+      );
+      
+      if (!coinbaseConnector) {
+        console.error("❌ Coinbase Wallet connector not found. Available:", connectors.map(c => c.id));
+        return;
+      }
+      
+      console.log("📱 Using connector:", coinbaseConnector.id);
+      
+      // Connect via wagmi - this will work with Base Account
+      if (!isConnected) {
+        try {
+          console.log("🔌 Connecting wallet...");
+          await connectAsync({ connector: coinbaseConnector });
+          console.log("✅ Wallet connected! isConnected should update now.");
+        } catch (wagmiError: any) {
+          console.error("❌ Connection failed:", wagmiError);
+          if (wagmiError?.code === 4001) {
+            console.log("User rejected");
+          }
+          throw wagmiError;
+        }
+      } else {
+        console.log("✅ Already connected");
+      }
+      
+    } catch (error: any) {
+      console.error("❌ Sign in failed:", error);
+      if (error?.code !== 4001 && error?.message !== 'User rejected') {
+        console.error("Unexpected error:", error);
+      }
     }
-  }, [baseAccountSDK]);
+  }, [connectAsync, connectors, isConnected]);
 
   const handleCardSelection = (card: GreetingCardData) => {
     setSelectedCard(card);
@@ -252,12 +289,35 @@ export default function App() {
             
             {/* Right: Wallet + Actions */}
             <div className="flex items-center gap-2">
-              <SignInWithBaseButton
-                align="center"
-                variant="solid"
-                colorScheme="light"
-                onClick={handleBaseSignIn}
-              />
+              {isConnected && address ? (
+                <Wallet>
+                  <ConnectWallet>
+                    <Avatar className="h-7 w-7 md:h-8 md:w-8" />
+                    <div className="flex flex-col items-start ml-2 min-w-0">
+                      <Name className="font-medium text-xs md:text-sm truncate" />
+                      <span className="text-[10px] text-gray-500 font-mono hidden sm:block truncate max-w-[120px]">
+                        {formatAddress(address)}
+                      </span>
+                    </div>
+                  </ConnectWallet>
+                  <WalletDropdown>
+                    <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick>
+                      <Avatar />
+                      <Name />
+                      <Address className="text-xs" />
+                      <EthBalance />
+                    </Identity>
+                    <WalletDropdownDisconnect />
+                  </WalletDropdown>
+                </Wallet>
+              ) : (
+                <SignInWithBaseButton
+                  align="center"
+                  variant="solid"
+                  colorScheme="light"
+                  onClick={handleBaseSignIn}
+                />
+              )}
               {saveFrameButton}
             </div>
           </div>
@@ -2683,14 +2743,14 @@ function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; sele
       {/* Generate Meep Button */}
       <div className="px-4 pb-6">
         {uploadError && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <div className="mb-4 p-3 bg-red-500 border border-red-200 rounded-lg">
             <p className="text-red-600 text-sm">{uploadError}</p>
           </div>
         )}
         <button 
           onClick={handleGenerateMeepClick}
           disabled={isGenerating}
-          className={`w-full py-4 rounded-xl font-bold text-lg transition-colors ${
+          className={`w-full py-4 text-black bg-blue-500 rounded-xl font-bold text-lg transition-colors ${
             isGenerating 
               ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
               : 'bg-[#00B2C7] text-white hover:bg-[#009eb3]'
@@ -2881,10 +2941,10 @@ function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; sele
             {/* IPFS Info */}
             {generatedMeepUrl && (
               <div className="px-6 pb-4">
-                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                {/* <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                   <p className="text-xs text-green-800 font-medium mb-1">✓ Uploaded to IPFS</p>
                   <p className="text-xs text-green-600 break-all">{generatedMeepHash}</p>
-                </div>
+                </div> */}
               </div>
             )}
 
@@ -2934,7 +2994,7 @@ function GreetingCardEditor({ onBack, selectedCard }: { onBack: () => void; sele
                   !isConnected ||
                   isResolvingRecipient
                 }
-                className={`w-full py-4 rounded-xl font-bold text-lg transition-colors ${
+                className={`w-full py-4 rounded-xl font-bold text-black bg-blue-500 text-lg transition-colors ${
                   recipientInput.trim() && recipientResolution?.success && !isMinting && isConnected && !isResolvingRecipient
                     ? 'bg-[#00B2C7] text-white hover:bg-[#009eb3] cursor-pointer' 
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'

@@ -9,8 +9,9 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        // Use the same tokens as app/theme.css so colors are consistent
+        background: "var(--app-background)",
+        foreground: "var(--app-foreground)",
       },
       animation: {
         "fade-out": "1s fadeOut 3s ease-out forwards",

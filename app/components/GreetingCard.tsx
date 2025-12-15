@@ -150,7 +150,7 @@ export default function BirthdayCard({
         <button
           type="button"
           onClick={onClick}
-          className="inline-flex flex-col items-center justify-center h-12 px-4 rounded-lg bg-[#00B2C7] text-[16px] leading-6 font-medium shadow-sm hover:brightness-95 active:brightness-90 transition"
+        className="inline-flex flex-col items-center justify-center h-12 px-4 rounded-lg bg-blue-500 text-black text-[16px] leading-6 font-medium shadow-sm hover:bg-[#009eb3] active:bg-[#00859a] transition"
         >
           <span>{cta}</span>
           {/* <span className="text-xs font-normal opacity-80">{price}</span> */}
