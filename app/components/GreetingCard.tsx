@@ -76,13 +76,13 @@ export default function BirthdayCard({
             <div className="text-[16px] leading-6 fw-400 text-[#111827] truncate">
               {title} <span className="font-normal opacity-80">{byline}</span>
             </div>
-            <div className="flex gap-1.5 text-[12px] leading-[15px] tracking-[-0.01em] text-[#6B7280]">
+            {/* <div className="flex gap-1.5 text-[12px] leading-[15px] tracking-[-0.01em] text-[#6B7280]">
               {tags.map((t) => (
                 <span key={t} className="truncate">
                   {t}
                 </span>
               ))}
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -130,7 +130,7 @@ export default function BirthdayCard({
       <div className="flex items-center justify-between h-10 w-full">
         {/* Likes */}
         <div className="flex items-center gap-2 h-6">
-          <svg
+          {/* <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             className="h-6 w-6"
@@ -143,7 +143,7 @@ export default function BirthdayCard({
           </svg>
           <span className="text-[16px] leading-6 font-medium text-[#111827]">
             {likes}
-          </span>
+          </span> */}
         </div>
 
         {/* CTA */}
