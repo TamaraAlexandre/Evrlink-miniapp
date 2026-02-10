@@ -33,7 +33,7 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
         <button
           type="button"
           onClick={handleSearch}
-          className="flex items-center justify-center px-5 py-3 bg-primary text-white text-sm font-medium rounded-xl hover:bg-primary-dark transition-colors active:scale-95"
+          className="flex items-center justify-center px-5 py-3 bg-primary text-white text-sm font-medium rounded-r-xl hover:bg-primary-dark transition-colors active:scale-95"
         >
           Search
         </button>

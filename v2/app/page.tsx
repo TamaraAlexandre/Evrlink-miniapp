@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { sdk } from "@farcaster/miniapp-sdk";
 import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
 import CategoryPills from "./components/CategoryPills";
@@ -17,6 +18,14 @@ export default function Home() {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    // Notify the Base / Farcaster host that the mini app is ready to be shown
+    sdk.actions.ready().catch((err) => {
+      // Include minimal info for debugging but don't break the UI
+      console.error("Failed to call sdk.actions.ready()", err);
+    });
+  }, []);
 
   const filteredCards = useMemo(() => {
     let cards: GreetingCardData[];

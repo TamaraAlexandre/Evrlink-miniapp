@@ -67,34 +67,46 @@ export default function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-border-light">
-      <div className="mx-auto max-w-lg flex items-center justify-around h-16">
-        {tabs.map((tab) => {
-          const isActive = pathname === tab.href;
-          return (
-            <Link
-              key={tab.href}
-              href={tab.href}
-              className={`flex flex-col items-center justify-center gap-1 px-4 py-2 transition-colors ${
-                isActive
-                  ? "text-primary"
-                  : "text-text-tertiary hover:text-text-secondary"
-              }`}
-            >
-              {tab.icon(isActive)}
-              <span
-                className={`text-xs ${
-                  isActive ? "font-semibold" : "font-medium"
+    <nav className="fixed inset-x-0 bottom-0 z-50 pointer-events-none">
+      <div className="mx-auto w-full max-w-[383.2px] px-4 pb-4">
+        <div
+          className="pointer-events-auto flex items-center justify-between rounded-[24px] bg-white/75 backdrop-blur-2xl border border-white/70 shadow-[0_8px_10px_-6px_rgba(0,0,0,0.1),0_20px_25px_-5px_rgba(0,0,0,0.1)] px-[33.6px] py-[17px]"
+        >
+          {tabs.map((tab) => {
+            const isActive = pathname === tab.href;
+            return (
+              <Link
+                key={tab.href}
+                href={tab.href}
+                className={`flex flex-col items-center justify-center gap-1 transition-all ${
+                  isActive
+                    ? "text-primary"
+                    : "text-text-tertiary hover:text-text-secondary"
                 }`}
               >
-                {tab.label}
-              </span>
-            </Link>
-          );
-        })}
+                <div
+                  className={`flex h-11 w-11 items-center justify-center rounded-2xl shadow-sm transition-all ${
+                    isActive
+                      ? "btn-gradient text-white"
+                      : "bg-white/90 border border-black/5 text-foreground"
+                  }`}
+                >
+                  {tab.icon(isActive)}
+                </div>
+                <span
+                  className={`text-xs ${
+                    isActive ? "font-semibold" : "font-medium"
+                  }`}
+                >
+                  {tab.label}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+        {/* Safe area for devices with home indicator */}
+        <div className="h-safe-area-inset-bottom" />
       </div>
-      {/* Safe area for devices with home indicator */}
-      <div className="h-safe-area-inset-bottom" />
     </nav>
   );
 }

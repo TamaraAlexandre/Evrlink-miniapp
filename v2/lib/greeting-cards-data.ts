@@ -60,7 +60,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/birthday.svg",
         tapeText: "HAPPY BIRTHDAY!!",
         description: "A delightful birthday celebration card",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "birthday-2",
@@ -74,7 +74,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/birthday.svg",
         tapeText: "MAKE A WISH!",
         description: "Sweet birthday wishes with cake",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "birthday-3",
@@ -88,7 +88,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/birthday.svg",
         tapeText: "PARTY TIME!",
         description: "Let's celebrate in style",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "birthday-4",
@@ -102,7 +102,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/birthday.svg",
         tapeText: "PARTY TIME!",
         description: "Let's celebrate in style",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
     ],
   },
@@ -123,7 +123,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/congrats.svg",
         tapeText: "CONGRATS!!",
         description: "Celebrate your success",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "congrats-2",
@@ -137,7 +137,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/congrats.svg",
         tapeText: "WELL DONE!",
         description: "Outstanding work deserves recognition",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
     ],
   },
@@ -158,7 +158,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/love.svg",
         tapeText: "I LOVE YOU!",
         description: "Express your deepest feelings",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "love-2",
@@ -172,7 +172,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/love.svg",
         tapeText: "SWEET DREAMS",
         description: "Dreamy love messages",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "love-3",
@@ -186,7 +186,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/love.svg",
         tapeText: "FOREVER YOURS",
         description: "Eternal love and commitment",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "love-4",
@@ -200,7 +200,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/love.svg",
         tapeText: "LOVE LETTER",
         description: "A heartfelt love letter",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "love-5",
@@ -214,7 +214,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/love.svg",
         tapeText: "MY HEART",
         description: "You have my heart",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "love-6",
@@ -228,7 +228,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/love.svg",
         tapeText: "SOULMATE",
         description: "Found my soulmate",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "love-7",
@@ -242,7 +242,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/love.svg",
         tapeText: "BE MINE",
         description: "Will you be mine?",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "love-8",
@@ -256,7 +256,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/love.svg",
         tapeText: "TOGETHER",
         description: "Better together",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "love-9",
@@ -270,7 +270,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/love.svg",
         tapeText: "XOXO",
         description: "Kisses and hugs",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "love-10",
@@ -284,7 +284,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/love.svg",
         tapeText: "ENDLESS LOVE",
         description: "Love without end",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
     ],
   },
@@ -305,7 +305,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/work.svg",
         tapeText: "GOOD WORK!",
         description: "Professional achievement recognition",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "work-2",
@@ -319,7 +319,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/work.svg",
         tapeText: "TEAM PLAYER!",
         description: "Celebrate teamwork",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "work-3",
@@ -333,7 +333,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/work.svg",
         tapeText: "PROMOTION!",
         description: "Congratulations on your promotion",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "work-4",
@@ -347,7 +347,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/work.svg",
         tapeText: "BOSS MOVE!",
         description: "That was a boss move",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
     ],
   },
@@ -368,7 +368,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/thanks.svg",
         tapeText: "THANK YOU!",
         description: "Express heartfelt gratitude",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "thanks-2",
@@ -382,7 +382,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/thanks.svg",
         tapeText: "MUCH APPRECIATED",
         description: "Show your appreciation",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "thanks-3",
@@ -396,7 +396,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/thanks.svg",
         tapeText: "SO GRATEFUL",
         description: "Feeling grateful",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "thanks-4",
@@ -410,7 +410,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/thanks.svg",
         tapeText: "THANKS A BUNCH",
         description: "Thanks a million",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "thanks-5",
@@ -424,7 +424,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/thanks.svg",
         tapeText: "YOU ROCK!",
         description: "You absolutely rock",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "thanks-6",
@@ -438,7 +438,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/thanks.svg",
         tapeText: "BIG THANKS",
         description: "A big thank you",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "thanks-7",
@@ -452,7 +452,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/thanks.svg",
         tapeText: "THANKFUL",
         description: "Feeling thankful",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "thanks-8",
@@ -466,7 +466,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/thanks.svg",
         tapeText: "CHEERS!",
         description: "Cheers to you",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
     ],
   },
@@ -487,7 +487,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/sorry.svg",
         tapeText: "I'M SORRY",
         description: "A heartfelt apology",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "sorry-2",
@@ -501,7 +501,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/sorry.svg",
         tapeText: "MY MISTAKE",
         description: "Taking responsibility",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "sorry-3",
@@ -515,7 +515,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/sorry.svg",
         tapeText: "FORGIVE ME",
         description: "Please forgive me",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "sorry-4",
@@ -529,7 +529,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/sorry.svg",
         tapeText: "OOPS!",
         description: "Oops, my bad",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "sorry-5",
@@ -543,7 +543,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/sorry.svg",
         tapeText: "MAKING AMENDS",
         description: "Making things right",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
     ],
   },
@@ -564,7 +564,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/situation.svg",
         tapeText: "IT'S COMPLICATED",
         description: "When things are complex",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "situation-2",
@@ -578,7 +578,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/situation.svg",
         tapeText: "MIXED SIGNALS",
         description: "Navigating unclear waters",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "situation-3",
@@ -592,7 +592,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/situation.svg",
         tapeText: "UNDEFINED",
         description: "No labels needed",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "situation-4",
@@ -606,7 +606,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/situation.svg",
         tapeText: "WHAT ARE WE?",
         description: "The age old question",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "situation-5",
@@ -620,7 +620,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/situation.svg",
         tapeText: "VIBES ONLY",
         description: "Just vibes",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "situation-6",
@@ -634,7 +634,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/situation.svg",
         tapeText: "NO STRINGS",
         description: "No strings attached",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "situation-7",
@@ -648,7 +648,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/situation.svg",
         tapeText: "TALKING STAGE",
         description: "Still in the talking stage",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "situation-8",
@@ -662,7 +662,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/situation.svg",
         tapeText: "MAYBE?",
         description: "Maybe, maybe not",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "situation-9",
@@ -676,7 +676,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/situation.svg",
         tapeText: "ON & OFF",
         description: "The on and off cycle",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "situation-10",
@@ -690,7 +690,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/situation.svg",
         tapeText: "DEFINE THE RELATIONSHIP",
         description: "Time to DTR",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
     ],
   },
@@ -711,7 +711,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/friends.svg",
         tapeText: "BEST FRIENDS!",
         description: "Celebrate true friendship",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "friendship-2",
@@ -725,7 +725,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/friends.svg",
         tapeText: "SQUAD GOALS!",
         description: "Friendship squad celebration",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "friendship-3",
@@ -739,7 +739,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/friends.svg",
         tapeText: "RIDE OR DIE!",
         description: "Through thick and thin",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "friendship-4",
@@ -753,7 +753,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/friends.svg",
         tapeText: "GM FREN!",
         description: "gm fren, have a great day",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "friendship-5",
@@ -767,7 +767,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/friends.svg",
         tapeText: "BROS!",
         description: "Bros forever",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "friendship-6",
@@ -781,7 +781,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/friends.svg",
         tapeText: "BESTIES!",
         description: "Besties for life",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "friendship-7",
@@ -795,7 +795,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/friends.svg",
         tapeText: "DAY ONES!",
         description: "From day one",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
     ],
   },
@@ -816,7 +816,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/degen.svg",
         tapeText: "DEGEN VIBES!",
         description: "For the crypto degenerates",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "degen-2",
@@ -830,7 +830,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/degen.svg",
         tapeText: "TO THE MOON!",
         description: "Crypto moon mission",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "degen-3",
@@ -844,7 +844,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/degen.svg",
         tapeText: "WAGMI!",
         description: "We're all gonna make it",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "degen-4",
@@ -858,7 +858,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/degen.svg",
         tapeText: "DIAMOND HANDS!",
         description: "Hold the line",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "degen-5",
@@ -872,7 +872,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/degen.svg",
         tapeText: "APE IN!",
         description: "Full send",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "degen-6",
@@ -886,7 +886,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/degen.svg",
         tapeText: "HODL!",
         description: "Hold on for dear life",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "degen-7",
@@ -900,7 +900,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/degen.svg",
         tapeText: "BULLISH!",
         description: "Extremely bullish",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
     ],
   },
@@ -921,7 +921,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/motivation.svg",
         tapeText: "RISE & SHINE!",
         description: "Start your day with motivation",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "motivational-2",
@@ -935,7 +935,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/motivation.svg",
         tapeText: "NEVER GIVE UP!",
         description: "Keep pushing forward",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "motivational-3",
@@ -949,7 +949,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/motivation.svg",
         tapeText: "YOU GOT THIS!",
         description: "Believe in yourself",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "motivational-4",
@@ -963,7 +963,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/motivation.svg",
         tapeText: "KEEP GOING!",
         description: "Stay strong and keep going",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
     ],
   },
@@ -984,7 +984,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/base.svg",
         tapeText: "BASE BUILDER!",
         description: "Building on Base",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "base-2",
@@ -998,7 +998,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/base.svg",
         tapeText: "ONCHAIN LIFE!",
         description: "Living on the blockchain",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
       {
         id: "base-3",
@@ -1012,7 +1012,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
         brandIcon: "/images/base.svg",
         tapeText: "BASED!",
         description: "Extremely based",
-        price: "0.0002 ETH",
+        price: "0.02 ETH",
       },
     ],
   },

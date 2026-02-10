@@ -32,7 +32,7 @@ export default function MintModal({
         <div
           className="flex items-center justify-between px-5 py-4"
           style={{
-            background: "linear-gradient(135deg, #06B6D4 0%, #14B8A6 50%, #0891B2 100%)",
+            background: "linear-gradient(135deg, #00C4D9 0%, #00B2C7 50%, #009AB0 100%)",
           }}
         >
           <span className="text-white text-lg font-bold">Mint Card</span>
@@ -96,7 +96,7 @@ export default function MintModal({
           {/* Send to */}
           <div className="mb-4">
             <div className="flex items-center gap-2 mb-2">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#14B8A6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00B2C7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10" />
                 <line x1="2" y1="12" x2="22" y2="12" />
                 <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
@@ -122,7 +122,8 @@ export default function MintModal({
             type="button"
             onClick={handleMint}
             disabled={!recipient.trim()}
-            className="w-full py-3.5 rounded-xl bg-primary text-white text-base font-semibold hover:bg-primary-dark transition-colors active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full rounded-md btn-gradient text-white text-base font-bold leading-[140%] transition-colors active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ fontFamily: "'Satoshi', sans-serif", height: 46, paddingTop: 12, paddingBottom: 12, paddingLeft: 16, paddingRight: 16 }}
           >
             Mint for {card.price}
           </button>

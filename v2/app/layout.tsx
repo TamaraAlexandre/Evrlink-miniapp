@@ -12,10 +12,31 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Evrlink – Digital Greeting Cards",
-  description: "Send and relive moments with digital cards.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const appUrl = process.env.NEXT_PUBLIC_URL || "https://your-app-url.com";
+  const embedImageUrl = `${appUrl}/api/og`; // adjust if you have a different OG image route
+
+  return {
+    title: "Evrlink – Digital Greeting Cards",
+    description: "Send and relive moments with digital cards.",
+    other: {
+      "fc:miniapp": JSON.stringify({
+        version: "next",
+        imageUrl: embedImageUrl,
+        button: {
+          title: "Open Evrlink",
+          action: {
+            type: "launch_miniapp",
+            name: "Evrlink",
+            url: appUrl,
+            splashImageUrl: `${appUrl}/splash.png`,
+            splashBackgroundColor: "#00B2C7",
+          },
+        },
+      }),
+    },
+  };
+}
 
 export default function RootLayout({
   children,

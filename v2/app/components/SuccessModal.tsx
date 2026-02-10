@@ -44,7 +44,7 @@ export default function SuccessModal({
         <div
           className="flex items-center justify-between px-5 py-4"
           style={{
-            background: "linear-gradient(135deg, #06B6D4 0%, #14B8A6 50%, #0891B2 100%)",
+            background: "linear-gradient(135deg, #00C4D9 0%, #00B2C7 50%, #009AB0 100%)",
           }}
         >
           <span className="text-white text-lg font-bold">
@@ -101,7 +101,7 @@ export default function SuccessModal({
             <button
               type="button"
               onClick={handleBackToHome}
-              className="flex-1 py-3 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary-dark transition-colors active:scale-[0.98]"
+              className="flex-1 py-3 rounded-xl btn-gradient text-white text-sm font-semibold transition-colors active:scale-[0.98]"
             >
               Back To Home
             </button>

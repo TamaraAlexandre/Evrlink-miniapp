@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import PageHeader from "../../components/PageHeader";
+import FlipCard from "../../components/FlipCard";
 import CardBackPreview from "../../components/CardBackPreview";
 import SimilarCardItem from "../../components/SimilarCardItem";
 import BottomNav from "../../components/BottomNav";
@@ -36,6 +37,7 @@ export default function GenerateMeepPage() {
   const cardId = params.cardId as string;
 
   const [message, setMessage] = useState("");
+  const [isFlipped, setIsFlipped] = useState(true);
   const [modalState, setModalState] = useState<ModalState>("none");
   const [recipientAddress, setRecipientAddress] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -110,11 +112,29 @@ export default function GenerateMeepPage() {
       {/* Header */}
       <PageHeader title="Generate a Meep" />
 
-      {/* Card Back Preview */}
-      <CardBackPreview message={message} maxLength={MAX_MESSAGE_LENGTH} />
+      {/* Flip Card: front = card image, back = message preview */}
+      <FlipCard
+        cardImage={card.paperImage}
+        cardTitle={card.title}
+        defaultFlipped
+        onFlip={setIsFlipped}
+        backContent={
+          <CardBackPreview
+            message={message}
+            maxLength={MAX_MESSAGE_LENGTH}
+            embedded
+          />
+        }
+      />
 
-      {/* Custom Message Section */}
-      <div className="px-4 py-4">
+      {/* Custom Message Section — only visible after flipping */}
+      <div
+        className={`px-4 py-4 transition-all duration-500 ${
+          isFlipped
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-4 pointer-events-none h-0 overflow-hidden py-0"
+        }`}
+      >
         <h2 className="text-base font-semibold text-foreground mb-1">
           Custom Message
         </h2>
@@ -142,7 +162,8 @@ export default function GenerateMeepPage() {
         <button
           type="button"
           onClick={handleMint}
-          className="w-full mt-4 py-3.5 rounded-xl bg-primary text-white text-base font-semibold hover:bg-primary-dark transition-colors active:scale-[0.98]"
+          className="w-full mt-7 rounded-md btn-gradient text-white text-base font-bold leading-[140%] transition-colors active:scale-[0.98]"
+          style={{ fontFamily: "'Satoshi', sans-serif", height: 46, paddingTop: 12, paddingBottom: 12, paddingLeft: 16, paddingRight: 16 }}
         >
           Mint for {card.price}
         </button>

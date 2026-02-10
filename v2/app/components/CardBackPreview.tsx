@@ -3,6 +3,8 @@
 interface CardBackPreviewProps {
   message: string;
   maxLength: number;
+  /** When true, removes outer padding so it can be embedded inside FlipCard */
+  embedded?: boolean;
 }
 
 /* Small decorative corner bracket */
@@ -50,12 +52,13 @@ function SideArrow({ className }: { className?: string }) {
 export default function CardBackPreview({
   message,
   maxLength,
+  embedded = false,
 }: CardBackPreviewProps) {
   return (
-    <div className="px-4 py-6">
+    <div className={embedded ? "" : "px-4 py-6"}>
       {/* Outer card with gradient background */}
       <div
-        className="relative mx-auto max-w-sm rounded-2xl p-5 shadow-lg"
+        className={`relative rounded-2xl p-5 shadow-lg ${embedded ? "w-full h-full" : "mx-auto max-w-sm"}`}
         style={{
           background:
             "linear-gradient(160deg, rgba(224,247,250,0.6) 0%, rgba(178,235,242,0.4) 30%, rgba(128,222,234,0.25) 60%, rgba(224,247,250,0.5) 100%)",
@@ -72,13 +75,13 @@ export default function CardBackPreview({
             >
               <path
                 d="M4 11c3-5 7.5-5 10.5 0s7.5 5 10.5 0"
-                stroke="#0891B2"
+                stroke="#00B2C7"
                 strokeWidth="3"
                 strokeLinecap="round"
               />
               <path
                 d="M11 11c3-5 7.5-5 10.5 0s7.5 5 10.5 0"
-                stroke="#0891B2"
+                stroke="#00B2C7"
                 strokeWidth="3"
                 strokeLinecap="round"
                 opacity="0.5"

@@ -31,7 +31,7 @@ export default function CardItem({ card, onClick, onMint }: CardItemProps) {
         onClick={onClick}
         role="button"
         tabIndex={0}
-        className="relative w-full rounded-2xl overflow-hidden border-[3px] border-accent-gold shadow-md cursor-pointer transition-transform active:scale-[0.98]"
+        className="relative w-full rounded-2xl overflow-hidden shadow-md cursor-pointer transition-transform active:scale-[0.98]"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -56,7 +56,8 @@ export default function CardItem({ card, onClick, onMint }: CardItemProps) {
             e.stopPropagation();
             onMint?.();
           }}
-          className="inline-flex items-center gap-1 px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-dark transition-colors active:scale-95"
+          className="inline-flex items-center justify-center gap-2.5 rounded-md btn-gradient text-white text-base font-bold leading-[140%] whitespace-nowrap transition-colors active:scale-95"
+          style={{ fontFamily: "'Satoshi', sans-serif", minWidth: 161, height: 46, paddingTop: 12, paddingBottom: 12, paddingLeft: 16, paddingRight: 16 }}
         >
           Mint for {card.price}
         </button>

@@ -80,7 +80,7 @@ export default function ErrorModal({
           <button
             type="button"
             onClick={onRetry}
-            className="w-full py-3.5 rounded-xl bg-primary text-white text-base font-semibold hover:bg-primary-dark transition-colors active:scale-[0.98] mb-3"
+            className="w-full py-3.5 rounded-xl btn-gradient text-white text-base font-semibold transition-colors active:scale-[0.98] mb-3"
           >
             Try Again
           </button>
