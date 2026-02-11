@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Header from "../components/Header";
 import SearchBar from "../components/SearchBar";
@@ -16,7 +16,7 @@ function shortAddress(addr: string | undefined | null): string {
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 }
 
-export default function SentPage() {
+function SentContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const addressParam = searchParams.get("address")?.trim() ?? "";
@@ -177,5 +177,23 @@ export default function SentPage() {
 
       <BottomNav />
     </div>
+  );
+}
+
+export default function SentPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="bg-white max-w-lg mx-auto pb-20">
+          <Header />
+          <div className="px-4 py-20 text-center text-sm text-text-secondary">
+            Loading…
+          </div>
+          <BottomNav />
+        </div>
+      }
+    >
+      <SentContent />
+    </Suspense>
   );
 }
