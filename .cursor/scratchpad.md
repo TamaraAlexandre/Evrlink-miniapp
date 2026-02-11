@@ -129,10 +129,26 @@ v2/
 
 - All 10 tasks done. Dev server running on http://localhost:3001.
 - Modal flow: Mint button → Mint Card modal → enter recipient → Mint → Success modal (or Error modal)
-- Error modal "Try Again" goes back to Mint modal with recipient preserved
-- Success modal "Back To Home" navigates to /
-- All 3 modal designs match provided UI screenshots
-- Minting logic is currently simulated (defaults to success). Ready to wire up real contract calls when APIs are implemented.
+- Minting is wired to direct contract call (wagmi). IPFS upload now uses Pinata in `/api/files` when `PINATA_JWT` is set; if not set, API returns 503 with a clear message. Mint value sent to contract is 0.0002 ether (matches GreetingCardNFT.sol MINT_PRICE).
+
+---
+
+## Smart Contract Analysis (GreetingCardNFT.sol) – What to Implement in UI
+
+**Contract summary:**
+- **Payment:** ETH only. `MINT_PRICE = 0.0002 ether` (constant in contract). No USDC or other tokens.
+- **Single mint:** `mintGreetingCard(string uri, address recipient)` – requires `msg.value >= MINT_PRICE`, mints NFT to `recipient`, sets `tokenURI(uri)`.
+- **Batch mint:** `batchMintGreetingCards(string[] tokenURIs, address recipient)` – total cost `MINT_PRICE * tokenURIs.length` in ETH. Optional for later.
+- **Events:** `GreetingCardMinted(tokenId, owner, tokenURI)` – can be used to show tokenId in success UI.
+
+**Price discrepancy:** Contract enforces **0.0002 ETH** per mint. Current v2 UI and data show **0.02 ETH**. Decide: (A) Use 0.0002 ETH in the tx (match contract as-is), or (B) Deploy an updated contract with 0.02 ETH and then use 0.02 in UI. **USDC is not in this contract** – to accept USDC you’d need a different flow (e.g. swap to ETH first or a separate contract).
+
+**Implementation checklist for v2 UI:**
+1. **IPFS upload:** Fix “Upload failed: Unauthorized”. Use Pinata when `PINATA_JWT` (and optionally gateway) are set in env; otherwise fail with a clear message so the user can add credentials.
+2. **Mint value:** Send exactly `MINT_PRICE` (0.0002 ether) in the `mintGreetingCard` call unless/until contract is updated. Optionally read `MINT_PRICE` from contract via `readContract` to keep UI in sync.
+3. **Flow:** User enters name (auto-resolved to address) → Clicks Mint → Compose card image → Upload to IPFS (Pinata) → `writeContract(mintGreetingCard, ipfsUrl, resolvedAddress, value: MINT_PRICE)` → User approves in wallet → On tx confirmation, show **success popup** (already implemented); do not show success until `useWaitForTransactionReceipt` reports success.
+4. **Payment method UI:** Contract accepts only ETH. Either remove USDC from the modal or keep as “Coming soon” and only enable ETH for now.
+5. **Success popup:** Already shows after `isSuccess` from `useWaitForTransactionReceipt`. Optionally decode `GreetingCardMinted` from receipt logs to show `tokenId` in the success message.
 
 ---
 
@@ -147,3 +163,4 @@ v2/
 - Tailwind v4 oxide binary may need explicit install: `npm install @tailwindcss/oxide-darwin-arm64@version --cache /tmp/npm-cache-evrlink` (npm cache permission issue workaround)
 - Use native `<img>` instead of `next/image` with `fill` for simpler full-width card images (avoids sizing issues)
 - For page scrolling, use `pb-20` padding at bottom instead of flex-1 overflow-y-auto (natural body scroll works better on mobile)
+- v2 IPFS upload requires `PINATA_JWT` in env; optional `NEXT_PUBLIC_GATEWAY_URL` for dedicated Pinata gateway. Without PINATA_JWT, `/api/files` returns 503.
