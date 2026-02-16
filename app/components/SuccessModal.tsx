@@ -1,22 +1,30 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { sdk } from "@farcaster/miniapp-sdk";
 import Modal from "./Modal";
 
 interface SuccessModalProps {
   isOpen: boolean;
   onClose: () => void;
   recipientAddress: string;
+  /** The original name/handle the sender typed (e.g. "defidevrel", "@alice") */
+  recipientName?: string;
+  /** The card title (e.g. "Miggles Magic") */
+  cardTitle?: string;
 }
+
+const APP_URL = process.env.NEXT_PUBLIC_URL || "https://evrlinkapp.com";
 
 export default function SuccessModal({
   isOpen,
   onClose,
   recipientAddress,
+  recipientName,
+  cardTitle,
 }: SuccessModalProps) {
   const router = useRouter();
 
-  // Truncate address for display
   const displayAddress =
     recipientAddress.length > 12
       ? `${recipientAddress.slice(0, 6)}...${recipientAddress.slice(-4)}`
@@ -27,13 +35,40 @@ export default function SuccessModal({
     router.push("/");
   };
 
-  const handleShare = () => {
-    // TODO: Wire up share functionality
-    if (navigator.share) {
-      navigator.share({
-        title: "Evrlink Greeting Card",
-        text: `I just sent a greeting card on Evrlink!`,
+  const handleShare = async () => {
+    // Build a mention tag for the recipient
+    // If they typed a plain name (no dot, no 0x), assume Farcaster handle → @name
+    // If they typed @name already, use as-is
+    // Otherwise fall back to the short address
+    let mention = displayAddress;
+    if (recipientName) {
+      const name = recipientName.trim();
+      if (name.startsWith("@")) {
+        mention = name;
+      } else if (!name.startsWith("0x") && !name.includes(".")) {
+        mention = `@${name}`;
+      } else {
+        mention = name;
+      }
+    }
+
+    const label = cardTitle || "a greeting card";
+    const text = `I just sent ${mention} "${label}" on @evrlink! 💌\n\nSend yours onchain 👇`;
+
+    try {
+      await sdk.actions.composeCast({
+        text,
+        embeds: [APP_URL],
       });
+    } catch (err) {
+      console.warn("composeCast not available, falling back to navigator.share", err);
+      if (navigator.share) {
+        navigator.share({
+          title: "Evrlink Greeting Card",
+          text: `I just sent a greeting card on Evrlink! 💌`,
+          url: APP_URL,
+        });
+      }
     }
   };
 

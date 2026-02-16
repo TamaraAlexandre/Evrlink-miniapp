@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import type { GreetingCardData } from "@/lib/greeting-cards-data";
 
 interface CardItemProps {
@@ -9,6 +10,16 @@ interface CardItemProps {
 }
 
 export default function CardItem({ card, onClick, onMint }: CardItemProps) {
+  const [isFlipped, setIsFlipped] = useState(false);
+  const hasBack = Boolean(card.backImage);
+
+  const handleTap = () => {
+    if (hasBack) {
+      setIsFlipped((prev) => !prev);
+    }
+    onClick?.();
+  };
+
   return (
     <div className="px-4 py-3">
       {/* Title + Tags */}
@@ -26,25 +37,65 @@ export default function CardItem({ card, onClick, onMint }: CardItemProps) {
         </div>
       </div>
 
-      {/* Card Image */}
+      {/* Card Image (with flip support) */}
       <div
-        onClick={onClick}
+        onClick={handleTap}
         role="button"
         tabIndex={0}
-        className="relative w-full rounded-2xl overflow-hidden shadow-md cursor-pointer transition-transform active:scale-[0.98]"
+        className="relative w-full cursor-pointer"
+        style={{ perspective: hasBack ? "1200px" : undefined }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={card.paperImage}
-          alt={card.title}
-          className="block w-full h-auto object-cover"
-          loading="lazy"
-        />
-        {/* Tap to flip overlay */}
-        <div className="absolute inset-x-0 bottom-0 flex items-center justify-center pb-4 pt-10 bg-linear-to-t from-black/40 to-transparent">
-          <span className="text-white/90 text-sm font-medium tracking-wide">
-            tap to flip
-          </span>
+        <div
+          className="relative w-full transition-transform duration-700 ease-in-out"
+          style={{
+            transformStyle: hasBack ? "preserve-3d" : undefined,
+            transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
+          }}
+        >
+          {/* Front */}
+          <div
+            className="relative w-full rounded-2xl overflow-hidden shadow-md"
+            style={{ backfaceVisibility: hasBack ? "hidden" : undefined }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={card.paperImage}
+              alt={card.title}
+              className="block w-full h-auto object-cover"
+              loading="lazy"
+            />
+            {/* Tap to flip overlay */}
+            <div className="absolute inset-x-0 bottom-0 flex items-center justify-center pb-4 pt-10 bg-linear-to-t from-black/40 to-transparent">
+              <span className="text-white/90 text-sm font-medium tracking-wide">
+                tap to flip
+              </span>
+            </div>
+          </div>
+
+          {/* Back (only rendered when backImage exists) */}
+          {hasBack && (
+            <div
+              className="absolute inset-0 w-full rounded-2xl overflow-hidden shadow-md"
+              style={{
+                backfaceVisibility: "hidden",
+                transform: "rotateY(180deg)",
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={card.backImage!}
+                alt={`${card.title} – back`}
+                className="block w-full h-auto object-cover"
+                loading="lazy"
+              />
+              {/* Tap to flip back overlay */}
+              <div className="absolute inset-x-0 bottom-0 flex items-center justify-center pb-4 pt-10 bg-linear-to-t from-black/40 to-transparent">
+                <span className="text-white/90 text-sm font-medium tracking-wide">
+                  tap to flip
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

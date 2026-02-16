@@ -45,8 +45,7 @@ export default function Home() {
   };
 
   const handleCardClick = (card: GreetingCardData) => {
-    // TODO: Navigate to card detail / editor
-    console.log("Card clicked:", card.id);
+    router.push(`/generate/${card.id}`);
   };
 
   const handleMint = (card: GreetingCardData) => {

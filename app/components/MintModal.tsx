@@ -13,7 +13,7 @@ interface MintModalProps {
   isOpen: boolean;
   onClose: () => void;
   card: GreetingCardData;
-  onMint: (recipient: string, paymentMethod: "ETH" | "USDT") => void;
+  onMint: (recipient: string, paymentMethod: "ETH" | "USDT", recipientInput: string) => void;
   isMinting?: boolean;
 }
 
@@ -43,7 +43,7 @@ export default function MintModal({
       return;
     }
 
-    onMint(resolution.address, paymentMethod);
+    onMint(resolution.address, paymentMethod, recipient.trim());
   };
 
   useEffect(() => {

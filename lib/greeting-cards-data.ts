@@ -9,6 +9,8 @@ export interface GreetingCardData {
   likes: number;
   cta: string;
   paperImage: string;
+  /** Optional pre-made back-of-card image (shown on flip instead of user message) */
+  backImage?: string;
   overlayImage: string;
   brandIcon: string;
   tapeText: string;
@@ -28,8 +30,9 @@ export interface CategoryData {
   cards: GreetingCardData[];
 }
 
-// Category pill metadata (order matches design)
+// Category pill metadata (order matches design — Miggles first)
 export const categoryMeta: CategoryMeta[] = [
+  { key: "miggles", label: "Miggles", emoji: "🐱" },
   { key: "base", label: "Base", emoji: "🟦" },
   { key: "degen", label: "Degen", emoji: "✨" },
   { key: "birthday", label: "Birthdays", emoji: "🎂" },
@@ -44,6 +47,28 @@ export const categoryMeta: CategoryMeta[] = [
 ];
 
 export const greetingCardsData: Record<string, CategoryData> = {
+  miggles: {
+    title: "Miggles Cards",
+    subtitle: "Send some Miggles love to your frens.",
+    cards: [
+      {
+        id: "miggles-1",
+        title: "Miggles Magic",
+        byline: "by Everlink",
+        tags: ["#miggles", "#cat"],
+        likes: 0,
+        cta: "Choose Card",
+        paperImage: "/images/categories/miggles/miggles1.png",
+        backImage: "/images/categories/miggles/miggles2.png",
+        overlayImage: "/images/loffy.png",
+        brandIcon: "/images/meep.png",
+        tapeText: "MIGGLES!",
+        description: "Miggles magic for your fren",
+        price: "0.02 ETH",
+      },
+    ],
+  },
+
   birthday: {
     title: "Birthday Cards",
     subtitle: "Celebrate special moments with personalized birthday greetings.",
@@ -1036,7 +1061,18 @@ export function getCardData(
   return categoryData.cards.find((card) => card.id === cardId) || null;
 }
 
-// Get all cards across all categories
+// Get all cards across all categories (follows categoryMeta order so Miggles shows first)
 export function getAllCards(): GreetingCardData[] {
-  return Object.values(greetingCardsData).flatMap((cat) => cat.cards);
+  const ordered: GreetingCardData[] = [];
+  for (const meta of categoryMeta) {
+    const cat = greetingCardsData[meta.key];
+    if (cat) ordered.push(...cat.cards);
+  }
+  // Append any categories not in categoryMeta
+  for (const [key, cat] of Object.entries(greetingCardsData)) {
+    if (!categoryMeta.some((m) => m.key === key)) {
+      ordered.push(...cat.cards);
+    }
+  }
+  return ordered;
 }

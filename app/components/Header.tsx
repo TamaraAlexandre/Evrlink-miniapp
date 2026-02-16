@@ -42,28 +42,28 @@ export default function Header() {
         >
           <svg
             width="24"
-            height="24"
+            height="48"
             viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
               d="M18 8A6 6 0 1 0 6 8c0 7-3 9-3 9h18s-3-2-3-9Z"
-              stroke="#E11D48"
+              stroke="var(--primary)"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
             <path
               d="M13.73 21a2 2 0 0 1-3.46 0"
-              stroke="#E11D48"
+              stroke="var(--primary)"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
           </svg>
           {/* Notification dot */}
-          <span className="absolute top-1.5 right-1.5 h-2.5 w-2.5 rounded-full bg-notification border-2 border-white" />
+          <span className="absolute top-1.5 right-1.5 h-2.5 w-2.5 rounded-full bg-primary border-2 border-white" />
         </button>
       </div>
     </header>

@@ -152,6 +152,27 @@ v2/
 
 ---
 
+## Notifications System
+
+**Implemented:** Farcaster in-app notifications when someone sends a card.
+
+### How it works:
+1. **Webhook** (`/api/webhook`) – Receives Farcaster lifecycle events (miniapp_added, miniapp_removed, notifications_enabled/disabled). Stores/deletes notification tokens in Upstash Redis.
+2. **Token storage** (`lib/kv.ts`) – Uses Upstash Redis to store `{ url, token }` per FID.
+3. **Notification sender** (`lib/notifs.ts`) – Sends POST to Farcaster client's notification endpoint.
+4. **Notify API** (`/api/notify`) – Called after successful mint. Resolves recipient wallet address → FID via Neynar, then sends notification.
+5. **Trigger** – Generate page fires a POST to `/api/notify` after mint transaction confirms.
+
+### Required env vars for notifications:
+- `NEYNAR_API_KEY` – Free tier from neynar.com (for webhook signature verification + address→FID resolution)
+- `KV_REST_API_URL` – Upstash Redis REST URL (free at upstash.com or via Vercel KV integration)
+- `KV_REST_API_TOKEN` – Upstash Redis REST token
+
+### Already configured:
+- `FARCASTER_MINIAPP_WEBHOOK_URL` in `.env` already points to `https://evrlinkapp.com/api/webhook`
+
+---
+
 ## Lessons
 
 - v2 uses Tailwind v4 with CSS-based config (@theme inline in globals.css), no tailwind.config.ts

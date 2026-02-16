@@ -45,6 +45,7 @@ export default function GenerateMeepPage() {
   const [isFlipped, setIsFlipped] = useState(true);
   const [modalState, setModalState] = useState<ModalState>("none");
   const [recipientAddress, setRecipientAddress] = useState("");
+  const [recipientName, setRecipientName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isMinting, setIsMinting] = useState(false);
   const { address: walletAddress, isConnected } = useAccount();
@@ -81,7 +82,7 @@ export default function GenerateMeepPage() {
     setModalState("mint");
   };
 
-  const handleMintConfirm = (recipient: string, paymentMethod: "ETH" | "USDT") => {
+  const handleMintConfirm = (recipient: string, paymentMethod: "ETH" | "USDT", recipientInput?: string) => {
     if (!card) return;
 
     if (paymentMethod !== "ETH") {
@@ -138,6 +139,7 @@ export default function GenerateMeepPage() {
 
         lastRecipientRef.current = recipient;
         setRecipientAddress(recipient);
+        setRecipientName(recipientInput || "");
 
         // 4) Call contract via wagmi with value and chainId so ETH is sent and tx targets Base
         // (ABI type inference can omit value for payable; we pass it explicitly so 0.0002 ETH is sent)
@@ -189,13 +191,26 @@ export default function GenerateMeepPage() {
     setIsMinting(false);
   }, [writeError]);
 
-  // When transaction confirms, show success modal
+  // When transaction confirms, show success modal and notify recipient
   useEffect(() => {
     if (!isSuccess || !txHash) return;
     console.log("Mint transaction confirmed:", txHash);
     setIsMinting(false);
     setModalState("success");
-  }, [isSuccess, txHash]);
+
+    // Fire-and-forget: notify the recipient via Farcaster notification
+    const recipient = lastRecipientRef.current;
+    if (recipient) {
+      fetch("/api/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          recipientAddress: recipient,
+          senderAddress: walletAddress,
+        }),
+      }).catch((err) => console.warn("Notification failed (non-critical):", err));
+    }
+  }, [isSuccess, txHash, walletAddress]);
 
   const handleCloseModal = () => {
     setModalState("none");
@@ -318,6 +333,8 @@ export default function GenerateMeepPage() {
         isOpen={modalState === "success"}
         onClose={handleCloseModal}
         recipientAddress={recipientAddress}
+        recipientName={recipientName}
+        cardTitle={card?.title || "Greeting Card"}
       />
 
       <ErrorModal
