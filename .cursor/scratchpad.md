@@ -173,6 +173,37 @@ v2/
 
 ---
 
+## USDC Atomic Swap+Mint (EIP-5792)
+
+**Implemented:** Atomic USDC→ETH swap and mint using `wallet_sendCalls` (EIP-5792).
+
+### How it works:
+When user selects USDC as payment method, 4 calls are batched atomically via `wallet_sendCalls`:
+1. **USDC approve** → approve Uniswap SwapRouter02 to spend user's USDC
+2. **exactOutputSingle** → swap USDC → WETH (exact output = 0.0002 WETH)
+3. **WETH withdraw** → unwrap WETH to native ETH
+4. **mintGreetingCard** → mint NFT with ETH value
+
+All 4 calls execute atomically — if any fails, all revert. Single wallet popup for user.
+
+### Key addresses (Base mainnet):
+- USDC: `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`
+- WETH: `0x4200000000000000000000000000000000000006`
+- SwapRouter02: `0x2626664c2603336E57B271c5C0b26F421741e481`
+- Fee tier: 500 (0.05% USDC/WETH pool)
+
+### Wagmi hooks used:
+- `useSendCalls` → submit batch
+- `useCallsStatus` → poll for batch completion (refetchInterval: 2000ms)
+- ETH path still uses `useWriteContract` + `useWaitForTransactionReceipt`
+
+### USDC amount calculation:
+- Actual mint price: 0.0002 ETH
+- Max USDC = ceil(0.0002 × ethUsdPrice × 1.1 × 1e6) (10% slippage buffer, 6 decimals)
+- `ethUsdPrice` fetched from CoinGecko and passed from MintModal
+
+---
+
 ## Lessons
 
 - v2 uses Tailwind v4 with CSS-based config (@theme inline in globals.css), no tailwind.config.ts
@@ -185,3 +216,7 @@ v2/
 - Use native `<img>` instead of `next/image` with `fill` for simpler full-width card images (avoids sizing issues)
 - For page scrolling, use `pb-20` padding at bottom instead of flex-1 overflow-y-auto (natural body scroll works better on mobile)
 - v2 IPFS upload requires `PINATA_JWT` in env; optional `NEXT_PUBLIC_GATEWAY_URL` for dedicated Pinata gateway. Without PINATA_JWT, `/api/files` returns 503.
+- `wallet_sendCalls` (EIP-5792) is the best way to batch approve+swap+mint atomically. wagmi v3+ has `useSendCalls` and `useCallsStatus` built-in. Coinbase Smart Wallet supports this natively.
+- Uniswap V3 SwapRouter02 `exactOutputSingle` struct does NOT have a `deadline` field (unlike the original SwapRouter).
+- USDC on Base has 6 decimals. Use `BigInt(Math.ceil(amount * 1e6))` for precise conversion.
+- `useCallsStatus` with `refetchInterval: 2000` is preferred over `useWaitForCallsStatus` for polling batch status — gives us more control over the status transitions (success vs failure).

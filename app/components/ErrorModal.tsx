@@ -12,7 +12,7 @@ interface ErrorModalProps {
 export default function ErrorModal({
   isOpen,
   onClose,
-  errorMessage = "Insufficient funds in wallet. Please add more ETH or USDT to continue.",
+  errorMessage = "Insufficient funds in wallet. Please add more ETH or USDC to continue.",
   onRetry,
 }: ErrorModalProps) {
   return (

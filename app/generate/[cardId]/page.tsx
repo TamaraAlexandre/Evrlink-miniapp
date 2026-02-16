@@ -2,9 +2,9 @@
 
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useSendCalls, useCallsStatus } from "wagmi";
 import { base } from "wagmi/chains";
-import { parseEther, getAddress } from "viem";
+import { parseEther, getAddress, encodeFunctionData } from "viem";
 import PageHeader from "../../components/PageHeader";
 import FlipCard from "../../components/FlipCard";
 import CardBackPreview from "../../components/CardBackPreview";
@@ -21,6 +21,60 @@ import nftAbi from "@/lib/Abi.json";
 import { prepareGreetingCardForUpload } from "@/lib/image-composer";
 
 const MAX_MESSAGE_LENGTH = 280;
+
+// Base chain contract addresses for USDC swap flow
+const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" as const;
+const WETH_ADDRESS = "0x4200000000000000000000000000000000000006" as const;
+const SWAP_ROUTER = "0x2626664c2603336E57B271c5C0b26F421741e481" as const; // Uniswap V3 SwapRouter02 on Base
+const MINT_PRICE_WEI = parseEther("0.0002");
+
+// Minimal ABIs for batch calls
+const erc20ApproveAbi = [
+  {
+    type: "function" as const,
+    name: "approve",
+    inputs: [
+      { name: "spender", type: "address" },
+      { name: "amount", type: "uint256" },
+    ],
+    outputs: [{ name: "", type: "bool" }],
+    stateMutability: "nonpayable" as const,
+  },
+] as const;
+
+const swapRouterAbi = [
+  {
+    type: "function" as const,
+    name: "exactOutputSingle",
+    inputs: [
+      {
+        name: "params",
+        type: "tuple",
+        components: [
+          { name: "tokenIn", type: "address" },
+          { name: "tokenOut", type: "address" },
+          { name: "fee", type: "uint24" },
+          { name: "recipient", type: "address" },
+          { name: "amountOut", type: "uint256" },
+          { name: "amountInMaximum", type: "uint256" },
+          { name: "sqrtPriceLimitX96", type: "uint160" },
+        ],
+      },
+    ],
+    outputs: [{ name: "amountIn", type: "uint256" }],
+    stateMutability: "payable" as const,
+  },
+] as const;
+
+const wethAbi = [
+  {
+    type: "function" as const,
+    name: "withdraw",
+    inputs: [{ name: "wad", type: "uint256" }],
+    outputs: [],
+    stateMutability: "nonpayable" as const,
+  },
+] as const;
 
 type ModalState = "none" | "mint" | "success" | "error";
 
@@ -48,15 +102,26 @@ export default function GenerateMeepPage() {
   const [recipientName, setRecipientName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isMinting, setIsMinting] = useState(false);
+  const [batchId, setBatchId] = useState<string | undefined>();
   const { address: walletAddress, isConnected } = useAccount();
   const {
     writeContractAsync,
     data: txHash,
     error: writeError,
   } = useWriteContract();
-  const { isSuccess } = useWaitForTransactionReceipt({
+  const { isSuccess: isTxSuccess } = useWaitForTransactionReceipt({
     hash: txHash,
   });
+
+  // EIP-5792 batched calls for USDC swap+mint
+  const { sendCallsAsync, error: sendCallsError } = useSendCalls();
+  const { data: batchResult } = useCallsStatus({
+    id: batchId as string,
+    query: { enabled: !!batchId, refetchInterval: 2000 },
+  });
+
+  // Unified success flag: either ETH tx confirmed or USDC batch succeeded
+  const isSuccess = isTxSuccess || batchResult?.status === "success";
 
   const lastRecipientRef = useRef<string | null>(null);
 
@@ -82,14 +147,8 @@ export default function GenerateMeepPage() {
     setModalState("mint");
   };
 
-  const handleMintConfirm = (recipient: string, paymentMethod: "ETH" | "USDT", recipientInput?: string) => {
+  const handleMintConfirm = (recipient: string, paymentMethod: "ETH" | "USDC", recipientInput?: string, ethUsdPrice?: number) => {
     if (!card) return;
-
-    if (paymentMethod !== "ETH") {
-      setErrorMessage("Only ETH payments are supported right now. Please choose ETH.");
-      setModalState("error");
-      return;
-    }
 
     if (!isConnected || !walletAddress) {
       setErrorMessage("Please open Evrlink inside the Base app or connect a wallet to mint.");
@@ -131,9 +190,6 @@ export default function GenerateMeepPage() {
 
         const ipfsUrl = (await res.json()) as string;
 
-        // 3) Use contract MINT_PRICE (0.0002 ether) so tx succeeds
-        const mintPriceWei = parseEther("0.0002");
-
         // Normalize recipient to checksummed address for the contract
         const recipientAddressNormalized = getAddress(recipient);
 
@@ -141,16 +197,77 @@ export default function GenerateMeepPage() {
         setRecipientAddress(recipient);
         setRecipientName(recipientInput || "");
 
-        // 4) Call contract via wagmi with value and chainId so ETH is sent and tx targets Base
-        // (ABI type inference can omit value for payable; we pass it explicitly so 0.0002 ETH is sent)
-        await writeContractAsync({
-          address: contractAddress,
-          abi: (nftAbi as { abi: readonly unknown[] }).abi,
-          functionName: "mintGreetingCard",
-          args: [ipfsUrl, recipientAddressNormalized],
-          value: mintPriceWei,
-          chainId: base.id,
-        } as unknown as Parameters<typeof writeContractAsync>[0]);
+        if (paymentMethod === "USDC") {
+          // === USDC path: atomic batch via wallet_sendCalls (EIP-5792) ===
+          // Batch: approve USDC → swap USDC→WETH → unwrap WETH→ETH → mint NFT
+          if (!ethUsdPrice || ethUsdPrice <= 0) {
+            throw new Error("ETH price unavailable. Please try again.");
+          }
+
+          // Calculate max USDC with 10% slippage buffer (amount is tiny, ~$0.50)
+          const maxUsdcRaw = BigInt(Math.ceil(0.0002 * ethUsdPrice * 1.1 * 1e6));
+
+          const approveData = encodeFunctionData({
+            abi: erc20ApproveAbi,
+            functionName: "approve",
+            args: [SWAP_ROUTER, maxUsdcRaw],
+          });
+
+          const swapData = encodeFunctionData({
+            abi: swapRouterAbi,
+            functionName: "exactOutputSingle",
+            args: [
+              {
+                tokenIn: USDC_ADDRESS,
+                tokenOut: WETH_ADDRESS,
+                fee: 500,
+                recipient: walletAddress,
+                amountOut: MINT_PRICE_WEI,
+                amountInMaximum: maxUsdcRaw,
+                sqrtPriceLimitX96: 0n,
+              },
+            ],
+          });
+
+          const unwrapData = encodeFunctionData({
+            abi: wethAbi,
+            functionName: "withdraw",
+            args: [MINT_PRICE_WEI],
+          });
+
+          const mintData = encodeFunctionData({
+            abi: (nftAbi as { abi: readonly unknown[] }).abi as readonly { type: string; name: string; inputs: readonly { name: string; type: string }[]; outputs: readonly { name: string; type: string }[]; stateMutability: string }[],
+            functionName: "mintGreetingCard",
+            args: [ipfsUrl, recipientAddressNormalized],
+          });
+
+          console.log("Sending batched USDC swap+mint via wallet_sendCalls...");
+          console.log("Max USDC:", maxUsdcRaw.toString(), "units (6 decimals)");
+
+          const result = await sendCallsAsync({
+            calls: [
+              { to: USDC_ADDRESS, data: approveData, value: 0n },
+              { to: SWAP_ROUTER, data: swapData, value: 0n },
+              { to: WETH_ADDRESS, data: unwrapData, value: 0n },
+              { to: contractAddress, data: mintData, value: MINT_PRICE_WEI },
+            ],
+            chainId: base.id,
+          } as Parameters<typeof sendCallsAsync>[0]);
+
+          // Store batch ID — useCallsStatus will poll for completion
+          setBatchId(result.id);
+          console.log("Batch submitted, ID:", result.id);
+        } else {
+          // === ETH path: single writeContract call ===
+          await writeContractAsync({
+            address: contractAddress,
+            abi: (nftAbi as { abi: readonly unknown[] }).abi,
+            functionName: "mintGreetingCard",
+            args: [ipfsUrl, recipientAddressNormalized],
+            value: MINT_PRICE_WEI,
+            chainId: base.id,
+          } as unknown as Parameters<typeof writeContractAsync>[0]);
+        }
       } catch (error) {
         console.error("Mint flow error:", error);
         setErrorMessage(
@@ -158,8 +275,6 @@ export default function GenerateMeepPage() {
         );
         setModalState("error");
         setIsMinting(false);
-      } finally {
-        // Loading stays true until writeError or isSuccess (see useEffects)
       }
     };
 
@@ -171,7 +286,7 @@ export default function GenerateMeepPage() {
     setModalState("mint");
   };
 
-  // Surface contract write errors into the UI
+  // Surface contract write errors into the UI (ETH path)
   useEffect(() => {
     if (!writeError) return;
     console.error("Contract write error:", writeError);
@@ -191,12 +306,49 @@ export default function GenerateMeepPage() {
     setIsMinting(false);
   }, [writeError]);
 
-  // When transaction confirms, show success modal and notify recipient
+  // Surface sendCalls errors (USDC batch path)
   useEffect(() => {
-    if (!isSuccess || !txHash) return;
-    console.log("Mint transaction confirmed:", txHash);
+    if (!sendCallsError) return;
+    console.error("Batch calls error:", sendCallsError);
+
+    let message = "Transaction failed.";
+    const msg = sendCallsError.message || String(sendCallsError);
+    if (msg.includes("User rejected") || msg.includes("rejected_by_user")) {
+      message = "Transaction rejected by user.";
+    } else if (msg.toLowerCase().includes("insufficient")) {
+      message = "Insufficient USDC balance for swap.";
+    } else if (msg.includes("not supported") || msg.includes("5700")) {
+      message = "Your wallet does not support batched transactions. Please use ETH to mint.";
+    } else {
+      message = msg;
+    }
+
+    setErrorMessage(message);
+    setModalState("error");
+    setIsMinting(false);
+    setBatchId(undefined);
+  }, [sendCallsError]);
+
+  // Handle batch failure status (USDC path)
+  useEffect(() => {
+    if (!batchResult || batchResult.status !== "failure") return;
+    console.error("Batch calls failed:", batchResult);
+    setErrorMessage("USDC swap and mint failed. Please try again or use ETH.");
+    setModalState("error");
+    setIsMinting(false);
+    setBatchId(undefined);
+  }, [batchResult]);
+
+  // When transaction confirms (ETH or USDC batch), show success modal and notify recipient
+  useEffect(() => {
+    if (!isSuccess) return;
+    // For ETH path, txHash must exist; for USDC path, batchId must exist
+    if (!txHash && !batchId) return;
+
+    console.log("Mint confirmed:", txHash ? `tx=${txHash}` : `batch=${batchId}`);
     setIsMinting(false);
     setModalState("success");
+    setBatchId(undefined);
 
     // Fire-and-forget: notify the recipient via Farcaster notification
     const recipient = lastRecipientRef.current;
@@ -210,7 +362,7 @@ export default function GenerateMeepPage() {
         }),
       }).catch((err) => console.warn("Notification failed (non-critical):", err));
     }
-  }, [isSuccess, txHash, walletAddress]);
+  }, [isSuccess, txHash, batchId, walletAddress]);
 
   const handleCloseModal = () => {
     setModalState("none");

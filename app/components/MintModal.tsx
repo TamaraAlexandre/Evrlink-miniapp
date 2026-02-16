@@ -13,8 +13,14 @@ interface MintModalProps {
   isOpen: boolean;
   onClose: () => void;
   card: GreetingCardData;
-  onMint: (recipient: string, paymentMethod: "ETH" | "USDT", recipientInput: string) => void;
+  onMint: (recipient: string, paymentMethod: "ETH" | "USDC", recipientInput: string, ethUsdPrice?: number) => void;
   isMinting?: boolean;
+}
+
+/** Parse "0.02 ETH" → 0.02 */
+function parseEthPrice(priceStr: string): number {
+  const match = priceStr.match(/([\d.]+)/);
+  return match ? parseFloat(match[1]) : 0;
 }
 
 export default function MintModal({
@@ -25,12 +31,13 @@ export default function MintModal({
   isMinting = false,
 }: MintModalProps) {
   const [recipient, setRecipient] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<"ETH" | "USDT">("ETH");
+  const [paymentMethod, setPaymentMethod] = useState<"ETH" | "USDC">("ETH");
   const [resolution, setResolution] = useState<RecipientResolutionResult | null>(
     null
   );
   const [isResolving, setIsResolving] = useState(false);
   const [errorText, setErrorText] = useState<string | null>(null);
+  const [ethUsdPrice, setEthUsdPrice] = useState<number | null>(null);
 
   const handleMint = () => {
     const input = recipient.trim();
@@ -43,11 +50,10 @@ export default function MintModal({
       return;
     }
 
-    onMint(resolution.address, paymentMethod, recipient.trim());
+    onMint(resolution.address, paymentMethod, recipient.trim(), ethUsdPrice ?? undefined);
   };
 
   useEffect(() => {
-    // Reset state when modal opens/closes
     if (!isOpen) {
       setResolution(null);
       setErrorText(null);
@@ -55,6 +61,44 @@ export default function MintModal({
       setIsResolving(false);
     }
   }, [isOpen]);
+
+  // Fetch ETH/USD price when modal opens or USDC is selected
+  useEffect(() => {
+    if (!isOpen || paymentMethod !== "USDC") return;
+    if (ethUsdPrice) return; // already fetched
+
+    let cancelled = false;
+    const fetchPrice = async () => {
+      try {
+        const res = await fetch(
+          "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"
+        );
+        const data = await res.json();
+        if (!cancelled && data?.ethereum?.usd) {
+          setEthUsdPrice(data.ethereum.usd);
+        }
+      } catch (err) {
+        console.warn("Failed to fetch ETH price:", err);
+      }
+    };
+    void fetchPrice();
+    return () => { cancelled = true; };
+  }, [isOpen, paymentMethod, ethUsdPrice]);
+
+  // Reset cached price when modal closes so next open gets fresh data
+  useEffect(() => {
+    if (!isOpen) setEthUsdPrice(null);
+  }, [isOpen]);
+
+  // Compute display price
+  const ethAmount = parseEthPrice(card.price);
+  let displayPrice = card.price;
+  if (paymentMethod === "USDC" && ethUsdPrice) {
+    const usdcAmount = Math.round(ethAmount * ethUsdPrice);
+    displayPrice = `~${usdcAmount} USDC`;
+  } else if (paymentMethod === "USDC") {
+    displayPrice = "Loading…";
+  }
 
   // Auto-resolve recipient as user types (with .base.eth default)
   useEffect(() => {
@@ -67,7 +111,6 @@ export default function MintModal({
       return;
     }
 
-    // If user only typed a label (no dot / @ / 0x), treat as "<label>.base.eth"
     if (
       !input.includes(".") &&
       !input.startsWith("0x") &&
@@ -146,7 +189,7 @@ export default function MintModal({
           {/* Price */}
           <div className="flex items-center justify-between px-1 mb-4">
             <span className="text-sm text-text-secondary">Price:</span>
-            <span className="text-lg font-bold text-foreground">{card.price}</span>
+            <span className="text-lg font-bold text-foreground">{displayPrice}</span>
           </div>
 
           {/* Payment Method Toggle */}
@@ -164,14 +207,14 @@ export default function MintModal({
             </button>
             <button
               type="button"
-              onClick={() => setPaymentMethod("USDT")}
+              onClick={() => setPaymentMethod("USDC")}
               className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                paymentMethod === "USDT"
+                paymentMethod === "USDC"
                   ? "bg-primary text-white shadow-sm"
                   : "bg-white text-primary border-2 border-primary/30 hover:border-primary/50"
               }`}
             >
-              USDT
+              USDC
             </button>
           </div>
 
@@ -263,7 +306,7 @@ export default function MintModal({
                 <span>Minting…</span>
               </>
             ) : (
-              <>Mint for {card.price}</>
+              <>Mint for {displayPrice}</>
             )}
           </button>
         </div>
