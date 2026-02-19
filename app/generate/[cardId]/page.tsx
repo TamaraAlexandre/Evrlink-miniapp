@@ -127,6 +127,9 @@ export default function GenerateMeepPage() {
 
   const { card, categoryKey } = useMemo(() => findCardById(cardId), [cardId]);
 
+  // Manifesto (miggles) cards are pre-designed — no custom message
+  const isPreDesignedCard = categoryKey === "miggles";
+
   // Get similar cards from same category (excluding current card)
   const similarCards = useMemo(() => {
     if (!categoryKey) return [];
@@ -390,62 +393,87 @@ export default function GenerateMeepPage() {
       {/* Header */}
       <PageHeader title="Generate a Meep" />
 
-      {/* Flip Card: front = card image, back = message preview */}
+      {/* Flip Card: front = card image, back = message preview or pre-designed back */}
       <FlipCard
         cardImage={card.paperImage}
         cardTitle={card.title}
-        defaultFlipped
+        defaultFlipped={!isPreDesignedCard}
         onFlip={setIsFlipped}
         backContent={
-          <CardBackPreview
-            message={message}
-            maxLength={MAX_MESSAGE_LENGTH}
-            embedded
-          />
+          isPreDesignedCard && card.backImage ? (
+            <div className="w-full h-full rounded-2xl overflow-hidden border-[3px] border-accent-gold shadow-lg bg-gray-100">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={card.backImage}
+                alt={`${card.title} – back`}
+                className="block w-full h-full object-cover"
+              />
+            </div>
+          ) : (
+            <CardBackPreview
+              message={message}
+              maxLength={MAX_MESSAGE_LENGTH}
+              embedded
+            />
+          )
         }
       />
 
-      {/* Custom Message Section — only visible after flipping */}
-      <div
-        className={`px-4 py-4 transition-all duration-500 ${
-          isFlipped
-            ? "opacity-100 translate-y-0"
-            : "opacity-0 translate-y-4 pointer-events-none h-0 overflow-hidden py-0"
-        }`}
-      >
-        <h2 className="text-base font-semibold text-foreground mb-1">
-          Custom Message
-        </h2>
-        <p className="text-sm text-text-secondary mb-3 leading-relaxed">
-          Write a heartfelt message for the back of the card. Keep it on one
-          line for the best visual effect.
-        </p>
-
-        {/* Textarea */}
-        <textarea
-          value={message}
-          onChange={handleMessageChange}
-          placeholder="Write your message here"
-          maxLength={MAX_MESSAGE_LENGTH}
-          rows={3}
-          className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-foreground placeholder:text-text-tertiary outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 resize-none transition-colors"
-        />
-
-        {/* Character Counter */}
-        <p className="text-xs text-text-tertiary mt-1.5">
-          {remainingChars}/{MAX_MESSAGE_LENGTH} characters
-        </p>
-
-        {/* Mint Button */}
-        <button
-          type="button"
-          onClick={handleMint}
-          className="w-full mt-7 rounded-md btn-gradient text-white text-base font-bold leading-[140%] transition-colors active:scale-[0.98]"
-          style={{ fontFamily: "'Satoshi', sans-serif", height: 46, paddingTop: 12, paddingBottom: 12, paddingLeft: 16, paddingRight: 16 }}
+      {/* Pre-designed card: no message, just mint CTA */}
+      {isPreDesignedCard ? (
+        <div className="px-4 py-4">
+          <p className="text-sm text-text-secondary mb-4">
+            This card is pre-designed. Mint as-is to send to someone special.
+          </p>
+          <button
+            type="button"
+            onClick={handleMint}
+            className="w-full rounded-md btn-gradient text-white text-base font-bold leading-[140%] transition-colors active:scale-[0.98]"
+            style={{ fontFamily: "'Satoshi', sans-serif", height: 46, paddingTop: 12, paddingBottom: 12, paddingLeft: 16, paddingRight: 16 }}
+          >
+            Mint for {card.price}
+          </button>
+        </div>
+      ) : (
+        /* Custom Message Section — only visible after flipping */
+        <div
+          className={`px-4 py-4 transition-all duration-500 ${
+            isFlipped
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-4 pointer-events-none h-0 overflow-hidden py-0"
+          }`}
         >
-          Mint for {card.price}
-        </button>
-      </div>
+          <h2 className="text-base font-semibold text-foreground mb-1">
+            Custom Message
+          </h2>
+          <p className="text-sm text-text-secondary mb-3 leading-relaxed">
+            Write a heartfelt message for the back of the card. Keep it on one
+            line for the best visual effect.
+          </p>
+
+          <textarea
+            value={message}
+            onChange={handleMessageChange}
+            placeholder="Write your message here"
+            maxLength={MAX_MESSAGE_LENGTH}
+            rows={3}
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-foreground placeholder:text-text-tertiary outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 resize-none transition-colors"
+          />
+
+          <p className="text-xs text-text-tertiary mt-1.5">
+            {remainingChars}/{MAX_MESSAGE_LENGTH} characters
+          </p>
+
+          <button
+            type="button"
+            onClick={handleMint}
+            className="w-full mt-7 rounded-md btn-gradient text-white text-base font-bold leading-[140%] transition-colors active:scale-[0.98]"
+            style={{ fontFamily: "'Satoshi', sans-serif", height: 46, paddingTop: 12, paddingBottom: 12, paddingLeft: 16, paddingRight: 16 }}
+          >
+            Mint for {card.price}
+          </button>
+        </div>
+      )}
 
       {/* Divider */}
       <div className="mx-4 border-t border-border-light" />
