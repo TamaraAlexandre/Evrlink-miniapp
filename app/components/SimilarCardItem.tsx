@@ -15,19 +15,11 @@ export default function SimilarCardItem({
 }: SimilarCardItemProps) {
   return (
     <div className="px-4 py-3">
-      {/* Title + Tags */}
+      {/* Title */}
       <div className="mb-2">
         <h3 className="text-base font-semibold text-foreground">
-          {card.title}{" "}
-          <span className="font-normal text-text-secondary">{card.byline}</span>
+          {card.title}
         </h3>
-        <div className="flex gap-1.5 mt-0.5">
-          {card.tags.map((tag) => (
-            <span key={tag} className="text-xs text-text-secondary">
-              {tag}
-            </span>
-          ))}
-        </div>
       </div>
 
       {/* Card Image */}
