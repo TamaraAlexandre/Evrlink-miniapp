@@ -1,77 +1,50 @@
 function withValidProperties(
-  properties: Record<string, undefined | string | string[] | boolean>
+  properties: Record<string, undefined | string | string[]>,
 ) {
   return Object.fromEntries(
-    Object.entries(properties).filter(([, value]) =>
-      Array.isArray(value) ? value.length > 0 : value !== undefined
-    )
+    Object.entries(properties).filter(([key, value]) => {
+      if (Array.isArray(value)) {
+        return value.length > 0;
+      }
+      return !!value;
+    }),
   );
 }
 
 export async function GET() {
-  const URL = process.env.NEXT_PUBLIC_URL as string | undefined;
+  const URL = process.env.NEXT_PUBLIC_URL;
 
-  const accountHeader = process.env.FARCASTER_ACCOUNT_HEADER;
-  const accountPayload = process.env.FARCASTER_ACCOUNT_PAYLOAD;
-  const accountSignature = process.env.FARCASTER_ACCOUNT_SIGNATURE;
-
-  const miniappVersion = process.env.FARCASTER_MINIAPP_VERSION;
-  const miniappName = process.env.FARCASTER_MINIAPP_NAME;
-  const miniappHomeUrl = process.env.FARCASTER_MINIAPP_HOME_URL ?? URL;
-  const miniappIconUrl = process.env.FARCASTER_MINIAPP_ICON_URL;
-  const miniappSplashImageUrl = process.env.FARCASTER_MINIAPP_SPLASH_IMAGE_URL;
-  const miniappSplashBackgroundColor =
-    process.env.FARCASTER_MINIAPP_SPLASH_BACKGROUND_COLOR;
-  const miniappWebhookUrl = process.env.FARCASTER_MINIAPP_WEBHOOK_URL;
-  const miniappSubtitle = process.env.FARCASTER_MINIAPP_SUBTITLE;
-  const miniappDescription = process.env.FARCASTER_MINIAPP_DESCRIPTION;
-  const miniappScreenshotUrls = (
-    process.env.FARCASTER_MINIAPP_SCREENSHOT_URLS ?? ""
-  )
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-  const miniappPrimaryCategory = process.env.FARCASTER_MINIAPP_PRIMARY_CATEGORY;
-  const miniappTags = (process.env.FARCASTER_MINIAPP_TAGS ?? "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-  const miniappHeroImageUrl = process.env.FARCASTER_MINIAPP_HERO_IMAGE_URL;
-  const miniappTagline = process.env.FARCASTER_MINIAPP_TAGLINE;
-  const miniappOgTitle = process.env.FARCASTER_MINIAPP_OG_TITLE;
-  const miniappOgDescription = process.env.FARCASTER_MINIAPP_OG_DESCRIPTION;
-  const miniappOgImageUrl = process.env.FARCASTER_MINIAPP_OG_IMAGE_URL;
-  const miniappNoIndex =
-    process.env.FARCASTER_MINIAPP_NOINDEX === "true" ? true : undefined;
-
-  const manifest = {
-    accountAssociation: {
-      header: accountHeader,
-      payload: accountPayload,
-      signature: accountSignature,
-    },
-    miniapp: withValidProperties({
-      version: miniappVersion,
-      name: miniappName,
-      homeUrl: miniappHomeUrl,
-      iconUrl: miniappIconUrl,
-      splashImageUrl: miniappSplashImageUrl,
-      splashBackgroundColor: miniappSplashBackgroundColor,
-      webhookUrl: miniappWebhookUrl,
-      subtitle: miniappSubtitle,
-      description: miniappDescription,
-      screenshotUrls: miniappScreenshotUrls,
-      primaryCategory: miniappPrimaryCategory,
-      tags: miniappTags,
-      heroImageUrl: miniappHeroImageUrl,
-      tagline: miniappTagline,
-      ogTitle: miniappOgTitle,
-      ogDescription: miniappOgDescription,
-      ogImageUrl: miniappOgImageUrl,
-      noindex: miniappNoIndex,
-    }),
-  };
-
-  return Response.json(manifest);
+  return Response.json({
+  "accountAssociation": {
+    "header": "eyJmaWQiOjEzNjg3MDYsInR5cGUiOiJhdXRoIiwia2V5IjoiMHgwMjhGNWRCOEJDRDI2RmQ1NzZiRTJBODMzRTZmNkEyMTM5MDQ4QTcxIn0",
+    "payload": "eyJkb21haW4iOiJ3d3cuZXZybGlua2FwcC5jb20ifQ",
+    "signature": "OmxCv2MRGV2JmLNk2bl/OScI5DgNJ24bj3CpIxupzXU3YSm/HjnM6smyP92lKLDSiIuraU+rhCxYBJ3XoKSEhBw="
+  },
+  "baseBuilder": {
+    "allowedAddresses": ["0xCD0D091030D3D4809e7c08a135B5ECae30537104"]
+  },
+  "miniapp": {
+    "name": "Evrlink",
+    "version": "1",
+    "iconUrl": "https://www.evrlinkapp.com/icon.png",
+    "homeUrl": "https://www.evrlinkapp.com",
+    "imageUrl": "https://www.evrlinkapp.com/image.png",
+    "splashImageUrl": "https://i.imgur.com/nhm1ph1.png",
+    "splashBackgroundColor": "#FFFFFF",
+    "webhookUrl": "https://www.evrlinkapp.com/api/webhook",
+    "description": "Greeting Cards ",
+    "subtitle": "Instant greeting cards",
+    "primaryCategory": "social",
+    "screenshotUrls": [
+      "https://i.imgur.com/nhm1ph1.png"
+    ],
+    "heroImageUrl": "https://i.imgur.com/nhm1ph1.png",
+    "tags": [
+      "social",
+      "cards"
+    ],
+    "tagline": "Instant Greeting Cards",
+    "noindex": true
+  }
+  });
 }
-

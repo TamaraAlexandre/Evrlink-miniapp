@@ -1,96 +1,48 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
-import type { ReactNode } from "react";
-import { WagmiProvider } from "wagmi";
+import { type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { sdk } from "@farcaster/miniapp-sdk";
-import { wagmiConfig } from "@/lib/wagmi";
+import { WagmiProvider, createConfig, http } from "wagmi";
+import { base } from "wagmi/chains";
+import { coinbaseWallet } from "wagmi/connectors";
+import { MiniKitProvider } from "@coinbase/onchainkit/minikit";
 
-type MiniAppUser = {
-  fid: number;
-  username?: string;
-  displayName?: string;
-  pfpUrl?: string;
-};
-
-type MiniAppContextValue = {
-  user: MiniAppUser | null;
-  isInMiniApp: boolean;
-};
-
-const MiniAppContext = createContext<MiniAppContextValue>({
-  user: null,
-  isInMiniApp: false,
+// Create wagmi config
+const config = createConfig({
+  chains: [base],
+  connectors: [
+    coinbaseWallet({
+      appName: process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME || "EvrLink",
+      preference: "smartWalletOnly", // Use Base Account smart wallets only, not Coinbase Wallet extension
+    }),
+  ],
+  transports: {
+    [base.id]: http(),
+  },
 });
 
-export function MiniAppProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<MiniAppUser | null>(null);
-  const [isInMiniApp, setIsInMiniApp] = useState(false);
+// Create query client
+const queryClient = new QueryClient();
 
-  useEffect(() => {
-    let cancelled = false;
-
-    const loadContextAndAuth = async () => {
-      try {
-        const inMiniApp = await sdk.isInMiniApp();
-        if (!inMiniApp || cancelled) return;
-
-        setIsInMiniApp(true);
-
-        const context = await sdk.context;
-        if (!cancelled && context?.user) {
-          setUser(context.user as MiniAppUser);
-        }
-
-        // Trigger Quick Auth to obtain a session token without explicit sign-in.
-        try {
-          await sdk.quickAuth.getToken();
-        } catch (authError) {
-          console.error("Quick Auth failed", authError);
-        }
-      } catch (error) {
-        console.error("Failed to load mini app context", error);
-      }
-    };
-
-    loadContextAndAuth();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
+export function Providers(props: { children: ReactNode }) {
   return (
-    <MiniAppContext.Provider value={{ user, isInMiniApp }}>
-      {children}
-    </MiniAppContext.Provider>
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <MiniKitProvider
+          apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
+          chain={base}
+          config={{
+            appearance: {
+              mode: "auto",
+              theme: "mini-app-theme",
+              name: process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME,
+              logo: process.env.NEXT_PUBLIC_ICON_URL,
+            },
+          }}
+        >
+          {props.children}
+        </MiniKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }
-
-export function useMiniAppUser() {
-  return useContext(MiniAppContext);
-}
-
-export function Providers({ children }: { children: ReactNode }) {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            retry: 1,
-            refetchOnWindowFocus: false,
-          },
-        },
-      })
-  );
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <WagmiProvider config={wagmiConfig}>
-        <MiniAppProvider>{children}</MiniAppProvider>
-      </WagmiProvider>
-    </QueryClientProvider>
-  );
-}
-

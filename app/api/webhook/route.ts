@@ -1,97 +1,123 @@
-/**
- * POST /api/webhook
- *
- * Receives Farcaster Mini App lifecycle events:
- *   - miniapp_added        → save notification token
- *   - miniapp_removed      → delete token
- *   - notifications_enabled  → save new token
- *   - notifications_disabled → delete token
- *
- * The webhookUrl in farcaster.json must point here.
- * Requires NEYNAR_API_KEY env var for signature verification.
- */
-
-import { NextRequest } from "next/server";
-import {
-  ParseWebhookEvent,
-  parseWebhookEvent,
-  verifyAppKeyWithNeynar,
-} from "@farcaster/miniapp-node";
 import {
   setUserNotificationDetails,
   deleteUserNotificationDetails,
-} from "@/lib/kv";
-import { sendNotification } from "@/lib/notifs";
+} from "@/lib/notification";
+import { sendFrameNotification } from "@/lib/notification-client";
+import { http } from "viem";
+import { createPublicClient } from "viem";
+import { optimism } from "viem/chains";
 
-export async function POST(request: NextRequest) {
+const appName = process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME;
+
+const KEY_REGISTRY_ADDRESS = "0x00000000Fc1237824fb747aBDE0FF18990E59b7e";
+
+const KEY_REGISTRY_ABI = [
+  {
+    inputs: [
+      { name: "fid", type: "uint256" },
+      { name: "key", type: "bytes" },
+    ],
+    name: "keyDataOf",
+    outputs: [
+      {
+        components: [
+          { name: "state", type: "uint8" },
+          { name: "keyType", type: "uint32" },
+        ],
+        name: "",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+] as const;
+
+async function verifyFidOwnership(fid: number, appKey: `0x${string}`) {
+  const client = createPublicClient({
+    chain: optimism,
+    transport: http(),
+  });
+
+  try {
+    const result = await client.readContract({
+      address: KEY_REGISTRY_ADDRESS,
+      abi: KEY_REGISTRY_ABI,
+      functionName: "keyDataOf",
+      args: [BigInt(fid), appKey],
+    });
+
+    return result.state === 1 && result.keyType === 1;
+  } catch (error) {
+    console.error("Key Registry verification failed:", error);
+    return false;
+  }
+}
+
+function decode(encoded: string) {
+  return JSON.parse(Buffer.from(encoded, "base64url").toString("utf-8"));
+}
+
+export async function POST(request: Request) {
   const requestJson = await request.json();
 
-  let data;
-  try {
-    data = await parseWebhookEvent(requestJson, verifyAppKeyWithNeynar);
-  } catch (e: unknown) {
-    const error = e as ParseWebhookEvent.ErrorType;
+  const { header: encodedHeader, payload: encodedPayload } = requestJson;
 
-    switch (error.name) {
-      case "VerifyJsonFarcasterSignature.InvalidDataError":
-      case "VerifyJsonFarcasterSignature.InvalidEventDataError":
-        return Response.json(
-          { success: false, error: error.message },
-          { status: 400 }
-        );
-      case "VerifyJsonFarcasterSignature.InvalidAppKeyError":
-        return Response.json(
-          { success: false, error: error.message },
-          { status: 401 }
-        );
-      case "VerifyJsonFarcasterSignature.VerifyAppKeyError":
-        return Response.json(
-          { success: false, error: error.message },
-          { status: 500 }
-        );
-    }
-  }
+  const headerData = decode(encodedHeader);
+  const event = decode(encodedPayload);
 
-  if (!data) {
+  const { fid, key } = headerData;
+
+  const valid = await verifyFidOwnership(fid, key);
+
+  if (!valid) {
     return Response.json(
-      { success: false, error: "Failed to parse webhook event" },
-      { status: 400 }
+      { success: false, error: "Invalid FID ownership" },
+      { status: 401 },
     );
   }
 
-  const fid = data.fid;
-  const event = data.event;
-
   switch (event.event) {
-    case "miniapp_added":
+    case "frame_added":
+      console.log(
+        "frame_added",
+        "event.notificationDetails",
+        event.notificationDetails,
+      );
       if (event.notificationDetails) {
         await setUserNotificationDetails(fid, event.notificationDetails);
-        await sendNotification({
+        await sendFrameNotification({
           fid,
-          title: "Welcome to Evrlink!",
-          body: "You'll get notified when someone sends you a greeting card.",
+          title: `Welcome to ${appName}`,
+          body: `Thank you for adding ${appName}`,
         });
       } else {
         await deleteUserNotificationDetails(fid);
       }
-      break;
 
-    case "miniapp_removed":
+      break;
+    case "frame_removed": {
+      console.log("frame_removed");
       await deleteUserNotificationDetails(fid);
       break;
-
-    case "notifications_enabled":
+    }
+    case "notifications_enabled": {
+      console.log("notifications_enabled", event.notificationDetails);
       await setUserNotificationDetails(fid, event.notificationDetails);
-      await sendNotification({
+      await sendFrameNotification({
         fid,
-        title: "Notifications enabled",
-        body: "You'll now be notified when you receive a greeting card!",
+        title: `Welcome to ${appName}`,
+        body: `Thank you for enabling notifications for ${appName}`,
       });
-      break;
 
-    case "notifications_disabled":
-      await deleteUserNotificationDetails(fid);
       break;
+    }
+    case "notifications_disabled": {
+      console.log("notifications_disabled");
+      await deleteUserNotificationDetails(fid);
+
+      break;
+    }
   }
 
   return Response.json({ success: true });

@@ -1,45 +1,49 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./theme.css";
+import "@coinbase/onchainkit/styles.css";
 import { Providers } from "./providers";
-import MiniAppReady from "./components/MiniAppReady";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
 
 export async function generateMetadata(): Promise<Metadata> {
-  const appUrl = process.env.NEXT_PUBLIC_URL || "https://your-app-url.com";
-  const embedImageUrl = `${appUrl}/api/og`; // adjust if you have a different OG image route
+  const URL = process.env.NEXT_PUBLIC_URL || "https://www.evrlinkapp.com";
+  const PROJECT_NAME = process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME || "EvrLink";
+  const HERO_IMAGE = process.env.NEXT_PUBLIC_APP_HERO_IMAGE || "https://i.imgur.com/nhm1ph1.png";
+  const SPLASH_IMAGE = process.env.NEXT_PUBLIC_SPLASH_IMAGE || "https://i.imgur.com/nhm1ph1.png";
+  const SPLASH_BG_COLOR = process.env.NEXT_PUBLIC_SPLASH_BACKGROUND_COLOR || "#000000";
 
   return {
-    title: "Evrlink – Digital Greeting Cards",
-    description: "Send and relive moments with digital cards.",
+    title: PROJECT_NAME,
+    description: process.env.NEXT_PUBLIC_APP_DESCRIPTION || "Create and share greeting cards instantly.",
+    openGraph: {
+      title: PROJECT_NAME,
+      description: "Create and share greeting cards instantly.",
+      images: [HERO_IMAGE],
+      url: URL,
+    },
     other: {
-      "base:app_id": "699746e0de5d09de18347da4",
-      "fc:miniapp": JSON.stringify({
+      "fc:frame": JSON.stringify({
         version: "next",
-        imageUrl: embedImageUrl,
+        imageUrl: HERO_IMAGE,
         button: {
-          title: "Open Evrlink",
+          title: `Launch ${PROJECT_NAME}`,
           action: {
-            type: "launch_miniapp",
-            name: "Evrlink",
-            url: appUrl,
-            splashImageUrl: `${appUrl}/splash.png`,
-            splashBackgroundColor: "#00B2C7",
+            type: "launch_frame",
+            name: PROJECT_NAME,
+            url: URL,
+            splashImageUrl: SPLASH_IMAGE,
+            splashBackgroundColor: SPLASH_BG_COLOR,
           },
         },
       }),
     },
   };
 }
+
 
 export default function RootLayout({
   children,
@@ -48,10 +52,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <MiniAppReady />
+      <body className="bg-background">
         <Providers>{children}</Providers>
       </body>
     </html>
