@@ -3,7 +3,7 @@
  * Combines greeting card images with text messages
  */
 
-import type { GreetingCardData } from './greeting-cards-data';
+import type { GreetingCardData } from "./greeting-cards-data";
 
 /**
  * Compose a greeting card with message text
@@ -13,17 +13,17 @@ export async function composeGreetingCard(
   message: string
 ): Promise<Blob> {
   return new Promise((resolve, reject) => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
     if (!ctx) {
-      reject(new Error('Could not get canvas context'));
+      reject(new Error("Could not get canvas context"));
       return;
     }
 
     const img = new Image();
-    img.crossOrigin = 'anonymous';
-    
+    img.crossOrigin = "anonymous";
+
     img.onload = () => {
       // Set canvas size to match image
       canvas.width = img.width;
@@ -39,21 +39,21 @@ export async function composeGreetingCard(
         const y = canvas.height * 0.6;
 
         // Configure text style
-        ctx.font = 'bold 32px Arial, sans-serif';
-        ctx.fillStyle = '#333333';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
+        ctx.font = "bold 32px Arial, sans-serif";
+        ctx.fillStyle = "#333333";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
 
         // Word wrap
-        const words = message.split(' ');
+        const words = message.split(" ");
         const lines: string[] = [];
         let currentLine = words[0];
 
         for (let i = 1; i < words.length; i++) {
           const word = words[i];
-          const width = ctx.measureText(currentLine + ' ' + word).width;
+          const width = ctx.measureText(currentLine + " " + word).width;
           if (width < maxWidth) {
-            currentLine += ' ' + word;
+            currentLine += " " + word;
           } else {
             lines.push(currentLine);
             currentLine = word;
@@ -75,16 +75,16 @@ export async function composeGreetingCard(
           if (blob) {
             resolve(blob);
           } else {
-            reject(new Error('Failed to create image blob'));
+            reject(new Error("Failed to create image blob"));
           }
         },
-        'image/png',
+        "image/png",
         1.0
       );
     };
 
     img.onerror = () => {
-      reject(new Error('Failed to load greeting card image'));
+      reject(new Error("Failed to load greeting card image"));
     };
 
     // Load the image
@@ -100,6 +100,6 @@ export async function prepareGreetingCardForUpload(
   message: string
 ): Promise<File> {
   const blob = await composeGreetingCard(cardData, message);
-  return new File([blob], 'greeting_card.png', { type: 'image/png' });
+  return new File([blob], "greeting_card.png", { type: "image/png" });
 }
 
