@@ -60,13 +60,11 @@ export default function Home() {
       {/* Tagline */}
       <div className="px-4 pb-2">
         <h1 className="text-lg font-semibold text-foreground leading-snug">
-          Send and relive moments with
+        Send and recieve greeting cards 
           <br />
-          digital cards.{" "}
-          <span className="inline-block">💌</span>
+          Special moments on Base
         </h1>
       </div>
-
       {/* Search */}
       <SearchBar onSearch={handleSearch} />
 

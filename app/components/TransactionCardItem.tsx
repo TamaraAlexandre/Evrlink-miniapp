@@ -1,27 +1,33 @@
 "use client";
 
+import FlipCard from "./FlipCard";
+import CardBackPreview from "./CardBackPreview";
+
 interface TransactionCardItemProps {
   /** The header line — rendered as JSX so parent can bold names, etc. */
   headerContent: React.ReactNode;
   tags: string[];
   cardImage: string;
+  /** Optional message to display on the back of the card */
+  message?: string;
   onShare?: () => void;
 }
 
 /**
  * Shared card component used on both Sent and Received pages.
- * Shows a header line, tags, card image with "tap to flip", and a Share button.
+ * Shows a header line, tags, a flippable card, and a Share button.
  */
 export default function TransactionCardItem({
   headerContent,
   tags,
   cardImage,
+  message = "",
   onShare,
 }: TransactionCardItemProps) {
   return (
     <div className="px-4 py-3">
       {/* Header + Tags */}
-      <div className="mb-2">
+      <div className="mb-2 px-0">
         <p className="text-base text-foreground leading-snug">{headerContent}</p>
         <div className="flex gap-1.5 mt-0.5">
           {tags.map((tag) => (
@@ -32,25 +38,21 @@ export default function TransactionCardItem({
         </div>
       </div>
 
-      {/* Card Image */}
-      <div className="relative w-full rounded-2xl overflow-hidden border-[3px] border-accent-gold shadow-md cursor-pointer transition-transform active:scale-[0.98]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={cardImage}
-          alt="Greeting card"
-          className="block w-full h-auto object-cover"
-          loading="lazy"
-        />
-        {/* Tap to flip overlay */}
-        <div className="absolute inset-x-0 bottom-0 flex items-center justify-center pb-4 pt-10 bg-linear-to-t from-black/40 to-transparent">
-          <span className="text-white/90 text-sm font-medium tracking-wide">
-            tap to flip
-          </span>
-        </div>
-      </div>
+      {/* Flippable Card */}
+      <FlipCard
+        cardImage={cardImage}
+        cardTitle="Greeting card"
+        backContent={
+          <CardBackPreview
+            message={message}
+            maxLength={280}
+            embedded
+          />
+        }
+      />
 
       {/* Share Button */}
-      <div className="flex justify-end mt-2">
+      <div className="flex justify-end -mt-2">
         <button
           type="button"
           onClick={(e) => {
