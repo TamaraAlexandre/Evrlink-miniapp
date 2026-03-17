@@ -2,15 +2,10 @@
 
 import Header from "../components/Header";
 import TransactionCardItem from "../components/TransactionCardItem";
+import AddressDisplay from "../components/AddressDisplay";
 import BottomNav from "../components/BottomNav";
 import { useAccount } from "wagmi";
 import { useReceivedCards } from "@/lib/use-nft-activity";
-
-function shortAddress(addr: string | undefined | null): string {
-  if (addr == null || typeof addr !== "string" || addr.length < 10)
-    return addr ?? "—";
-  return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
-}
 
 export default function ReceivedPage() {
   const {
@@ -79,9 +74,10 @@ export default function ReceivedPage() {
               headerContent={
                 <>
                   {card.cardTitle} from{" "}
-                  <span className="font-semibold text-primary">
-                    {shortAddress(card.senderAddress)}
-                  </span>
+                  <AddressDisplay
+                    address={card.senderAddress}
+                    className="font-semibold text-primary"
+                  />
                 </>
               }
               tags={card.tags}

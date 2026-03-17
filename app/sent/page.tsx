@@ -4,17 +4,12 @@ import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Header from "../components/Header";
 import TransactionCardItem from "../components/TransactionCardItem";
+import AddressDisplay from "../components/AddressDisplay";
 import BottomNav from "../components/BottomNav";
 import { useAccount } from "wagmi";
 import { isAddress } from "viem";
 import type { Address } from "viem";
 import { useSentCards } from "@/lib/use-nft-activity";
-
-function shortAddress(addr: string | undefined | null): string {
-  if (addr == null || typeof addr !== "string" || addr.length < 10)
-    return addr ?? "—";
-  return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
-}
 
 function SentContent() {
   const searchParams = useSearchParams();
@@ -87,9 +82,10 @@ function SentContent() {
               headerContent={
                 <>
                   Sent to:{" "}
-                  <span className="font-semibold text-primary">
-                    {shortAddress(card.recipientAddress)}
-                  </span>
+                  <AddressDisplay
+                    address={card.recipientAddress}
+                    className="font-semibold text-primary"
+                  />
                 </>
               }
               tags={card.tags}
