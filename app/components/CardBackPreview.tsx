@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 interface CardBackPreviewProps {
   message: string;
   maxLength: number;
@@ -66,28 +68,13 @@ export default function CardBackPreview({
       >
         {/* Evrlink Logo - centered at top */}
         <div className="flex justify-center mb-4">
-          <div className="flex items-center justify-center w-12 h-12">
-            <svg
-              width="36"
-              height="22"
-              viewBox="0 0 36 22"
-              fill="none"
-            >
-              <path
-                d="M4 11c3-5 7.5-5 10.5 0s7.5 5 10.5 0"
-                stroke="#00B2C7"
-                strokeWidth="3"
-                strokeLinecap="round"
-              />
-              <path
-                d="M11 11c3-5 7.5-5 10.5 0s7.5 5 10.5 0"
-                stroke="#00B2C7"
-                strokeWidth="3"
-                strokeLinecap="round"
-                opacity="0.5"
-              />
-            </svg>
-          </div>
+          <Image
+            src="/images/logo.png"
+            alt="Evrlink"
+            width={48}
+            height={48}
+            className="h-12 w-12 object-contain"
+          />
         </div>
 
         {/* Card area with corner decorations */}

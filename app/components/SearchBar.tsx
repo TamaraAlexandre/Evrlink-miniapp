@@ -45,7 +45,8 @@ export default function SearchBar({ onSearch }: SearchBarProps) {
           placeholder="Search for a card"
           value={query}
           onChange={handleChange}
-          className="flex-1 px-3 py-3 text-sm text-foreground placeholder:text-text-tertiary outline-none bg-transparent"
+          className="flex-1 px-3 py-3 text-foreground placeholder:text-text-tertiary outline-none bg-transparent"
+          style={{ fontSize: '16px' }}
         />
 
         {/* Clear button (shows when there's text) */}
