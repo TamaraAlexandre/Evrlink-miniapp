@@ -1,81 +1,28 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { usePublicClient } from "wagmi";
-import { base } from "wagmi/chains";
-import {
-  type Address,
-  keccak256,
-  toBytes,
-  encodePacked,
-} from "viem";
-
-// Base Mainnet L2 Resolver — used for Basename reverse resolution
-const BASE_L2_RESOLVER = "0xC6d566A56A1aFf6508b41f6c90ff131615583BCD" as Address;
+import type { Address } from "viem";
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-
-const L2_RESOLVER_ABI = [
-  {
-    inputs: [{ name: "node", type: "bytes32" }],
-    name: "name",
-    outputs: [{ name: "", type: "string" }],
-    stateMutability: "view",
-    type: "function",
-  },
-] as const;
-
-/** Standard ENS namehash — implemented without viem's ENS subpath to avoid extra deps. */
-function computeNamehash(name: string): `0x${string}` {
-  let node: `0x${string}` = `0x${"00".repeat(32)}`;
-  if (name === "") return node;
-  const labels = name.split(".");
-  for (let i = labels.length - 1; i >= 0; i--) {
-    const labelHash = keccak256(toBytes(labels[i]));
-    node = keccak256(encodePacked(["bytes32", "bytes32"], [node, labelHash]));
-  }
-  return node;
-}
-
-/**
- * Computes the ENSIP-11 chain-specific reverse node for an address on Base.
- * This matches the approach used by OnchainKit for Basename reverse resolution.
- */
-function getBaseReverseNode(address: Address): `0x${string}` {
-  // Chain coin type for Base (chainId 8453): 0x80000000 + 8453 = 0x800020E5
-  const chainCoinType = (0x80000000 + base.id) >>> 0;
-  const coinTypeHex = chainCoinType.toString(16).toUpperCase();
-  const baseReverseNode = computeNamehash(`${coinTypeHex}.reverse`);
-  const addressNode = keccak256(toBytes(address.toLowerCase().slice(2)));
-  return keccak256(
-    encodePacked(["bytes32", "bytes32"], [baseReverseNode, addressNode])
-  );
-}
 
 export function useBasename(address: Address | string | undefined | null): {
   name: string | null;
   isLoading: boolean;
 } {
-  const client = usePublicClient({ chainId: base.id });
-
   const query = useQuery({
     queryKey: ["basename", address],
     queryFn: async (): Promise<string | null> => {
-      if (!client || !address || address === ZERO_ADDRESS) return null;
+      if (!address || address === ZERO_ADDRESS) return null;
       try {
-        const reverseNode = getBaseReverseNode(address as Address);
-        const name = await client.readContract({
-          address: BASE_L2_RESOLVER,
-          abi: L2_RESOLVER_ABI,
-          functionName: "name",
-          args: [reverseNode],
-        });
-        return name && name.length > 0 ? name : null;
+        const res = await fetch(`/api/basename/${address}`);
+        if (!res.ok) return null;
+        const data = await res.json();
+        return data.name ?? null;
       } catch {
         return null;
       }
     },
-    enabled: Boolean(client && address && address !== ZERO_ADDRESS),
+    enabled: Boolean(address && address !== ZERO_ADDRESS),
     staleTime: 5 * 60 * 1000,
     retry: false,
   });

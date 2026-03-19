@@ -35,7 +35,7 @@ export default function Header() {
         )}
 
         {/* Notification Bell */}
-        <button
+        {/* <button
           type="button"
           className="relative flex h-10 w-10 items-center justify-center rounded-full hover:bg-gray-50 transition-colors"
           aria-label="Notifications"
@@ -62,9 +62,9 @@ export default function Header() {
               strokeLinejoin="round"
             />
           </svg>
-          {/* Notification dot */}
+          
           <span className="absolute top-1.5 right-1.5 h-2.5 w-2.5 rounded-full bg-primary border-2 border-white" />
-        </button>
+        </button> */}
       </div>
     </header>
   );
