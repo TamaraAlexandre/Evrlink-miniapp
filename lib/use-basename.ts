@@ -8,7 +8,6 @@ import {
   keccak256,
   toBytes,
   encodePacked,
-  namehash,
 } from "viem";
 
 // Base Mainnet L2 Resolver — used for Basename reverse resolution
@@ -26,6 +25,18 @@ const L2_RESOLVER_ABI = [
   },
 ] as const;
 
+/** Standard ENS namehash — implemented without viem's ENS subpath to avoid extra deps. */
+function computeNamehash(name: string): `0x${string}` {
+  let node: `0x${string}` = `0x${"00".repeat(32)}`;
+  if (name === "") return node;
+  const labels = name.split(".");
+  for (let i = labels.length - 1; i >= 0; i--) {
+    const labelHash = keccak256(toBytes(labels[i]));
+    node = keccak256(encodePacked(["bytes32", "bytes32"], [node, labelHash]));
+  }
+  return node;
+}
+
 /**
  * Computes the ENSIP-11 chain-specific reverse node for an address on Base.
  * This matches the approach used by OnchainKit for Basename reverse resolution.
@@ -34,7 +45,7 @@ function getBaseReverseNode(address: Address): `0x${string}` {
   // Chain coin type for Base (chainId 8453): 0x80000000 + 8453 = 0x800020E5
   const chainCoinType = (0x80000000 + base.id) >>> 0;
   const coinTypeHex = chainCoinType.toString(16).toUpperCase();
-  const baseReverseNode = namehash(`${coinTypeHex}.reverse`);
+  const baseReverseNode = computeNamehash(`${coinTypeHex}.reverse`);
   const addressNode = keccak256(toBytes(address.toLowerCase().slice(2)));
   return keccak256(
     encodePacked(["bytes32", "bytes32"], [baseReverseNode, addressNode])
