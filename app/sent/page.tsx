@@ -42,9 +42,9 @@ function SentContent() {
 
       <div className="px-4 pb-2">
         <h1 className="text-lg font-semibold text-foreground leading-snug">
-          Cards you have sent to share
-          <br />
-          special moments. <span className="inline-block">💌</span>
+          Sent Cards
+          {/* <br />
+          special moments. <span className="inline-block">💌</span> */}
         </h1>
       </div>
 

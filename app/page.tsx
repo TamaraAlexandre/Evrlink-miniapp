@@ -61,8 +61,8 @@ export default function Home() {
       <div className="px-4 pb-2">
         <h1 className="text-lg font-semibold text-foreground leading-snug">
         Send and recieve greeting cards 
-          <br />
-          Special moments on Base
+          {/* <br /> */}
+          {/* Special moments on Base */}
         </h1>
       </div>
       {/* Search */}

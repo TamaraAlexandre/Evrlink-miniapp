@@ -32,9 +32,9 @@ export default function ReceivedPage() {
 
       <div className="px-4 pb-2">
         <h1 className="text-lg font-semibold text-foreground leading-snug">
-          Cards sent to you to relive special
-          <br />
-          moments. <span className="inline-block">💖</span>
+          Received Cards
+          {/* <br /> */}
+          {/* moments. <span className="inline-block">💖</span> */}
         </h1>
       </div>
 
