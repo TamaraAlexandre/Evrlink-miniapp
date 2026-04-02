@@ -1,12 +1,10 @@
 /**
- * Send a Farcaster in-app notification to a user by FID.
- * Looks up their stored notification token and POSTs to the Farcaster client's API.
+ * Send an in-app notification to a user by FID.
+ * Looks up their stored notification token and POSTs to the client API.
+ *
+ * This version is Base App compatible and does not depend on @farcaster/miniapp-node.
  */
 
-import {
-  type SendNotificationRequest,
-  sendNotificationResponseSchema,
-} from "@farcaster/miniapp-node";
 import { getUserNotificationDetails } from "./kv";
 
 const appUrl = process.env.NEXT_PUBLIC_URL || "";
@@ -16,6 +14,20 @@ export type SendNotificationResult =
   | { state: "no_token" }
   | { state: "rate_limit" }
   | { state: "error"; error: unknown };
+
+type NotificationPayload = {
+  notificationId: string;
+  title: string;
+  body: string;
+  targetUrl: string;
+  tokens: string[];
+};
+
+type NotificationResponse = {
+  result?: {
+    rateLimitedTokens?: string[];
+  };
+};
 
 export async function sendNotification({
   fid,
@@ -33,27 +45,33 @@ export async function sendNotification({
     return { state: "no_token" };
   }
 
+  const payload: NotificationPayload = {
+    notificationId: crypto.randomUUID(),
+    title,
+    body,
+    targetUrl: targetUrl || appUrl,
+    tokens: [details.token],
+  };
+
   try {
     const response = await fetch(details.url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        notificationId: crypto.randomUUID(),
-        title,
-        body,
-        targetUrl: targetUrl || appUrl,
-        tokens: [details.token],
-      } satisfies SendNotificationRequest),
+      body: JSON.stringify(payload),
     });
 
-    const responseJson = await response.json();
+    let responseJson: NotificationResponse | unknown = {};
+    try {
+      responseJson = (await response.json()) as NotificationResponse;
+    } catch {
+      // If response is not JSON, treat as opaque but still handle status codes.
+    }
 
-    if (response.status === 200) {
-      const parsed = sendNotificationResponseSchema.safeParse(responseJson);
-      if (!parsed.success) {
-        return { state: "error", error: parsed.error.errors };
-      }
-      if (parsed.data.result.rateLimitedTokens.length) {
+    if (response.ok) {
+      const rateLimitedTokens =
+        (responseJson as NotificationResponse).result?.rateLimitedTokens ??
+        [];
+      if (rateLimitedTokens.length > 0) {
         return { state: "rate_limit" };
       }
       return { state: "success" };
@@ -64,3 +82,4 @@ export async function sendNotification({
     return { state: "error", error: err };
   }
 }
+

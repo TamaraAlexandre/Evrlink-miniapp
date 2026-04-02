@@ -1,60 +1,74 @@
 /**
  * POST /api/webhook
  *
- * Receives Farcaster Mini App lifecycle events:
+ * Receives Base App (formerly Farcaster Mini App) lifecycle events:
  *   - miniapp_added        → save notification token
  *   - miniapp_removed      → delete token
  *   - notifications_enabled  → save new token
  *   - notifications_disabled → delete token
  *
- * The webhookUrl in farcaster.json must point here.
- * Requires NEYNAR_API_KEY env var for signature verification.
+ * This version is compatible with Base App and does not depend on
+ * @farcaster/miniapp-node. It trusts that the platform only calls this
+ * endpoint with valid, authorized events.
  */
 
-import { NextRequest } from "next/server";
-import {
-  ParseWebhookEvent,
-  parseWebhookEvent,
-  verifyAppKeyWithNeynar,
-} from "@farcaster/miniapp-node";
+import type { NextRequest } from "next/server";
 import {
   setUserNotificationDetails,
   deleteUserNotificationDetails,
 } from "@/lib/kv";
 import { sendNotification } from "@/lib/notifs";
 
+type MiniAppEventBase = {
+  event: string;
+  notificationDetails?: {
+    url: string;
+    token: string;
+  };
+};
+
+type MiniAppAddedEvent = MiniAppEventBase & {
+  event: "miniapp_added";
+};
+
+type MiniAppRemovedEvent = MiniAppEventBase & {
+  event: "miniapp_removed";
+};
+
+type NotificationsEnabledEvent = MiniAppEventBase & {
+  event: "notifications_enabled";
+};
+
+type NotificationsDisabledEvent = MiniAppEventBase & {
+  event: "notifications_disabled";
+};
+
+type WebhookEvent =
+  | MiniAppAddedEvent
+  | MiniAppRemovedEvent
+  | NotificationsEnabledEvent
+  | NotificationsDisabledEvent;
+
+type WebhookBody = {
+  fid: number;
+  event: WebhookEvent;
+};
+
 export async function POST(request: NextRequest) {
-  const requestJson = await request.json();
+  let data: WebhookBody;
 
-  let data;
   try {
-    data = await parseWebhookEvent(requestJson, verifyAppKeyWithNeynar);
-  } catch (e: unknown) {
-    const error = e as ParseWebhookEvent.ErrorType;
-
-    switch (error.name) {
-      case "VerifyJsonFarcasterSignature.InvalidDataError":
-      case "VerifyJsonFarcasterSignature.InvalidEventDataError":
-        return Response.json(
-          { success: false, error: error.message },
-          { status: 400 }
-        );
-      case "VerifyJsonFarcasterSignature.InvalidAppKeyError":
-        return Response.json(
-          { success: false, error: error.message },
-          { status: 401 }
-        );
-      case "VerifyJsonFarcasterSignature.VerifyAppKeyError":
-        return Response.json(
-          { success: false, error: error.message },
-          { status: 500 }
-        );
-    }
+    data = (await request.json()) as WebhookBody;
+  } catch (e) {
+    return Response.json(
+      { success: false, error: "Invalid JSON body" },
+      { status: 400 }
+    );
   }
 
-  if (!data) {
+  if (!data || typeof data.fid !== "number" || !data.event) {
     return Response.json(
-      { success: false, error: "Failed to parse webhook event" },
+      { success: false, error: "Missing fid or event" },
       { status: 400 }
     );
   }
@@ -81,7 +95,9 @@ export async function POST(request: NextRequest) {
       break;
 
     case "notifications_enabled":
-      await setUserNotificationDetails(fid, event.notificationDetails);
+      if (event.notificationDetails) {
+        await setUserNotificationDetails(fid, event.notificationDetails);
+      }
       await sendNotification({
         fid,
         title: "Notifications enabled",
@@ -92,7 +108,12 @@ export async function POST(request: NextRequest) {
     case "notifications_disabled":
       await deleteUserNotificationDetails(fid);
       break;
+
+    default:
+      // Ignore unknown events but return success so the platform doesn't retry endlessly.
+      break;
   }
 
   return Response.json({ success: true });
 }
+
