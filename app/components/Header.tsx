@@ -1,11 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useMiniAppUser } from "../providers";
 
 export default function Header() {
-  const { user } = useMiniAppUser();
-
   return (
     <header className="flex items-center justify-between px-4 pt-4 pb-2">
       {/* Evrlink Logo */}
@@ -21,19 +18,6 @@ export default function Header() {
       </div>
 
       <div className="flex items-center gap-3">
-        {/* User avatar from Farcaster / Base mini app context */}
-        {user?.pfpUrl && (
-          <div className="h-9 w-9 rounded-full overflow-hidden border border-border-light shadow-sm">
-            <Image
-              src={user.pfpUrl}
-              alt={user.displayName || user.username || "User avatar"}
-              width={36}
-              height={36}
-              className="h-9 w-9 object-cover"
-            />
-          </div>
-        )}
-
         {/* Notification Bell */}
         {/* <button
           type="button"

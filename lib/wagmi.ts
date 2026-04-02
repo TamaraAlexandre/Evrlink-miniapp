@@ -1,14 +1,27 @@
-import { createConfig, http } from "wagmi";
 import { WagmiProvider } from "wagmi";
+import {
+  cookieStorage,
+  createConfig,
+  createStorage,
+  http,
+} from "wagmi";
 import { base } from "wagmi/chains";
-import { farcasterFrame } from "@farcaster/miniapp-wagmi-connector";
+import { baseAccount, injected } from "wagmi/connectors";
 
 export const wagmiConfig = createConfig({
   chains: [base],
+  connectors: [
+    injected(),
+    baseAccount({
+      appName: "Evrlink",
+    }),
+  ],
+  storage: createStorage({
+    storage: cookieStorage,
+  }),
   transports: {
-    [base.id]: http("https://mainnet.base.org"),
+    [base.id]: http(),
   },
-  connectors: [farcasterFrame()],
   ssr: true,
 });
 

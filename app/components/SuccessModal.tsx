@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { sdk } from "@farcaster/miniapp-sdk";
 import Modal from "./Modal";
 
 interface SuccessModalProps {
@@ -55,19 +54,15 @@ export default function SuccessModal({
     const label = cardTitle || "a greeting card";
     const text = `I just sent ${mention} "${label}" on @evrlink! 💌\n\nSend yours onchain 👇`;
 
-    try {
-      await sdk.actions.composeCast({
-        text,
-        embeds: [APP_URL],
-      });
-    } catch (err) {
-      console.warn("composeCast not available, falling back to navigator.share", err);
-      if (navigator.share) {
-        navigator.share({
+    if (navigator.share) {
+      try {
+        await navigator.share({
           title: "Evrlink Greeting Card",
-          text: `I just sent a greeting card on Evrlink! 💌`,
+          text,
           url: APP_URL,
         });
+      } catch (err) {
+        console.warn("navigator.share failed", err);
       }
     }
   };
