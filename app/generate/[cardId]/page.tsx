@@ -287,7 +287,7 @@ export default function GenerateMeepPage() {
             className="w-full rounded-md btn-gradient text-white text-base font-bold leading-[140%] transition-colors active:scale-[0.98]"
             style={{ fontFamily: "'Satoshi', sans-serif", height: 46, paddingTop: 12, paddingBottom: 12, paddingLeft: 16, paddingRight: 16 }}
           >
-            Mint for {card.price}
+            Create for $1 USDC
           </button>
         </div>
       ) : (
@@ -326,7 +326,7 @@ export default function GenerateMeepPage() {
             className="w-full mt-7 rounded-md btn-gradient text-white text-base font-bold leading-[140%] transition-colors active:scale-[0.98]"
             style={{ fontFamily: "'Satoshi', sans-serif", height: 46, paddingTop: 12, paddingBottom: 12, paddingLeft: 16, paddingRight: 16 }}
           >
-            Mint for {card.price}
+            Create for $1 USDC
           </button>
         </div>
       )}
