@@ -53,7 +53,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
     cards: [
       {
         id: "miggles-1",
-        title: "Miggles Magic",
+        title: "Miggles Manifesto",
         byline: "",
         tags: [],
         likes: 0,

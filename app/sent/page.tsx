@@ -40,6 +40,8 @@ function SentContent() {
     <div className="bg-white max-w-lg mx-auto pb-20">
       <Header />
 
+      <BottomNav />
+
       <div className="px-4 pb-2">
         <h1 className="text-lg font-semibold text-foreground leading-snug">
           Sent Cards
@@ -122,7 +124,6 @@ function SentContent() {
         </div>
       )}
 
-      <BottomNav />
     </div>
   );
 }
@@ -133,10 +134,10 @@ export default function SentPage() {
       fallback={
         <div className="bg-white max-w-lg mx-auto pb-20">
           <Header />
+          <BottomNav />
           <div className="px-4 py-20 text-center text-sm text-text-secondary">
             Loading…
           </div>
-          <BottomNav />
         </div>
       }
     >

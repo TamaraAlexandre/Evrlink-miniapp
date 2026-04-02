@@ -10,9 +10,9 @@ export default function Header() {
         <Image
           src="/images/logo.png"
           alt="Evrlink"
-          width={40}
-          height={40}
-          className="h-10 w-10 object-contain"
+          width={50}
+          height={50}
+          className="h-[50px] w-[50px] object-contain"
           priority
         />
       </div>

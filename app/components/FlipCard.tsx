@@ -33,7 +33,7 @@ export default function FlipCard({
   };
 
   return (
-    <div className="px-4 py-6">
+    <div className="px-4 pt-2 pb-0">
       <div
         role="button"
         tabIndex={0}

@@ -13,14 +13,8 @@ interface MintModalProps {
   isOpen: boolean;
   onClose: () => void;
   card: GreetingCardData;
-  onMint: (recipient: string, paymentMethod: "ETH" | "USDC", recipientInput: string, ethUsdPrice?: number) => void;
+  onMint: (recipient: string, recipientInput: string) => void;
   isMinting?: boolean;
-}
-
-/** Parse "0.02 ETH" → 0.02 */
-function parseEthPrice(priceStr: string): number {
-  const match = priceStr.match(/([\d.]+)/);
-  return match ? parseFloat(match[1]) : 0;
 }
 
 export default function MintModal({
@@ -31,13 +25,11 @@ export default function MintModal({
   isMinting = false,
 }: MintModalProps) {
   const [recipient, setRecipient] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<"ETH" | "USDC">("ETH");
   const [resolution, setResolution] = useState<RecipientResolutionResult | null>(
     null
   );
   const [isResolving, setIsResolving] = useState(false);
   const [errorText, setErrorText] = useState<string | null>(null);
-  const [ethUsdPrice, setEthUsdPrice] = useState<number | null>(null);
 
   const handleMint = () => {
     const input = recipient.trim();
@@ -50,7 +42,7 @@ export default function MintModal({
       return;
     }
 
-    onMint(resolution.address, paymentMethod, recipient.trim(), ethUsdPrice ?? undefined);
+    onMint(resolution.address, recipient.trim());
   };
 
   useEffect(() => {
@@ -62,43 +54,8 @@ export default function MintModal({
     }
   }, [isOpen]);
 
-  // Fetch ETH/USD price when modal opens or USDC is selected
-  useEffect(() => {
-    if (!isOpen || paymentMethod !== "USDC") return;
-    if (ethUsdPrice) return; // already fetched
-
-    let cancelled = false;
-    const fetchPrice = async () => {
-      try {
-        const res = await fetch(
-          "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"
-        );
-        const data = await res.json();
-        if (!cancelled && data?.ethereum?.usd) {
-          setEthUsdPrice(data.ethereum.usd);
-        }
-      } catch (err) {
-        console.warn("Failed to fetch ETH price:", err);
-      }
-    };
-    void fetchPrice();
-    return () => { cancelled = true; };
-  }, [isOpen, paymentMethod, ethUsdPrice]);
-
-  // Reset cached price when modal closes so next open gets fresh data
-  useEffect(() => {
-    if (!isOpen) setEthUsdPrice(null);
-  }, [isOpen]);
-
-  // Compute display price
-  const ethAmount = parseEthPrice(card.price);
-  let displayPrice = card.price;
-  if (paymentMethod === "USDC" && ethUsdPrice) {
-    const usdcAmount = Math.round(ethAmount * ethUsdPrice);
-    displayPrice = `~${usdcAmount} USDC`;
-  } else if (paymentMethod === "USDC") {
-    displayPrice = "Loading…";
-  }
+  // Always display a fixed price of 1 USDC
+  const displayPrice = "1 USDC";
 
   // Auto-resolve recipient as user types (with .base.eth default)
   useEffect(() => {
@@ -190,32 +147,6 @@ export default function MintModal({
           <div className="flex items-center justify-between px-1 mb-4">
             <span className="text-sm text-text-secondary">Price:</span>
             <span className="text-lg font-bold text-foreground">{displayPrice}</span>
-          </div>
-
-          {/* Payment Method Toggle */}
-          <div className="flex gap-3 mb-5">
-            <button
-              type="button"
-              onClick={() => setPaymentMethod("ETH")}
-              className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                paymentMethod === "ETH"
-                  ? "bg-primary text-white shadow-sm"
-                  : "bg-white text-primary border-2 border-primary/30 hover:border-primary/50"
-              }`}
-            >
-              ETH
-            </button>
-            <button
-              type="button"
-              onClick={() => setPaymentMethod("USDC")}
-              className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                paymentMethod === "USDC"
-                  ? "bg-primary text-white shadow-sm"
-                  : "bg-white text-primary border-2 border-primary/30 hover:border-primary/50"
-              }`}
-            >
-              USDC
-            </button>
           </div>
 
           {/* Send to */}

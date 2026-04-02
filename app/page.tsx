@@ -57,6 +57,9 @@ export default function Home() {
       {/* Header */}
       <Header />
 
+      {/* Navigation */}
+      <BottomNav />
+
       {/* Tagline */}
       <div className="px-4 pb-2">
         <h1 className="text-lg font-semibold text-foreground leading-snug">
@@ -84,8 +87,6 @@ export default function Home() {
         onMint={handleMint}
       />
 
-      {/* Bottom Navigation */}
-      <BottomNav />
     </div>
   );
 }

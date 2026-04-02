@@ -67,10 +67,10 @@ export default function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 pointer-events-none">
-      <div className="mx-auto w-full max-w-[383.2px] px-4 pb-4">
+    <nav className="w-full">
+      <div className="mx-auto w-full max-w-[383.2px] px-4 pt-3 pb-3">
         <div
-          className="pointer-events-auto flex items-center justify-between rounded-[24px] bg-white/75 backdrop-blur-2xl border border-white/70 shadow-[0_8px_10px_-6px_rgba(0,0,0,0.1),0_20px_25px_-5px_rgba(0,0,0,0.1)] px-[33.6px] py-[17px]"
+          className="flex items-center justify-between rounded-[24px] bg-white border border-white/70 shadow-[0_8px_10px_-6px_rgba(0,0,0,0.08),0_16px_20px_-6px_rgba(0,0,0,0.06)] px-[33.6px] py-[12px]"
         >
           {tabs.map((tab) => {
             const isActive = pathname === tab.href;

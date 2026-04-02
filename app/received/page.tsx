@@ -30,6 +30,8 @@ export default function ReceivedPage() {
     <div className="bg-white max-w-lg mx-auto pb-20">
       <Header />
 
+      <BottomNav />
+
       <div className="px-4 pb-2">
         <h1 className="text-lg font-semibold text-foreground leading-snug">
           Received Cards
@@ -104,7 +106,6 @@ export default function ReceivedPage() {
         </div>
       )}
 
-      <BottomNav />
     </div>
   );
 }

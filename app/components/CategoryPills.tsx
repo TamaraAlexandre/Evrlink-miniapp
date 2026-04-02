@@ -1,37 +1,19 @@
 "use client";
-
 import { categoryMeta } from "@/lib/greeting-cards-data";
-
 interface CategoryPillsProps {
   selectedCategory: string | null;
   onSelectCategory: (category: string | null) => void;
 }
-
-export default function CategoryPills({
-  selectedCategory,
-  onSelectCategory,
-}: CategoryPillsProps) {
+export default function CategoryPills({ selectedCategory, onSelectCategory }: CategoryPillsProps) {
   return (
-    <div className="px-4 py-2">
-      <p className="text-sm font-medium text-foreground mb-2">Categories</p>
-      <div className="flex gap-2 overflow-x-auto overflow-y-hidden hide-scrollbar pb-1 -mx-4 px-4">
+    <div style={{padding:"8px 0"}}>
+      <p style={{fontSize:"14px",fontWeight:500,marginBottom:"8px",paddingLeft:"16px"}}>Categories</p>
+      <div style={{display:"flex",overflowX:"auto",gap:"8px",paddingLeft:"16px",paddingRight:"16px",paddingBottom:"8px"}}>
         {categoryMeta.map((cat) => {
           const isSelected = selectedCategory === cat.key;
           return (
-            <button
-              key={cat.key}
-              type="button"
-              onClick={() =>
-                onSelectCategory(isSelected ? null : cat.key)
-              }
-              className={`flex items-center gap-1.5 whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium transition-all active:scale-95 shrink-0 ${
-                isSelected
-                  ? "btn-gradient text-white shadow-sm"
-                  : "bg-white text-foreground border border-gray-200 hover:border-gray-300"
-              }`}
-            >
-              <span className="text-base leading-none">{cat.emoji}</span>
-              <span>{cat.label}</span>
+            <button key={cat.key} type="button" onClick={() => onSelectCategory(isSelected ? null : cat.key)} style={{flexShrink:0,whiteSpace:"nowrap",borderRadius:"6px",padding:"8px 16px",fontSize:"14px",fontWeight:500,border: isSelected ? "none" : "1px solid #e5e7eb",background: isSelected ? "linear-gradient(135deg,#00C4D9,#009AB0)" : "white",color: isSelected ? "white" : "#111"}}>
+              {cat.emoji} {cat.label}
             </button>
           );
         })}
