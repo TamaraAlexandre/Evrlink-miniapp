@@ -35,19 +35,22 @@ export default function SuccessModal({
   };
 
   const handleShare = async () => {
-    // Build a mention tag for the recipient
-    // If they typed a plain name (no dot, no 0x), assume Farcaster handle → @name
-    // If they typed @name already, use as-is
-    // Otherwise fall back to the short address
+    // Build how we refer to the recipient in the share text.
+    // Base names / ENS: use as typed. Wallet: use shortened address. Plain
+    // words without a dot are not treated as a social handle — use address.
     let mention = displayAddress;
     if (recipientName) {
       const name = recipientName.trim();
-      if (name.startsWith("@")) {
+      if (!name) {
+        mention = displayAddress;
+      } else if (name.startsWith("0x")) {
+        mention = displayAddress;
+      } else if (name.includes(".")) {
         mention = name;
-      } else if (!name.startsWith("0x") && !name.includes(".")) {
-        mention = `@${name}`;
+      } else if (name.startsWith("@")) {
+        mention = name;
       } else {
-        mention = name;
+        mention = displayAddress;
       }
     }
 

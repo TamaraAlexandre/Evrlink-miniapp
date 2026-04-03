@@ -178,7 +178,7 @@ export default function MintModal({
             <p className="text-xs text-text-tertiary mt-1.5">
               By default we treat this as a Basename label (e.g.{" "}
               <span className="font-semibold">defidevrel.base.eth</span>). ENS
-              (.eth), Farcaster handles, or direct wallet addresses also work.
+              (.eth) names and direct wallet addresses also work.
             </p>
             {isResolving && (
               <p className="text-xs text-primary mt-1.5">
