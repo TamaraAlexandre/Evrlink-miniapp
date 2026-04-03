@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { LayoutGrid, PenLine, Send } from "lucide-react";
 import Header from "./components/Header";
 import SearchBar from "./components/SearchBar";
 import CategoryPills from "./components/CategoryPills";
@@ -53,21 +54,54 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-white max-w-lg mx-auto pb-20">
+    <div className="bg-white max-w-lg mx-auto pb-20 pt-2">
       {/* Header */}
       <Header />
 
       {/* Navigation */}
       <BottomNav />
 
-      {/* Tagline */}
-      <div className="px-4 pb-2">
+      {/* Tagline + steps */}
+      <div className="px-4 pb-4 pt-4 flex flex-col items-center text-center">
         <h1 className="text-2xl font-bold text-foreground leading-tight tracking-tight">
           Say it with a card
         </h1>
-        <p className="mt-2 text-sm font-normal text-text-secondary leading-snug">
-          Greeting cards on Base
+        <p className="mt-2 text-sm font-normal leading-snug text-text-secondary">
+          Greeting cards that live forever on Base
         </p>
+
+        <div className="mt-5 flex w-full max-w-md items-center justify-center gap-4">
+          <div className="flex min-w-0 flex-1 flex-col items-center gap-2">
+            <LayoutGrid
+              className="size-7 shrink-0 text-[#00B2C7]"
+              strokeWidth={2}
+              aria-hidden
+            />
+            <span className="text-center text-xs leading-tight text-foreground">
+              Pick a card
+            </span>
+          </div>
+          <div className="flex min-w-0 flex-1 flex-col items-center gap-2">
+            <PenLine
+              className="size-7 shrink-0 text-[#00B2C7]"
+              strokeWidth={2}
+              aria-hidden
+            />
+            <span className="text-center text-xs leading-tight text-foreground">
+              Write your message
+            </span>
+          </div>
+          <div className="flex min-w-0 flex-1 flex-col items-center gap-2">
+            <Send
+              className="size-7 shrink-0 text-[#00B2C7]"
+              strokeWidth={2}
+              aria-hidden
+            />
+            <span className="text-center text-xs leading-tight text-foreground">
+              Send for $1
+            </span>
+          </div>
+        </div>
       </div>
       {/* Search */}
       <SearchBar onSearch={handleSearch} />
