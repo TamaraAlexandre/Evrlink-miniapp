@@ -231,7 +231,10 @@ export default function GenerateMeepPage() {
   if (!card) {
     return (
       <div className="bg-white max-w-lg mx-auto min-h-screen">
-        <PageHeader title="Generate a Meep" />
+        <PageHeader
+          title="Personalize Your Card"
+          titleClassName="text-[#00B2C7]"
+        />
         <div className="flex flex-col items-center justify-center py-20 px-4">
           <p className="text-text-secondary text-sm">Card not found</p>
         </div>
@@ -239,45 +242,51 @@ export default function GenerateMeepPage() {
     );
   }
 
-  const remainingChars = MAX_MESSAGE_LENGTH - message.length;
-
   return (
     <div className="bg-white max-w-lg mx-auto pb-10">
       {/* Header */}
-      <PageHeader title="Generate a Meep" />
+      <PageHeader
+        title="Personalize Your Card"
+        titleClassName="text-[#00B2C7]"
+      />
 
       {/* Navigation */}
       <BottomNav />
 
-      {/* Flip Card: front = card image, back = message preview or pre-designed back */}
-      <FlipCard
-        cardImage={card.paperImage}
-        cardTitle={card.title}
-        defaultFlipped={!isPreDesignedCard}
-        onFlip={setIsFlipped}
-        backContent={
-          isPreDesignedCard && card.backImage ? (
-            <div className="w-full h-full rounded-2xl overflow-hidden border-[3px] border-accent-gold shadow-lg bg-gray-100">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={card.backImage}
-                alt={`${card.title} – back`}
-                className="block w-full h-full object-cover"
+      {/* Flip card + below: max 8px gap (gap-2). No gap when message block is collapsed. */}
+      <div
+        className={`flex flex-col ${
+          isPreDesignedCard || isFlipped ? "gap-2" : "gap-0"
+        }`}
+      >
+        <FlipCard
+          cardImage={card.paperImage}
+          cardTitle={card.title}
+          defaultFlipped={!isPreDesignedCard}
+          onFlip={setIsFlipped}
+          backContent={
+            isPreDesignedCard && card.backImage ? (
+              <div className="h-full w-full bg-gray-100">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={card.backImage}
+                  alt={`${card.title} – back`}
+                  className="block h-full w-full object-cover"
+                />
+              </div>
+            ) : (
+              <CardBackPreview
+                message={message}
+                maxLength={MAX_MESSAGE_LENGTH}
+                embedded
               />
-            </div>
-          ) : (
-            <CardBackPreview
-              message={message}
-              maxLength={MAX_MESSAGE_LENGTH}
-              embedded
-            />
-          )
-        }
-      />
+            )
+          }
+        />
 
       {/* Pre-designed card: no message, just mint CTA */}
       {isPreDesignedCard ? (
-        <div className="px-4 pt-2 pb-2">
+        <div className="px-4 pb-2">
           <p className="text-sm text-text-secondary mb-4">
             This card is pre-designed. Mint as-is to send to someone special.
           </p>
@@ -291,21 +300,17 @@ export default function GenerateMeepPage() {
           </button>
         </div>
       ) : (
-        /* Custom Message Section — only visible after flipping */
+        /* Your Message section — only visible after flipping */
         <div
-          className={`px-4 pt-0 -mt-4 pb-2 transition-all duration-500 ${
+          className={`px-4 pt-0 pb-2 transition-all duration-500 ${
             isFlipped
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-4 pointer-events-none h-0 overflow-hidden py-0"
           }`}
         >
-          <h2 className="text-base font-semibold text-foreground mb-1">
-            Custom Message
+          <h2 className="text-base font-semibold text-foreground mt-0 mb-2">
+            Your Message
           </h2>
-          <p className="text-sm text-text-secondary mb-3 leading-relaxed">
-            Write a heartfelt message for the back of the card. Keep it on one
-            line for the best visual effect.
-          </p>
 
           <textarea
             value={message}
@@ -317,7 +322,7 @@ export default function GenerateMeepPage() {
           />
 
           <p className="text-xs text-text-tertiary mt-1.5">
-            {remainingChars}/{MAX_MESSAGE_LENGTH} characters
+            {message.length}/{MAX_MESSAGE_LENGTH} characters
           </p>
 
           <button
@@ -330,6 +335,7 @@ export default function GenerateMeepPage() {
           </button>
         </div>
       )}
+      </div>
 
       {/* Divider */}
       <div className="mx-4 border-t border-border-light" />

@@ -4,9 +4,11 @@ import { useRouter } from "next/navigation";
 
 interface PageHeaderProps {
   title: string;
+  /** Overrides default `text-foreground` for the title (e.g. brand accent). */
+  titleClassName?: string;
 }
 
-export default function PageHeader({ title }: PageHeaderProps) {
+export default function PageHeader({ title, titleClassName }: PageHeaderProps) {
   const router = useRouter();
 
   return (
@@ -34,7 +36,9 @@ export default function PageHeader({ title }: PageHeaderProps) {
       </button>
 
       {/* Title */}
-      <h1 className="flex-1 text-center text-base font-semibold text-foreground pr-10">
+      <h1
+        className={`flex-1 text-center text-base font-semibold pr-10 ${titleClassName ?? "text-foreground"}`}
+      >
         {title}
       </h1>
     </header>

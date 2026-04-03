@@ -62,11 +62,12 @@ export default function Home() {
 
       {/* Tagline */}
       <div className="px-4 pb-2">
-        <h1 className="text-lg font-semibold text-foreground leading-snug">
-        Send and recieve greeting cards 
-          {/* <br /> */}
-          {/* Special moments on Base */}
+        <h1 className="text-2xl font-bold text-foreground leading-tight tracking-tight">
+          Say it with a card
         </h1>
+        <p className="mt-2 text-sm font-normal text-text-secondary leading-snug">
+          Greeting cards on Base
+        </p>
       </div>
       {/* Search */}
       <SearchBar onSearch={handleSearch} />

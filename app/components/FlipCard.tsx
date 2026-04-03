@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface FlipCardProps {
   /** The card's front image URL */
@@ -13,6 +13,8 @@ interface FlipCardProps {
   onFlip?: (flipped: boolean) => void;
   /** Start flipped to the back side */
   defaultFlipped?: boolean;
+  /** Merged onto the outer wrapper (e.g. spacing tweaks on a parent screen). */
+  className?: string;
 }
 
 export default function FlipCard({
@@ -21,27 +23,37 @@ export default function FlipCard({
   backContent,
   onFlip,
   defaultFlipped = false,
+  className,
 }: FlipCardProps) {
   const [isFlipped, setIsFlipped] = useState(defaultFlipped);
 
+  useEffect(() => {
+    onFlip?.(isFlipped);
+  }, [isFlipped, onFlip]);
+
   const toggle = () => {
-    setIsFlipped((prev) => {
-      const next = !prev;
-      onFlip?.(next);
-      return next;
-    });
+    setIsFlipped((prev) => !prev);
   };
 
   return (
-    <div className="px-4 pt-2 pb-0">
+    <div className={`px-4 pt-2 pb-0 ${className ?? ""}`}>
       <div
         role="button"
         tabIndex={0}
-        aria-label={isFlipped ? "Tap to see front of card" : "Tap to flip card and write your message"}
-        className="relative mx-auto max-w-sm cursor-pointer outline-none"
+        aria-label={
+          isFlipped
+            ? "Tap to see front of card"
+            : "Tap to flip card and write your message"
+        }
+        className="relative mx-auto w-full max-w-sm cursor-pointer outline-none"
         style={{ perspective: "1200px" }}
         onClick={toggle}
-        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            toggle();
+          }
+        }}
       >
         {/* Inner wrapper that rotates */}
         <div
@@ -66,7 +78,6 @@ export default function FlipCard({
             {/* Tap to flip hint overlay */}
             <div className="absolute inset-0 flex items-center justify-center bg-black/10">
               <div className="animate-flip-hint flex items-center gap-2.5 px-6 py-3 rounded-full bg-white/95 shadow-xl backdrop-blur-sm border border-white/60">
-                {/* Tap hand icon */}
                 <svg
                   width="22"
                   height="22"
@@ -106,19 +117,6 @@ export default function FlipCard({
                 <span className="text-sm font-semibold text-foreground tracking-wide">
                   Tap to flip
                 </span>
-                {/* Flip arrows icon */}
-                {/* <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  className="text-primary animate-bounce-x"
-                >
-                  <path d="M17 1l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M3 11V9a4 4 0 0 1 4-4h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M7 23l-4-4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M21 13v2a4 4 0 0 1-4 4H3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg> */}
               </div>
             </div>
           </div>

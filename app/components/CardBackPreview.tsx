@@ -57,17 +57,29 @@ export default function CardBackPreview({
   embedded = false,
 }: CardBackPreviewProps) {
   return (
-    <div className={embedded ? "" : "px-4 py-6"}>
+    <div
+      className={
+        embedded
+          ? "flex h-full min-h-0 w-full flex-col"
+          : "px-4 py-6"
+      }
+    >
       {/* Outer card with gradient background */}
       <div
-        className={`relative rounded-2xl p-5 shadow-lg ${embedded ? "w-full h-full" : "mx-auto max-w-sm"}`}
+        className={
+          embedded
+            ? "relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl p-3 shadow-lg"
+            : "relative mx-auto max-w-sm rounded-2xl p-5 shadow-lg"
+        }
         style={{
           background:
             "linear-gradient(160deg, rgba(224,247,250,0.6) 0%, rgba(178,235,242,0.4) 30%, rgba(128,222,234,0.25) 60%, rgba(224,247,250,0.5) 100%)",
         }}
       >
         {/* Evrlink Logo - centered at top */}
-        <div className="flex justify-center mb-4">
+        <div
+          className={`flex shrink-0 justify-center ${embedded ? "mb-2" : "mb-4"}`}
+        >
           <Image
             src="/images/logo.png"
             alt="Evrlink"
@@ -78,7 +90,7 @@ export default function CardBackPreview({
         </div>
 
         {/* Card area with corner decorations */}
-        <div className="relative">
+        <div className={`relative min-h-0 ${embedded ? "flex min-h-0 flex-1 flex-col" : ""}`}>
           {/* Corner brackets */}
           <CornerBracket className="absolute -top-1 -left-1 text-primary/60" />
           <CornerBracket className="absolute -top-1 -right-1 text-primary/60 rotate-90" />
@@ -90,7 +102,13 @@ export default function CardBackPreview({
           <SideArrow className="absolute top-1/2 -right-2 -translate-y-1/2 text-primary/40" />
 
           {/* Inner white card */}
-          <div className="mx-3 my-2 rounded-xl bg-white shadow-sm border border-white/80 px-6 py-10">
+          <div
+            className={`mx-3 rounded-xl border border-white/80 bg-white shadow-sm ${
+              embedded
+                ? "my-1 min-h-0 flex-1 overflow-y-auto px-4 py-4"
+                : "my-2 px-6 py-10"
+            }`}
+          >
             {/* Message or Placeholder */}
             {message ? (
               <p className="text-sm text-foreground text-center leading-relaxed whitespace-pre-wrap wrap-break-word">
@@ -109,8 +127,12 @@ export default function CardBackPreview({
           </div>
         </div>
 
-        {/* Bottom: TAP TO FLIP with decorative dashes */}
-        <div className="flex items-center justify-center gap-2 mt-4 mb-1">
+        {/* Bottom: TAP TO FLIP with decorative dashes (tighter when embedded in FlipCard) */}
+        <div
+          className={`flex shrink-0 items-center justify-center gap-2 ${
+            embedded ? "mt-1 mb-0" : "mt-4 mb-1"
+          }`}
+        >
           {/* Left dashes */}
           <div className="flex gap-0.5">
             {Array.from({ length: 8 }).map((_, i) => (
