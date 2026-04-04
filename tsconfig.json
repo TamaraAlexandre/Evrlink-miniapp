@@ -25,5 +25,13 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "hardhat.config.cjs",
+    "scripts",
+    "contracts",
+    "cache",
+    "artifacts",
+    "typechain-types"
+  ]
 }

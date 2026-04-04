@@ -2,11 +2,15 @@
   "name": "my-project",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "compile:contracts": "cross-env TS_NODE_PROJECT=tsconfig.hardhat.json node --import tsx ./node_modules/hardhat/internal/cli/cli.js compile",
+    "deploy:base-sepolia": "cross-env TS_NODE_PROJECT=tsconfig.hardhat.json node --import tsx ./node_modules/hardhat/internal/cli/cli.js run scripts/deploy-base-sepolia.ts --network baseSepolia",
+    "deploy:sepolia": "cross-env HARDHAT_CONFIG=hardhat.config.cjs npx hardhat run scripts/deploy.ts --network baseSepolia"
   },
   "dependencies": {
     "@coinbase/onchainkit": "^1.1.2",
@@ -20,14 +24,27 @@
     "viem": "^2.47.6",
     "wagmi": "^2.19.5"
   },
+  "ts-node": {
+    "transpileOnly": true,
+    "compilerOptions": {
+      "module": "commonjs",
+      "moduleResolution": "node"
+    }
+  },
   "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^7.0.3",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "ethers": "^6.13.5",
+    "hardhat": "^2.22.17",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.3",
     "typescript": "^5"
   }
 }
