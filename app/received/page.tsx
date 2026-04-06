@@ -1,9 +1,8 @@
 "use client";
 
-import Header from "../components/Header";
+import StickyAppHeader from "../components/StickyAppHeader";
 import TransactionCardItem from "../components/TransactionCardItem";
 import AddressDisplay from "../components/AddressDisplay";
-import BottomNav from "../components/BottomNav";
 import { useAccount } from "wagmi";
 import { useReceivedCards } from "@/lib/use-nft-activity";
 
@@ -27,16 +26,12 @@ export default function ReceivedPage() {
   };
 
   return (
-    <div className="bg-white max-w-lg mx-auto pb-20">
-      <Header />
+    <div className="bg-white max-w-lg mx-auto pb-8">
+      <StickyAppHeader />
 
-      <BottomNav />
-
-      <div className="px-4 pb-2">
+      <div className="px-4 pb-2 pt-3">
         <h1 className="text-lg font-semibold text-foreground leading-snug">
           Received Cards
-          {/* <br /> */}
-          {/* moments. <span className="inline-block">💖</span> */}
         </h1>
       </div>
 
@@ -105,7 +100,6 @@ export default function ReceivedPage() {
           </p>
         </div>
       )}
-
     </div>
   );
 }

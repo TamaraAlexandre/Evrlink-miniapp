@@ -208,7 +208,7 @@ export default function MintModal({
             type="button"
             onClick={handleMint}
             disabled={!recipient.trim() || isMinting}
-            className="w-full rounded-md btn-gradient text-white text-base font-bold leading-[140%] transition-colors active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full rounded-md btn-primary text-white text-base font-bold leading-[140%] transition-colors active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             style={{ fontFamily: "'Satoshi', sans-serif", height: 46, paddingTop: 12, paddingBottom: 12, paddingLeft: 16, paddingRight: 16 }}
           >
             {isMinting ? (

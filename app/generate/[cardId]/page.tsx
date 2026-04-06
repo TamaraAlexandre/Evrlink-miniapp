@@ -9,7 +9,8 @@ import PageHeader from "../../components/PageHeader";
 import FlipCard from "../../components/FlipCard";
 import CardBackPreview from "../../components/CardBackPreview";
 import SimilarCardItem from "../../components/SimilarCardItem";
-import BottomNav from "../../components/BottomNav";
+// import BottomNav from "../../components/BottomNav";
+import HeaderNav from "../../components/HeaderNav";
 import MintModal from "../../components/MintModal";
 import SuccessModal from "../../components/SuccessModal";
 import ErrorModal from "../../components/ErrorModal";
@@ -251,7 +252,7 @@ export default function GenerateMeepPage() {
       />
 
       {/* Navigation */}
-      <BottomNav />
+      <HeaderNav />
 
       {/* Flip card + below: max 8px gap (gap-2). No gap when message block is collapsed. */}
       <div
@@ -293,7 +294,7 @@ export default function GenerateMeepPage() {
           <button
             type="button"
             onClick={handleMint}
-            className="w-full rounded-md btn-gradient text-white text-base font-bold leading-[140%] transition-colors active:scale-[0.98]"
+            className="w-full rounded-md btn-primary text-white text-base font-bold leading-[140%] transition-colors active:scale-[0.98]"
             style={{ fontFamily: "'Satoshi', sans-serif", height: 46, paddingTop: 12, paddingBottom: 12, paddingLeft: 16, paddingRight: 16 }}
           >
             Create for $1 USDC
@@ -328,7 +329,7 @@ export default function GenerateMeepPage() {
           <button
             type="button"
             onClick={handleMint}
-            className="w-full mt-7 rounded-md btn-gradient text-white text-base font-bold leading-[140%] transition-colors active:scale-[0.98]"
+            className="w-full mt-7 rounded-md btn-primary text-white text-base font-bold leading-[140%] transition-colors active:scale-[0.98]"
             style={{ fontFamily: "'Satoshi', sans-serif", height: 46, paddingTop: 12, paddingBottom: 12, paddingLeft: 16, paddingRight: 16 }}
           >
             Create for $1 USDC

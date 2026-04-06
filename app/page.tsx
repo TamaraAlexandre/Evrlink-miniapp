@@ -3,11 +3,10 @@
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { LayoutGrid, PenLine, Send } from "lucide-react";
-import Header from "./components/Header";
+import StickyAppHeader from "./components/StickyAppHeader";
 import SearchBar from "./components/SearchBar";
 import CategoryPills from "./components/CategoryPills";
 import CardFeed from "./components/CardFeed";
-import BottomNav from "./components/BottomNav";
 import {
   greetingCardsData,
   getAllCards,
@@ -54,15 +53,12 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-white max-w-lg mx-auto pb-20 pt-2">
-      {/* Header */}
-      <Header />
-
-      {/* Navigation */}
-      <BottomNav />
+    <div className="mx-auto max-w-lg bg-white pb-8 pt-0">
+      {/* Sticky: logo + tab nav */}
+      <StickyAppHeader />
 
       {/* Tagline + steps */}
-      <div className="px-4 pb-4 pt-4 flex flex-col items-center text-center">
+      <div className="flex flex-col items-center px-4 pb-4 pt-3 text-center">
         <h1 className="text-2xl font-bold text-foreground leading-tight tracking-tight">
           Say it with a card
         </h1>

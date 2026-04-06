@@ -68,42 +68,66 @@ export default function BottomNav() {
 
   return (
     <nav className="w-full">
-      <div className="mx-auto w-full max-w-[383.2px] px-4 pt-3 pb-3">
+      <div className="mx-auto w-full max-w-[390px] px-4 pt-1 pb-2">
+        
+      <div
+        className="
+          relative flex items-center justify-around 
+          border border-primary/10
+          p-3 bg-gradient-to-b from-white to-[#F7FCFF] py-2.5
+
+          before:content-[''] before:absolute before:top-0 before:left-0 
+          before:w-[80px] before:h-[2px] before:bg-primary
+
+          after:content-[''] after:absolute after:top-0 after:left-0 
+          after:h-[85px] after:w-[2px] after:bg-primary
+        "
+>
+  {/* bottom-right lines */}
+  <div
+    className="
+      pointer-events-none absolute inset-0
+      before:content-[''] before:absolute before:bottom-0 before:right-0 
+      before:w-[80px] before:h-[2px] before:bg-primary
+
+      after:content-[''] after:absolute after:bottom-0 after:right-0 
+      after:h-[85px] after:w-[2px] after:bg-primary
+    "
+  />
+
+  {tabs.map((tab) => {
+    const isActive = pathname === tab.href;
+    return (
+      <Link
+        key={tab.href}
+        href={tab.href}
+        className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-1 transition-all ${
+          isActive
+            ? "text-primary"
+            : "text-text-tertiary hover:text-text-secondary"
+        }`}
+      >
         <div
-          className="flex items-center justify-between rounded-[24px] bg-white border border-white/70 shadow-[0_8px_10px_-6px_rgba(0,0,0,0.08),0_16px_20px_-6px_rgba(0,0,0,0.06)] px-[33.6px] py-[12px]"
+          className={`flex h-10 w-10 items-center justify-center rounded-xl transition-all ${
+            isActive
+              ? "btn-primary text-white shadow-[0_8px_16px_-8px_rgba(0,178,199,0.65)]"
+              : "border border-primary/10 bg-white text-foreground"
+          }`}
         >
-          {tabs.map((tab) => {
-            const isActive = pathname === tab.href;
-            return (
-              <Link
-                key={tab.href}
-                href={tab.href}
-                className={`flex flex-col items-center justify-center gap-1 transition-all ${
-                  isActive
-                    ? "text-primary"
-                    : "text-text-tertiary hover:text-text-secondary"
-                }`}
-              >
-                <div
-                  className={`flex h-11 w-11 items-center justify-center rounded-2xl shadow-sm transition-all ${
-                    isActive
-                      ? "btn-gradient text-white"
-                      : "bg-white/90 border border-black/5 text-foreground"
-                  }`}
-                >
-                  {tab.icon(isActive)}
-                </div>
-                <span
-                  className={`text-xs ${
-                    isActive ? "font-semibold" : "font-medium"
-                  }`}
-                >
-                  {tab.label}
-                </span>
-              </Link>
-            );
-          })}
+          {tab.icon(isActive)}
         </div>
+        <span
+          className={`text-[13px] ${
+            isActive ? "font-semibold" : "font-medium"
+          }`}
+        >
+          {tab.label}
+        </span>
+      </Link>
+    );
+  })}
+</div>
+  
         {/* Safe area for devices with home indicator */}
         <div className="h-safe-area-inset-bottom" />
       </div>

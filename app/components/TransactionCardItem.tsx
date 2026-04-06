@@ -59,7 +59,7 @@ export default function TransactionCardItem({
             e.stopPropagation();
             onShare?.();
           }}
-          className="inline-flex items-center gap-1.5 px-5 py-2 rounded-lg btn-gradient text-white text-sm font-medium transition-colors active:scale-95"
+          className="inline-flex items-center gap-1.5 px-5 py-2 rounded-lg btn-primary text-white text-sm font-medium transition-colors active:scale-95"
         >
           <svg
             width="15"
