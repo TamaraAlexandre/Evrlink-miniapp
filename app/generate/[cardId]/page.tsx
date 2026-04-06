@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { base } from "wagmi/chains";
-import { parseEther, getAddress, encodeFunctionData } from "viem";
+import { getAddress } from "viem";
 import PageHeader from "../../components/PageHeader";
 import FlipCard from "../../components/FlipCard";
 import CardBackPreview from "../../components/CardBackPreview";
@@ -23,10 +23,8 @@ import { prepareGreetingCardForUpload } from "@/lib/image-composer";
 
 const MAX_MESSAGE_LENGTH = 280;
 
-// Base chain contract address for USDC
 const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" as const;
 
-// Minimal ABI for USDC approve
 const erc20ApproveAbi = [
   {
     type: "function" as const,
@@ -155,22 +153,20 @@ export default function GenerateMeepPage() {
         setRecipientName(recipientInput || "");
 
         // 3) Approve 1 USDC for the NFT contract
-        const usdcAmount = 1_000_000n; // 1 USDC (6 decimals)
-
         await writeContractAsync({
           address: USDC_ADDRESS,
           abi: erc20ApproveAbi,
           functionName: "approve",
-          args: [contractAddress, usdcAmount],
+          args: [contractAddress, 1_000_000n],
           chainId: base.id,
         } as unknown as Parameters<typeof writeContractAsync>[0]);
 
-        // 4) Mint the greeting card paying with USDC
+        // 4) Mint the greeting card (USDC payment via prior approve)
         await writeContractAsync({
           address: contractAddress,
-          abi: (nftAbi as { abi: readonly unknown[] }).abi,
+          abi: nftAbi.abi,
           functionName: "mintGreetingCard",
-          args: [ipfsUrl, recipientAddressNormalized, usdcAmount],
+          args: [ipfsUrl, recipientAddressNormalized],
           chainId: base.id,
         } as unknown as Parameters<typeof writeContractAsync>[0]);
       } catch (error) {
