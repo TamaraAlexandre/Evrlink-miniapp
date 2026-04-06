@@ -93,6 +93,12 @@ body {
   opacity: 0.92;
 }
 
+.btn-primary {
+  background: var(--primary);
+}
+.btn-primary:hover {
+  opacity: 0.92;
+}
 /* Flip card hint – gentle pulse to draw attention */
 @keyframes flip-hint {
   0%, 100% {

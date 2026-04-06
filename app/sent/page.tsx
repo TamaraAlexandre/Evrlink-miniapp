@@ -2,10 +2,9 @@
 
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import Header from "../components/Header";
+import StickyAppHeader from "../components/StickyAppHeader";
 import TransactionCardItem from "../components/TransactionCardItem";
 import AddressDisplay from "../components/AddressDisplay";
-import BottomNav from "../components/BottomNav";
 import { useAccount } from "wagmi";
 import { isAddress } from "viem";
 import type { Address } from "viem";
@@ -37,16 +36,12 @@ function SentContent() {
   };
 
   return (
-    <div className="bg-white max-w-lg mx-auto pb-20">
-      <Header />
+    <div className="bg-white max-w-lg mx-auto pb-8">
+      <StickyAppHeader />
 
-      <BottomNav />
-
-      <div className="px-4 pb-2">
+      <div className="px-4 pb-2 pt-3">
         <h1 className="text-lg font-semibold text-foreground leading-snug">
           Sent Cards
-          {/* <br />
-          special moments. <span className="inline-block">💌</span> */}
         </h1>
       </div>
 
@@ -123,7 +118,6 @@ function SentContent() {
           )}
         </div>
       )}
-
     </div>
   );
 }
@@ -132,9 +126,8 @@ export default function SentPage() {
   return (
     <Suspense
       fallback={
-        <div className="bg-white max-w-lg mx-auto pb-20">
-          <Header />
-          <BottomNav />
+        <div className="bg-white max-w-lg mx-auto pb-8">
+          <StickyAppHeader />
           <div className="px-4 py-20 text-center text-sm text-text-secondary">
             Loading…
           </div>

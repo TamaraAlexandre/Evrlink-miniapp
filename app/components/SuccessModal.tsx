@@ -134,7 +134,7 @@ export default function SuccessModal({
             <button
               type="button"
               onClick={handleBackToHome}
-              className="flex-1 py-3 rounded-xl btn-gradient text-white text-sm font-semibold transition-colors active:scale-[0.98]"
+              className="flex-1 py-3 rounded-xl btn-primary text-white text-sm font-semibold transition-colors active:scale-[0.98]"
             >
               Back To Home
             </button>

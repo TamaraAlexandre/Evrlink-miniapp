@@ -75,7 +75,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
     cards: [
       {
         id: "birthday-1",
-        title: "Birthday Bling",
+        title: "🎂 Birthday",
         byline: "",
         tags: [],
         likes: 0,
@@ -89,7 +89,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "birthday-2",
-        title: "Birthday Wishes",
+        title: "🎂 Birthday",
         byline: "",
         tags: [],
         likes: 0,
@@ -103,7 +103,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "birthday-3",
-        title: "Party Time",
+        title: "🎂 Birthday",
         byline: "",
         tags: [],
         likes: 0,
@@ -117,7 +117,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "birthday-4",
-        title: "Birthday Bash",
+        title: "🎂 Birthday",
         byline: "",
         tags: [],
         likes: 0,
@@ -138,7 +138,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
     cards: [
       {
         id: "congrats-1",
-        title: "Congratulations",
+        title: "🎉 Congrats",
         byline: "",
         tags: [],
         likes: 0,
@@ -152,7 +152,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "congrats-2",
-        title: "Well Done",
+        title: "🎉 Congrats",
         byline: "",
         tags: [],
         likes: 0,
@@ -173,7 +173,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
     cards: [
       {
         id: "love-1",
-        title: "Love You",
+        title: "💗 Love",
         byline: "",
         tags: [],
         likes: 0,
@@ -187,7 +187,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "love-2",
-        title: "Sweet Dreams",
+        title: "💗 Love",
         byline: "",
         tags: [],
         likes: 0,
@@ -201,7 +201,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "love-3",
-        title: "Forever Yours",
+        title: "💗 Love",
         byline: "",
         tags: [],
         likes: 0,
@@ -215,7 +215,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "love-4",
-        title: "Love Letter",
+        title: "💗 Love",
         byline: "",
         tags: [],
         likes: 0,
@@ -229,7 +229,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "love-5",
-        title: "My Heart",
+        title: "💗 Love",
         byline: "",
         tags: [],
         likes: 0,
@@ -243,7 +243,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "love-6",
-        title: "Soulmate",
+        title: "💗 Love",
         byline: "",
         tags: [],
         likes: 0,
@@ -257,7 +257,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "love-7",
-        title: "Be Mine",
+        title: "💗 Love",
         byline: "",
         tags: [],
         likes: 0,
@@ -271,7 +271,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "love-8",
-        title: "Together",
+        title: "💗 Love",
         byline: "",
         tags: [],
         likes: 0,
@@ -285,7 +285,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "love-9",
-        title: "Kiss",
+        title: "💗 Love",
         byline: "",
         tags: [],
         likes: 0,
@@ -299,7 +299,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "love-10",
-        title: "Endless Love",
+        title: "💗 Love",
         byline: "",
         tags: [],
         likes: 0,
@@ -320,7 +320,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
     cards: [
       {
         id: "work-1",
-        title: "Good Work",
+        title: "💼 Work",
         byline: "",
         tags: [],
         likes: 0,
@@ -334,7 +334,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "work-2",
-        title: "Team Player",
+        title: "💼 Work",
         byline: "",
         tags: [],
         likes: 0,
@@ -348,7 +348,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "work-3",
-        title: "Promotion",
+        title: "💼 Work",
         byline: "",
         tags: [],
         likes: 0,
@@ -362,7 +362,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "work-4",
-        title: "Boss Move",
+        title: "💼 Work",
         byline: "",
         tags: [],
         likes: 0,
@@ -383,7 +383,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
     cards: [
       {
         id: "thanks-1",
-        title: "Thank You",
+        title: "🙏 Thanks",
         byline: "",
         tags: [],
         likes: 0,
@@ -397,7 +397,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "thanks-2",
-        title: "Appreciated",
+        title: "🙏 Thanks",
         byline: "",
         tags: [],
         likes: 0,
@@ -411,7 +411,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "thanks-3",
-        title: "Grateful",
+        title: "🙏 Thanks",
         byline: "",
         tags: [],
         likes: 0,
@@ -425,7 +425,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "thanks-4",
-        title: "Thanks a Bunch",
+        title: "🙏 Thanks",
         byline: "",
         tags: [],
         likes: 0,
@@ -439,7 +439,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "thanks-5",
-        title: "You Rock",
+        title: "🙏 Thanks",
         byline: "",
         tags: [],
         likes: 0,
@@ -453,7 +453,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "thanks-6",
-        title: "Big Thanks",
+        title: "🙏 Thanks",
         byline: "",
         tags: [],
         likes: 0,
@@ -467,7 +467,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "thanks-7",
-        title: "Thankful",
+        title: "🙏 Thanks",
         byline: "",
         tags: [],
         likes: 0,
@@ -481,7 +481,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "thanks-8",
-        title: "Cheers",
+        title: "🙏 Thanks",
         byline: "",
         tags: [],
         likes: 0,
@@ -502,7 +502,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
     cards: [
       {
         id: "sorry-1",
-        title: "I'm Sorry",
+        title: "💐 Sorry",
         byline: "",
         tags: [],
         likes: 0,
@@ -516,7 +516,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "sorry-2",
-        title: "My Mistake",
+        title: "💐 Sorry",
         byline: "",
         tags: [],
         likes: 0,
@@ -530,7 +530,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "sorry-3",
-        title: "Forgive Me",
+        title: "💐 Sorry",
         byline: "",
         tags: [],
         likes: 0,
@@ -544,7 +544,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "sorry-4",
-        title: "Oops",
+        title: "💐 Sorry",
         byline: "",
         tags: [],
         likes: 0,
@@ -558,7 +558,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "sorry-5",
-        title: "Making Amends",
+        title: "💐 Sorry",
         byline: "",
         tags: [],
         likes: 0,
@@ -579,7 +579,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
     cards: [
       {
         id: "situation-1",
-        title: "It's Complicated",
+        title: "💭 Situationship",
         byline: "",
         tags: [],
         likes: 0,
@@ -593,7 +593,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "situation-2",
-        title: "Mixed Signals",
+        title: "💭 Situationship",
         byline: "",
         tags: [],
         likes: 0,
@@ -607,7 +607,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "situation-3",
-        title: "Undefined",
+        title: "💭 Situationship",
         byline: "",
         tags: [],
         likes: 0,
@@ -621,7 +621,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "situation-4",
-        title: "What Are We",
+        title: "💭 Situationship",
         byline: "",
         tags: [],
         likes: 0,
@@ -635,7 +635,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "situation-5",
-        title: "Vibes Only",
+        title: "💭 Situationship",
         byline: "",
         tags: [],
         likes: 0,
@@ -649,7 +649,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "situation-6",
-        title: "No Strings",
+        title: "💭 Situationship",
         byline: "",
         tags: [],
         likes: 0,
@@ -663,7 +663,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "situation-7",
-        title: "Talking Stage",
+        title: "💭 Situationship",
         byline: "",
         tags: [],
         likes: 0,
@@ -677,7 +677,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "situation-8",
-        title: "Maybe",
+        title: "💭 Situationship",
         byline: "",
         tags: [],
         likes: 0,
@@ -691,7 +691,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "situation-9",
-        title: "On & Off",
+        title: "💭 Situationship",
         byline: "",
         tags: [],
         likes: 0,
@@ -705,7 +705,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "situation-10",
-        title: "DTR",
+        title: "💭 Situationship",
         byline: "",
         tags: [],
         likes: 0,
@@ -726,7 +726,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
     cards: [
       {
         id: "friendship-1",
-        title: "Best Friends",
+        title: "🤝 Friends",
         byline: "",
         tags: [],
         likes: 0,
@@ -740,7 +740,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "friendship-2",
-        title: "Squad Goals",
+        title: "🤝 Friends",
         byline: "",
         tags: [],
         likes: 0,
@@ -754,7 +754,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "friendship-3",
-        title: "Ride or Die",
+        title: "🤝 Friends",
         byline: "",
         tags: [],
         likes: 0,
@@ -768,7 +768,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "friendship-4",
-        title: "Fren",
+        title: "🤝 Friends",
         byline: "",
         tags: [],
         likes: 0,
@@ -782,7 +782,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "friendship-5",
-        title: "Bros",
+        title: "🤝 Friends",
         byline: "",
         tags: [],
         likes: 0,
@@ -796,7 +796,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "friendship-6",
-        title: "Besties",
+        title: "🤝 Friends",
         byline: "",
         tags: [],
         likes: 0,
@@ -810,7 +810,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "friendship-7",
-        title: "Day Ones",
+        title: "🤝 Friends",
         byline: "",
         tags: [],
         likes: 0,
@@ -831,7 +831,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
     cards: [
       {
         id: "degen-1",
-        title: "Degen Vibes",
+        title: "✨ Degen",
         byline: "",
         tags: [],
         likes: 0,
@@ -845,7 +845,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "degen-2",
-        title: "To The Moon",
+        title: "✨ Degen",
         byline: "",
         tags: [],
         likes: 0,
@@ -859,7 +859,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "degen-3",
-        title: "WAGMI",
+        title: "✨ Degen",
         byline: "",
         tags: [],
         likes: 0,
@@ -873,7 +873,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "degen-4",
-        title: "Diamond Hands",
+        title: "✨ Degen",
         byline: "",
         tags: [],
         likes: 0,
@@ -887,7 +887,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "degen-5",
-        title: "Ape In",
+        title: "✨ Degen",
         byline: "",
         tags: [],
         likes: 0,
@@ -901,7 +901,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "degen-6",
-        title: "HODL",
+        title: "✨ Degen",
         byline: "",
         tags: [],
         likes: 0,
@@ -915,7 +915,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "degen-7",
-        title: "Bullish",
+        title: "✨ Degen",
         byline: "",
         tags: [],
         likes: 0,
@@ -936,7 +936,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
     cards: [
       {
         id: "motivational-1",
-        title: "Rise & Shine",
+        title: "💪 Motivation",
         byline: "",
         tags: [],
         likes: 0,
@@ -950,7 +950,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "motivational-2",
-        title: "Never Give Up",
+        title: "💪 Motivation",
         byline: "",
         tags: [],
         likes: 0,
@@ -964,7 +964,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "motivational-3",
-        title: "You Got This",
+        title: "💪 Motivation",
         byline: "",
         tags: [],
         likes: 0,
@@ -978,7 +978,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "motivational-4",
-        title: "Keep Going",
+        title: "💪 Motivation",
         byline: "",
         tags: [],
         likes: 0,
@@ -999,7 +999,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
     cards: [
       {
         id: "base-1",
-        title: "Base Builder",
+        title: "🟦 Base",
         byline: "",
         tags: [],
         likes: 0,
@@ -1013,7 +1013,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "base-2",
-        title: "Onchain Life",
+        title: "🟦 Base",
         byline: "",
         tags: [],
         likes: 0,
@@ -1027,7 +1027,7 @@ export const greetingCardsData: Record<string, CategoryData> = {
       },
       {
         id: "base-3",
-        title: "Based",
+        title: "🟦 Base",
         byline: "",
         tags: [],
         likes: 0,

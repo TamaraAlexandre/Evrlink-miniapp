@@ -73,7 +73,7 @@ export default function SimilarCardItem({
             e.stopPropagation();
             onMint?.();
           }}
-          className="inline-flex items-center justify-center gap-2.5 rounded-md btn-gradient text-white text-base font-bold leading-[140%] whitespace-nowrap transition-colors active:scale-95"
+          className="inline-flex items-center justify-center gap-2.5 rounded-md btn-primary text-white text-base font-bold leading-[140%] whitespace-nowrap transition-colors active:scale-95"
           style={{ fontFamily: "'Satoshi', sans-serif", minWidth: 161, height: 46, paddingTop: 12, paddingBottom: 12, paddingLeft: 16, paddingRight: 16 }}
         >
           Create for $1 USDC
