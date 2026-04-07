@@ -5,19 +5,12 @@ import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { base } from "wagmi/chains";
 import { createConfig, WagmiProvider, http } from "wagmi";
-import { coinbaseWallet, injected } from "wagmi/connectors";
+import { injected } from "wagmi/connectors";
 import { OnchainKitProvider } from "@coinbase/onchainkit";
 
 const wagmiConfig = createConfig({
   chains: [base],
-  connectors: [
-    injected({ target: "metaMask" }),
-    coinbaseWallet({
-      appName: "Evrlink",
-      preference: "all",
-    }),
-    injected(),
-  ],
+  connectors: [injected()],
   transports: {
     [base.id]: http(),
   },
