@@ -20,6 +20,7 @@ import {
 } from "@/lib/greeting-cards-data";
 import nftAbi from "@/lib/Abi.json";
 import { prepareGreetingCardForUpload } from "@/lib/image-composer";
+import { useMiniKit } from "@coinbase/onchainkit/minikit";
 
 const MAX_MESSAGE_LENGTH = 280;
 
@@ -65,6 +66,8 @@ export default function GenerateMeepPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isMinting, setIsMinting] = useState(false);
   const { address: walletAddress, isConnected } = useAccount();
+  const { context: miniKitContext } = useMiniKit();
+  const miniKitAddress = miniKitContext?.client?.wallet?.accounts?.[0];
   const {
     writeContractAsync,
     data: txHash,
@@ -105,7 +108,8 @@ export default function GenerateMeepPage() {
   const handleMintConfirm = (recipient: string, recipientInput?: string) => {
     if (!card) return;
 
-    if (!isConnected || !walletAddress) {
+    const effectiveAddress = walletAddress || miniKitAddress;
+    if (!effectiveAddress) {
       setErrorMessage("Please open Evrlink inside the Base app or connect a wallet to mint.");
       setModalState("error");
       return;
