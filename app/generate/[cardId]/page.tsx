@@ -167,7 +167,7 @@ export default function GenerateMeepPage() {
           abi: erc20ApproveAbi,
           functionName: "approve",
           args: [contractAddress, 1_000_000n],
-          chainId: base.id,
+          
         } as unknown as Parameters<typeof writeContractAsync>[0]);
 
         await writeContractAsync({
@@ -175,7 +175,7 @@ export default function GenerateMeepPage() {
           abi: nftAbi.abi,
           functionName: "mintGreetingCard",
           args: [ipfsUrl, recipientAddressNormalized],
-          chainId: base.id,
+          
         } as unknown as Parameters<typeof writeContractAsync>[0]);
       } catch (error) {
         console.error("Mint flow error:", error);
