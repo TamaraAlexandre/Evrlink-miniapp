@@ -1,7 +1,22 @@
 /**
  * Basename & ENS Resolution Service
- * (ported from v1 – client-side helper that calls our API route)
+ * (ported from v1 – client-side helper; Base names use the L2 resolver on-chain)
  */
+
+import { createPublicClient, http, namehash } from "viem";
+import { normalize } from "viem/ens";
+import { base } from "viem/chains";
+
+const L2_RESOLVER_ADDRESS = "0xC6d566A56A1aFf6508b41f6c90ff131615583BCD";
+const L2_RESOLVER_ABI = [
+  {
+    inputs: [{ name: "node", type: "bytes32" }],
+    name: "addr",
+    outputs: [{ name: "", type: "address" }],
+    stateMutability: "view",
+    type: "function",
+  },
+] as const;
 
 export function isValidBaseName(name: string): boolean {
   if (!name || typeof name !== "string") return false;
@@ -61,30 +76,16 @@ export async function resolveBasename(name: string): Promise<string | null> {
 }
 
 async function resolveBasenameOnBase(name: string): Promise<string | null> {
-  try {
-    console.log("🔍 Resolving basename via server API:", name);
-
-    const response = await fetch("/api/resolve-basename", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name: name.replace(".base.eth", "") }),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      if (data.success && data.address) {
-        console.log(`✅ Resolved ${name} via server:`, data.address);
-        return data.address;
-      }
-    } else {
-      console.warn(`Server resolution failed with status ${response.status}`);
-    }
-  } catch (error) {
-    console.error("Server-side resolution error:", error);
-  }
-
+  const client = createPublicClient({ chain: base, transport: http() });
+  const node = namehash(normalize(name));
+  const address = await client.readContract({
+    address: L2_RESOLVER_ADDRESS,
+    abi: L2_RESOLVER_ABI,
+    functionName: "addr",
+    args: [node],
+  });
+  if (address && address !== "0x0000000000000000000000000000000000000000")
+    return address;
   return null;
 }
 

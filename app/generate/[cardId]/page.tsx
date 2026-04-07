@@ -145,7 +145,7 @@ export default function GenerateMeepPage() {
 
         const ipfsUrl = (await res.json()) as string;
 
-        // Normalize recipient to checksummed address for the contract
+        // `recipient` is already a resolved 0x address from MintModal; checksum for the contract call only.
         const recipientAddressNormalized = getAddress(recipient);
 
         lastRecipientRef.current = recipient;
