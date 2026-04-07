@@ -75,12 +75,12 @@ export default function GenerateMeepPage() {
   const miniKitAddress = (
     miniKitContext?.client as { wallet?: { accounts?: string[] } } | undefined
   )?.wallet?.accounts?.[0];
-  const publicClient = usePublicClient();
   const {
     writeContractAsync,
     data: txHash,
     error: writeError,
   } = useWriteContract();
+  const publicClient = usePublicClient();
   const { isSuccess: isTxSuccess } = useWaitForTransactionReceipt({
     hash: txHash,
   });
@@ -172,10 +172,7 @@ export default function GenerateMeepPage() {
           chainId: base.id,
         } as unknown as Parameters<typeof writeContractAsync>[0]);
 
-        if (!publicClient) {
-          throw new Error("Unable to read chain state. Please try again.");
-        }
-        await publicClient.waitForTransactionReceipt({ hash: approveTxHash });
+        await publicClient!.waitForTransactionReceipt({ hash: approveTxHash });
 
         await writeContractAsync({
           address: contractAddress,
