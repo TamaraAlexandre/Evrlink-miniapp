@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   useAccount,
+  usePublicClient,
   useWriteContract,
   useWaitForTransactionReceipt,
 } from "wagmi";
@@ -74,6 +75,7 @@ export default function GenerateMeepPage() {
   const miniKitAddress = (
     miniKitContext?.client as { wallet?: { accounts?: string[] } } | undefined
   )?.wallet?.accounts?.[0];
+  const publicClient = usePublicClient();
   const {
     writeContractAsync,
     data: txHash,
@@ -162,20 +164,25 @@ export default function GenerateMeepPage() {
         setRecipientAddress(recipient);
         setRecipientName(recipientInput || "");
 
-        await writeContractAsync({
+        const approveTxHash = await writeContractAsync({
           address: USDC_ADDRESS,
           abi: erc20ApproveAbi,
           functionName: "approve",
           args: [contractAddress, 1_000_000n],
-          
+          chainId: base.id,
         } as unknown as Parameters<typeof writeContractAsync>[0]);
+
+        if (!publicClient) {
+          throw new Error("Unable to read chain state. Please try again.");
+        }
+        await publicClient.waitForTransactionReceipt({ hash: approveTxHash });
 
         await writeContractAsync({
           address: contractAddress,
           abi: nftAbi.abi,
           functionName: "mintGreetingCard",
           args: [ipfsUrl, recipientAddressNormalized],
-          
+          chainId: base.id,
         } as unknown as Parameters<typeof writeContractAsync>[0]);
       } catch (error) {
         console.error("Mint flow error:", error);
