@@ -1,16 +1,40 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { MiniKitProvider } from "@coinbase/onchainkit/minikit";
+import { useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { base } from "wagmi/chains";
+import { createConfig, WagmiProvider, http } from "wagmi";
+import { coinbaseWallet } from "wagmi/connectors";
+import { OnchainKitProvider } from "@coinbase/onchainkit";
+
+const wagmiConfig = createConfig({
+  chains: [base],
+  connectors: [
+    coinbaseWallet({
+      appName: "Evrlink",
+      preference: "all",
+    }),
+  ],
+  transports: {
+    [base.id]: http(),
+  },
+  ssr: true,
+});
 
 export function Providers({ children }: { children: ReactNode }) {
+  const [queryClient] = useState(() => new QueryClient());
   return (
-    <MiniKitProvider
-      apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
-      chain={base}
-    >
-      {children}
-    </MiniKitProvider>
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <OnchainKitProvider
+          apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
+          chain={base}
+          miniKit={{ enabled: true }}
+        >
+          {children}
+        </OnchainKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }
