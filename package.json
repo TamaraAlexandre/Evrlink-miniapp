@@ -13,6 +13,8 @@
     "deploy:sepolia": "cross-env HARDHAT_CONFIG=hardhat.config.cjs npx hardhat run scripts/deploy.ts --network baseSepolia"
   },
   "dependencies": {
+    "@base-org/account": "^2.5.3",
+    "@base-org/account-ui": "^1.0.1",
     "@coinbase/onchainkit": "^1.1.2",
     "@tanstack/react-query": "^5.90.20",
     "@upstash/redis": "^1.36.2",

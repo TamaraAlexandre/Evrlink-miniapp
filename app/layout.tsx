@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: "Evrlink – Digital Greeting Cards",
     description: "Send and recieve greeting cards because some moments should last forever.",
     other: {
-      "base:app_id": "699746e0de5d09de18347da4",
+      "base:app_id": "68ed9e7273010b72f49bc06a",
       "fc:miniapp": JSON.stringify({
         version: "next",
         imageUrl: embedImageUrl,

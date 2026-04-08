@@ -4,12 +4,9 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   useAccount,
-  usePublicClient,
-  useSignTypedData,
   useWriteContract,
 } from "wagmi";
-import { base } from "wagmi/chains";
-import { getAddress, parseSignature } from "viem";
+import { getAddress } from "viem";
 import PageHeader from "../../components/PageHeader";
 import FlipCard from "../../components/FlipCard";
 import CardBackPreview from "../../components/CardBackPreview";
@@ -26,20 +23,9 @@ import {
 import nftAbi from "@/lib/Abi.json";
 import { prepareGreetingCardForUpload } from "@/lib/image-composer";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
+import { pay } from "@base-org/account";
 
 const MAX_MESSAGE_LENGTH = 280;
-
-const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" as const;
-
-const usdcNoncesAbi = [
-  {
-    name: "nonces",
-    inputs: [{ name: "owner", type: "address" }],
-    outputs: [{ name: "", type: "uint256" }],
-    stateMutability: "view",
-    type: "function",
-  },
-] as const;
 
 type ModalState = "none" | "mint" | "success" | "error";
 
@@ -72,8 +58,6 @@ export default function GenerateMeepPage() {
   const miniKitAddress = (
     miniKitContext?.client as { wallet?: { accounts?: string[] } } | undefined
   )?.wallet?.accounts?.[0];
-  const publicClient = usePublicClient();
-  const { signTypedDataAsync } = useSignTypedData();
   const {
     writeContractAsync,
     error: writeError,
@@ -157,51 +141,20 @@ export default function GenerateMeepPage() {
         setRecipientAddress(recipient);
         setRecipientName(recipientInput || "");
 
-        if (!publicClient) {
-          throw new Error("Public client unavailable.");
-        }
+        const payment = await pay({
+          amount: "1.00",
+          to: "0xE0F949358FBde0dFD21e340A80b2F5D2079aD6D5",
+        });
 
-        const nonce = await publicClient.readContract({
-          address: USDC_ADDRESS,
-          abi: usdcNoncesAbi,
-          functionName: "nonces",
-          args: [effectiveAddress as `0x${string}`],
-        });
-        const deadline = BigInt(Math.floor(Date.now() / 1000) + 3600);
-        const signature = await signTypedDataAsync({
-          account: effectiveAddress as `0x${string}`,
-          domain: {
-            name: "USD Coin",
-            version: "2",
-            chainId: 8453,
-            verifyingContract: USDC_ADDRESS,
-          },
-          types: {
-            Permit: [
-              { name: "owner", type: "address" },
-              { name: "spender", type: "address" },
-              { name: "value", type: "uint256" },
-              { name: "nonce", type: "uint256" },
-              { name: "deadline", type: "uint256" },
-            ],
-          },
-          primaryType: "Permit",
-          message: {
-            owner: effectiveAddress as `0x${string}`,
-            spender: contractAddress,
-            value: 1_000_000n,
-            nonce,
-            deadline,
-          },
-        });
-        const { v, r, s } = parseSignature(signature);
+        if (!payment || !payment.id) {
+          throw new Error("Payment failed");
+        }
 
         await writeContractAsync({
           address: contractAddress,
           abi: nftAbi.abi,
-          functionName: "permitAndMint",
-          args: [ipfsUrl, recipientAddressNormalized, deadline, v, r, s],
-          chainId: base.id,
+          functionName: "mintGreetingCard",
+          args: [ipfsUrl, recipientAddressNormalized],
         } as unknown as Parameters<typeof writeContractAsync>[0]);
         setIsMinting(false);
         setModalState("success");
