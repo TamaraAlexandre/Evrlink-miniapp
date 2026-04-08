@@ -4,12 +4,10 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   useAccount,
-  usePublicClient,
-  useWriteContract,
-  useWaitForTransactionReceipt,
+  useSendCalls,
 } from "wagmi";
 import { base } from "wagmi/chains";
-import { getAddress } from "viem";
+import { encodeFunctionData, getAddress } from "viem";
 import PageHeader from "../../components/PageHeader";
 import FlipCard from "../../components/FlipCard";
 import CardBackPreview from "../../components/CardBackPreview";
@@ -75,16 +73,7 @@ export default function GenerateMeepPage() {
   const miniKitAddress = (
     miniKitContext?.client as { wallet?: { accounts?: string[] } } | undefined
   )?.wallet?.accounts?.[0];
-  const {
-    writeContractAsync,
-    data: txHash,
-    error: writeError,
-  } = useWriteContract();
-  const publicClient = usePublicClient();
-  const { isSuccess: isTxSuccess } = useWaitForTransactionReceipt({
-    hash: txHash,
-  });
-  const isSuccess = isTxSuccess;
+  const { sendCallsAsync, error: sendCallsError } = useSendCalls();
 
   const lastRecipientRef = useRef<string | null>(null);
 
@@ -164,23 +153,26 @@ export default function GenerateMeepPage() {
         setRecipientAddress(recipient);
         setRecipientName(recipientInput || "");
 
-        const approveTxHash = await writeContractAsync({
-          address: USDC_ADDRESS,
+        const approveData = encodeFunctionData({
           abi: erc20ApproveAbi,
           functionName: "approve",
           args: [contractAddress, 1_000_000n],
-          chainId: base.id,
-        } as unknown as Parameters<typeof writeContractAsync>[0]);
-
-        await publicClient!.waitForTransactionReceipt({ hash: approveTxHash });
-
-        await writeContractAsync({
-          address: contractAddress,
+        });
+        const mintData = encodeFunctionData({
           abi: nftAbi.abi,
           functionName: "mintGreetingCard",
           args: [ipfsUrl, recipientAddressNormalized],
+        });
+
+        await sendCallsAsync({
           chainId: base.id,
-        } as unknown as Parameters<typeof writeContractAsync>[0]);
+          calls: [
+            { to: USDC_ADDRESS, data: approveData },
+            { to: contractAddress, data: mintData },
+          ],
+        });
+        setIsMinting(false);
+        setModalState("success");
       } catch (error) {
         console.error("Mint flow error:", error);
         setErrorMessage(
@@ -199,13 +191,13 @@ export default function GenerateMeepPage() {
     setModalState("mint");
   };
 
-  // Surface contract write errors into the UI
+  // Surface batched sendCalls errors into the UI
   useEffect(() => {
-    if (!writeError) return;
-    console.error("Contract write error:", writeError);
+    if (!sendCallsError) return;
+    console.error("SendCalls error:", sendCallsError);
 
     let message = "Transaction failed.";
-    const msg = writeError.message || String(writeError);
+    const msg = sendCallsError.message || String(sendCallsError);
     if (msg.includes("User rejected")) {
       message = "Transaction rejected by user.";
     } else if (msg.toLowerCase().includes("insufficient funds")) {
@@ -217,17 +209,7 @@ export default function GenerateMeepPage() {
     setErrorMessage(message);
     setModalState("error");
     setIsMinting(false);
-  }, [writeError]);
-
-  // When mint transaction confirms, show success modal
-  useEffect(() => {
-    if (!isSuccess) return;
-    if (!txHash) return;
-
-    console.log("Mint confirmed:", `tx=${txHash}`);
-    setIsMinting(false);
-    setModalState("success");
-  }, [isSuccess, txHash]);
+  }, [sendCallsError]);
 
   const handleCloseModal = () => {
     setModalState("none");
