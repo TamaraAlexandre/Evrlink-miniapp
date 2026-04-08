@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { LayoutGrid, PenLine, Send } from "lucide-react";
 import StickyAppHeader from "./components/StickyAppHeader";
 import SearchBar from "./components/SearchBar";
 import CategoryPills from "./components/CategoryPills";
@@ -68,31 +67,25 @@ export default function Home() {
 
         <div className="mt-5 flex w-full max-w-md items-center justify-center gap-4">
           <div className="flex min-w-0 flex-1 flex-col items-center gap-2">
-            <LayoutGrid
-              className="size-7 shrink-0 text-[#00B2C7]"
-              strokeWidth={2}
-              aria-hidden
-            />
+            <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#00B2C7] text-sm font-semibold text-white">
+              1
+            </div>
             <span className="text-center text-xs leading-tight text-foreground">
               Pick a card
             </span>
           </div>
           <div className="flex min-w-0 flex-1 flex-col items-center gap-2">
-            <PenLine
-              className="size-7 shrink-0 text-[#00B2C7]"
-              strokeWidth={2}
-              aria-hidden
-            />
+            <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#00B2C7] text-sm font-semibold text-white">
+              2
+            </div>
             <span className="text-center text-xs leading-tight text-foreground">
               Write your message
             </span>
           </div>
           <div className="flex min-w-0 flex-1 flex-col items-center gap-2">
-            <Send
-              className="size-7 shrink-0 text-[#00B2C7]"
-              strokeWidth={2}
-              aria-hidden
-            />
+            <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#00B2C7] text-sm font-semibold text-white">
+              3
+            </div>
             <span className="text-center text-xs leading-tight text-foreground">
               Send for $1
             </span>
