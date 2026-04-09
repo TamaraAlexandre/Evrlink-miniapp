@@ -23,7 +23,6 @@ import {
 } from "@/lib/greeting-cards-data";
 import nftAbi from "@/lib/Abi.json";
 import { prepareGreetingCardForUpload } from "@/lib/image-composer";
-import { useMiniKit } from "@coinbase/onchainkit/minikit";
 import { base } from "@base-org/account";
 
 const MAX_MESSAGE_LENGTH = 280;
@@ -56,10 +55,6 @@ export default function GenerateMeepPage() {
   const [isMinting, setIsMinting] = useState(false);
   const { address: walletAddress, isConnected } = useAccount();
   const { connect, connectors } = useConnect();
-  const { context: miniKitContext } = useMiniKit();
-  const miniKitAddress = (
-    miniKitContext?.client as { wallet?: { accounts?: string[] } } | undefined
-  )?.wallet?.accounts?.[0];
   const {
     writeContractAsync,
     error: writeError,
