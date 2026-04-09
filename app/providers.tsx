@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { base } from "wagmi/chains";
 import { createConfig, WagmiProvider, http } from "wagmi";
 import { baseAccount, injected } from "wagmi/connectors";
-import { OnchainKitProvider } from "@coinbase/onchainkit";
+import { cookieStorage, createStorage } from "wagmi";
 
 const wagmiConfig = createConfig({
   chains: [base],
@@ -16,10 +16,11 @@ const wagmiConfig = createConfig({
       appName: "Evrlink",
     }),
   ],
-  transports: {
-    [base.id]: http("https://mainnet.base.org"),
-  },
+  storage: createStorage({ storage: cookieStorage }),
   ssr: true,
+  transports: {
+    [base.id]: http(),
+  },
 });
 
 export function Providers({ children }: { children: ReactNode }) {
@@ -27,13 +28,7 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <OnchainKitProvider
-          apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
-          chain={base}
-          miniKit={{ enabled: true }}
-        >
-          {children}
-        </OnchainKitProvider>
+        {children}
       </QueryClientProvider>
     </WagmiProvider>
   );
