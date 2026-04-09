@@ -102,13 +102,6 @@ export default function GenerateMeepPage() {
   const handleMintConfirm = (recipient: string, recipientInput?: string) => {
     if (!card) return;
 
-    const effectiveAddress = walletAddress || miniKitAddress;
-    if (!effectiveAddress) {
-      setErrorMessage("Please open Evrlink inside the Base app or connect a wallet to mint.");
-      setModalState("error");
-      return;
-    }
-
     const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as
       | `0x${string}`
       | undefined;
