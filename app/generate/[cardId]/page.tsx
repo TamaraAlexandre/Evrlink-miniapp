@@ -150,12 +150,20 @@ export default function GenerateMeepPage() {
           throw new Error("Payment failed");
         }
 
-        await writeContractAsync({
-          address: contractAddress,
-          abi: nftAbi.abi,
-          functionName: "mintGreetingCard",
-          args: [ipfsUrl, recipientAddressNormalized],
-        } as unknown as Parameters<typeof writeContractAsync>[0]);
+        const mintRes = await fetch("/api/owner-mint", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            uri: ipfsUrl,
+            recipient: recipientAddressNormalized,
+            paymentId: payment.id,
+          }),
+        });
+
+        if (!mintRes.ok) {
+          const data = await mintRes.json().catch(() => null);
+          throw new Error(data?.error || "Minting failed after payment");
+        }
         setIsMinting(false);
         setModalState("success");
       } catch (error) {
