@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useMiniKit } from "@coinbase/onchainkit/minikit";
 import { useRouter } from "next/navigation";
 import StickyAppHeader from "./components/StickyAppHeader";
 import SearchBar from "./components/SearchBar";
@@ -13,7 +14,12 @@ import {
 } from "@/lib/greeting-cards-data";
 
 export default function Home() {
+  const { setFrameReady, isFrameReady } = useMiniKit();
   const router = useRouter();
+
+  useEffect(() => {
+    if (!isFrameReady) setFrameReady();
+  }, [setFrameReady, isFrameReady]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
