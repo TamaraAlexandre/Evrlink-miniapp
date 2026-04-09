@@ -170,8 +170,9 @@ export default function GenerateMeepPage() {
         setModalState("success");
       } catch (error) {
         console.error("Mint flow error:", error);
-        const errMsg = error instanceof Error ? error.message : String(error);
-        setErrorMessage("DEBUG: " + errMsg);
+        setErrorMessage(
+          error instanceof Error ? error.message : "Minting failed. Please try again."
+        );
         setModalState("error");
         setIsMinting(false);
       }
