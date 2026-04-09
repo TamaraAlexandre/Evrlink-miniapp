@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   useAccount,
+  useConnect,
   useWriteContract,
 } from "wagmi";
 import { getAddress } from "viem";
@@ -54,6 +55,7 @@ export default function GenerateMeepPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isMinting, setIsMinting] = useState(false);
   const { address: walletAddress, isConnected } = useAccount();
+  const { connect, connectors } = useConnect();
   const { context: miniKitContext } = useMiniKit();
   const miniKitAddress = (
     miniKitContext?.client as { wallet?: { accounts?: string[] } } | undefined
@@ -62,6 +64,13 @@ export default function GenerateMeepPage() {
     writeContractAsync,
     error: writeError,
   } = useWriteContract();
+
+  // Auto-connect wallet when app loads
+  useEffect(() => {
+    if (!isConnected && connectors.length > 0) {
+      connect({ connector: connectors[0] });
+    }
+  }, [isConnected, connect, connectors]);
 
   const lastRecipientRef = useRef<string | null>(null);
 
