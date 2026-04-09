@@ -24,7 +24,7 @@ import {
 import nftAbi from "@/lib/Abi.json";
 import { prepareGreetingCardForUpload } from "@/lib/image-composer";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
-import { pay } from "@base-org/account";
+import { base } from "@base-org/account";
 
 const MAX_MESSAGE_LENGTH = 280;
 
@@ -143,7 +143,7 @@ export default function GenerateMeepPage() {
         setRecipientAddress(recipient);
         setRecipientName(recipientInput || "");
 
-        const payment = await pay({
+        const payment = await base.pay({
           amount: "1.00",
           to: "0xE0F949358FBde0dFD21e340A80b2F5D2079aD6D5",
         });
