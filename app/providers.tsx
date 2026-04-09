@@ -5,21 +5,16 @@ import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { base } from "wagmi/chains";
 import { createConfig, WagmiProvider } from "wagmi";
-import { createBaseAccountSDK } from "@base-org/account";
-import { custom } from "viem";
-import { cookieStorage, createStorage } from "wagmi";
-
-const sdk = createBaseAccountSDK({
-  appName: "Evrlink",
-  appChainIds: [8453],
-});
+import { injected } from "wagmi/connectors";
+import { http, cookieStorage, createStorage } from "wagmi";
 
 const wagmiConfig = createConfig({
   chains: [base],
+  connectors: [injected()],
   storage: createStorage({ storage: cookieStorage }),
   ssr: true,
   transports: {
-    [base.id]: custom(sdk.getProvider()),
+    [base.id]: http(),
   },
 });
 
