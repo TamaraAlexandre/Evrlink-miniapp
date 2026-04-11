@@ -5,398 +5,57 @@
   "abi": [
     {
       "inputs": [
-        { "internalType": "string", "name": "name", "type": "string" },
-        { "internalType": "string", "name": "symbol", "type": "string" },
-        { "internalType": "address", "name": "initialOwner", "type": "address" }
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
       ],
       "stateMutability": "nonpayable",
       "type": "constructor"
     },
     {
       "inputs": [
-        { "internalType": "address", "name": "sender", "type": "address" },
-        { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
-        { "internalType": "address", "name": "owner", "type": "address" }
-      ],
-      "name": "ERC721IncorrectOwner",
-      "type": "error"
-    },
-    {
-      "inputs": [
-        { "internalType": "address", "name": "operator", "type": "address" },
-        { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-      ],
-      "name": "ERC721InsufficientApproval",
-      "type": "error"
-    },
-    {
-      "inputs": [{ "internalType": "address", "name": "approver", "type": "address" }],
-      "name": "ERC721InvalidApprover",
-      "type": "error"
-    },
-    {
-      "inputs": [{ "internalType": "address", "name": "operator", "type": "address" }],
-      "name": "ERC721InvalidOperator",
-      "type": "error"
-    },
-    {
-      "inputs": [{ "internalType": "address", "name": "owner", "type": "address" }],
-      "name": "ERC721InvalidOwner",
-      "type": "error"
-    },
-    {
-      "inputs": [{ "internalType": "address", "name": "receiver", "type": "address" }],
-      "name": "ERC721InvalidReceiver",
-      "type": "error"
-    },
-    {
-      "inputs": [{ "internalType": "address", "name": "sender", "type": "address" }],
-      "name": "ERC721InvalidSender",
-      "type": "error"
-    },
-    {
-      "inputs": [{ "internalType": "uint256", "name": "tokenId", "type": "uint256" }],
-      "name": "ERC721NonexistentToken",
-      "type": "error"
-    },
-    {
-      "inputs": [{ "internalType": "address", "name": "owner", "type": "address" }],
-      "name": "OwnableInvalidOwner",
-      "type": "error"
-    },
-    {
-      "inputs": [{ "internalType": "address", "name": "account", "type": "address" }],
-      "name": "OwnableUnauthorizedAccount",
-      "type": "error"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        { "indexed": true, "internalType": "address", "name": "owner", "type": "address" },
-        { "indexed": true, "internalType": "address", "name": "approved", "type": "address" },
-        { "indexed": true, "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-      ],
-      "name": "Approval",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        { "indexed": true, "internalType": "address", "name": "owner", "type": "address" },
-        { "indexed": true, "internalType": "address", "name": "operator", "type": "address" },
-        { "indexed": false, "internalType": "bool", "name": "approved", "type": "bool" }
-      ],
-      "name": "ApprovalForAll",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        { "indexed": false, "internalType": "uint256", "name": "_fromTokenId", "type": "uint256" },
-        { "indexed": false, "internalType": "uint256", "name": "_toTokenId", "type": "uint256" }
-      ],
-      "name": "BatchMetadataUpdate",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        { "indexed": false, "internalType": "uint256[]", "name": "tokenIds", "type": "uint256[]" },
-        { "indexed": false, "internalType": "address", "name": "sender", "type": "address" },
-        { "indexed": false, "internalType": "address", "name": "recipient", "type": "address" }
-      ],
-      "name": "BatchMinted",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        { "indexed": false, "internalType": "address", "name": "recipient", "type": "address" },
-        { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
-      ],
-      "name": "FeesForwarded",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        { "indexed": false, "internalType": "uint256", "name": "tokenId", "type": "uint256" },
-        { "indexed": false, "internalType": "address", "name": "sender", "type": "address" },
-        { "indexed": false, "internalType": "address", "name": "recipient", "type": "address" },
-        { "indexed": false, "internalType": "string", "name": "tokenURI", "type": "string" }
-      ],
-      "name": "GreetingCardMinted",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        { "indexed": false, "internalType": "uint256", "name": "_tokenId", "type": "uint256" }
-      ],
-      "name": "MetadataUpdate",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        { "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" },
-        { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }
-      ],
-      "name": "OwnershipTransferred",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        { "indexed": true, "internalType": "address", "name": "from", "type": "address" },
-        { "indexed": true, "internalType": "address", "name": "to", "type": "address" },
-        { "indexed": true, "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-      ],
-      "name": "Transfer",
-      "type": "event"
-    },
-    {
-      "inputs": [],
-      "name": "MAX_SUPPLY",
-      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "MINT_PRICE",
-      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        { "internalType": "address", "name": "to", "type": "address" },
-        { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-      ],
-      "name": "approve",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [{ "internalType": "address", "name": "owner", "type": "address" }],
-      "name": "balanceOf",
-      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        { "internalType": "string[]", "name": "tokenURIs", "type": "string[]" },
-        { "internalType": "address", "name": "recipient", "type": "address" }
-      ],
-      "name": "batchMintGreetingCards",
-      "outputs": [{ "internalType": "uint256[]", "name": "", "type": "uint256[]" }],
-      "stateMutability": "payable",
-      "type": "function"
-    },
-    {
-      "inputs": [{ "internalType": "uint256", "name": "tokenId", "type": "uint256" }],
-      "name": "getApproved",
-      "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [{ "internalType": "uint256", "name": "tokenId", "type": "uint256" }],
-      "name": "getCardDetails",
-      "outputs": [
-        { "internalType": "address", "name": "sender", "type": "address" },
-        { "internalType": "address", "name": "recipient", "type": "address" },
-        { "internalType": "address", "name": "currentOwner", "type": "address" },
-        { "internalType": "string", "name": "uri", "type": "string" }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [{ "internalType": "address", "name": "recipient", "type": "address" }],
-      "name": "getCardsReceived",
-      "outputs": [{ "internalType": "uint256[]", "name": "", "type": "uint256[]" }],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [{ "internalType": "address", "name": "recipient", "type": "address" }],
-      "name": "getCardsReceivedCount",
-      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [{ "internalType": "address", "name": "sender", "type": "address" }],
-      "name": "getCardsSent",
-      "outputs": [{ "internalType": "uint256[]", "name": "", "type": "uint256[]" }],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [{ "internalType": "address", "name": "sender", "type": "address" }],
-      "name": "getCardsSentCount",
-      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "getFeeRecipient",
-      "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        { "internalType": "address", "name": "owner", "type": "address" },
-        { "internalType": "address", "name": "operator", "type": "address" }
-      ],
-      "name": "isApprovedForAll",
-      "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        { "internalType": "string", "name": "uri", "type": "string" },
-        { "internalType": "address", "name": "recipient", "type": "address" }
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
       ],
       "name": "mintGreetingCard",
-      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
       "stateMutability": "payable",
       "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "name",
-      "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-      "name": "originalRecipient",
-      "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-      "name": "originalSender",
-      "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "owner",
-      "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [{ "internalType": "uint256", "name": "tokenId", "type": "uint256" }],
-      "name": "ownerOf",
-      "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "renounceOwnership",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        { "internalType": "address", "name": "from", "type": "address" },
-        { "internalType": "address", "name": "to", "type": "address" },
-        { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-      ],
-      "name": "safeTransferFrom",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        { "internalType": "address", "name": "from", "type": "address" },
-        { "internalType": "address", "name": "to", "type": "address" },
-        { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
-        { "internalType": "bytes", "name": "data", "type": "bytes" }
-      ],
-      "name": "safeTransferFrom",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        { "internalType": "address", "name": "operator", "type": "address" },
-        { "internalType": "bool", "name": "approved", "type": "bool" }
-      ],
-      "name": "setApprovalForAll",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [{ "internalType": "string", "name": "baseURI", "type": "string" }],
-      "name": "setBaseURI",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [{ "internalType": "bytes4", "name": "interfaceId", "type": "bytes4" }],
-      "name": "supportsInterface",
-      "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "symbol",
-      "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [{ "internalType": "uint256", "name": "tokenId", "type": "uint256" }],
-      "name": "tokenURI",
-      "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        { "internalType": "address", "name": "from", "type": "address" },
-        { "internalType": "address", "name": "to", "type": "address" },
-        { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
-      ],
-      "name": "transferFrom",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [{ "internalType": "address", "name": "newOwner", "type": "address" }],
-      "name": "transferOwnership",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "withdraw",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
     }
-  ]
+  ],
+  "bytecode": "0x608060405234801561001057600080fd5b506040516102ab3803806102ab83398101604081905261002f91610112565b50505050610196565b634e487b7160e01b600052604160045260246000fd5b600082601f83011261005f57600080fd5b81516001600160401b038082111561007957610079610038565b604051601f8301601f19908116603f011681019082821181831017156100a1576100a1610038565b81604052838152602092508660208588010111156100be57600080fd5b600091505b838210156100e057858201830151818301840152908201906100c3565b6000602085830101528094505050505092915050565b80516001600160a01b038116811461010d57600080fd5b919050565b6000806000806080858703121561012857600080fd5b84516001600160401b038082111561013f57600080fd5b61014b8883890161004e565b9550602087015191508082111561016157600080fd5b5061016e8782880161004e565b93505061017d604086016100f6565b915061018b606086016100f6565b905092959194509250565b610106806101a56000396000f3fe608060405260043610601c5760003560e01c8063b56cc27c146021575b600080fd5b6035602c3660046047565b60009392505050565b60405190815260200160405180910390f35b600080600060408486031215605b57600080fd5b833567ffffffffffffffff80821115607257600080fd5b818601915086601f830112608557600080fd5b813581811115609357600080fd5b87602082850101111560a457600080fd5b602092830195509350508401356001600160a01b038116811460c557600080fd5b80915050925092509256fea2646970667358221220bb6543e95d6fd361bfe7b42b47a659c58b848f7c7004729271336ac53f0158b864736f6c63430008180033",
+  "deployedBytecode": "0x608060405260043610601c5760003560e01c8063b56cc27c146021575b600080fd5b6035602c3660046047565b60009392505050565b60405190815260200160405180910390f35b600080600060408486031215605b57600080fd5b833567ffffffffffffffff80821115607257600080fd5b818601915086601f830112608557600080fd5b813581811115609357600080fd5b87602082850101111560a457600080fd5b602092830195509350508401356001600160a01b038116811460c557600080fd5b80915050925092509256fea2646970667358221220bb6543e95d6fd361bfe7b42b47a659c58b848f7c7004729271336ac53f0158b864736f6c63430008180033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
 }
