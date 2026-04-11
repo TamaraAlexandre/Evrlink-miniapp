@@ -140,7 +140,7 @@ export default function GenerateMeepPage() {
 
         const payment = await pay({
           amount: "1.00",
-          to: "0xE0F949358FBde0dFD21e340A80b2F5D2079aD6D5",
+          to: "0x393b57b89c67349e0fc184b7b57E44e28eF3b29C",
         });
 
         if (!payment || !payment.id) {
