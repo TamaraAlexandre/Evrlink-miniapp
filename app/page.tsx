@@ -14,7 +14,7 @@ import {
 } from "@/lib/greeting-cards-data";
 
 /** TEMP: set to `false` or remove the SuccessModal block when done previewing. */
-const SHOW_SUCCESS_MODAL_PREVIEW = true;
+const SHOW_SUCCESS_MODAL_PREVIEW = false;
 
 export default function Home() {
   const router = useRouter();
