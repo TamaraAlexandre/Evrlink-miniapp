@@ -94,7 +94,7 @@ export default function Home() {
               3
             </div>
             <span className="text-center text-xs leading-tight text-foreground">
-              Send for $1
+              Send
             </span>
           </div>
         </div>
