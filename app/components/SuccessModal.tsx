@@ -118,7 +118,7 @@ export default function SuccessModal({
           {/* Recipient Address Pill */}
           <div className="inline-flex items-center px-6 py-3 rounded-full bg-surface border border-border-light mb-4">
             <span className="text-sm font-medium text-foreground">
-              {recipientName {displayAddress}{displayAddress} !recipientName.startsWith("0x") ? recipientName : displayAddress}
+              {recipientName && !recipientName.startsWith("0x") ? recipientName : displayAddress}
             </span>
           </div>
 
