@@ -6,16 +6,23 @@ import StickyAppHeader from "./components/StickyAppHeader";
 import SearchBar from "./components/SearchBar";
 import CategoryPills from "./components/CategoryPills";
 import CardFeed from "./components/CardFeed";
+import SuccessModal from "./components/SuccessModal";
 import {
   greetingCardsData,
   getAllCards,
   type GreetingCardData,
 } from "@/lib/greeting-cards-data";
 
+/** TEMP: set to `false` or remove the SuccessModal block when done previewing. */
+const SHOW_SUCCESS_MODAL_PREVIEW = true;
+
 export default function Home() {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [successPreviewOpen, setSuccessPreviewOpen] = useState(SHOW_SUCCESS_MODAL_PREVIEW);
+
+  const previewCard = useMemo(() => getAllCards()[0], []);
 
   const filteredCards = useMemo(() => {
     let cards: GreetingCardData[];
@@ -111,6 +118,16 @@ export default function Home() {
         onMint={handleMint}
       />
 
+      {SHOW_SUCCESS_MODAL_PREVIEW ? (
+        <SuccessModal
+          isOpen={successPreviewOpen}
+          onClose={() => setSuccessPreviewOpen(false)}
+          recipientAddress="0x1234567890123456789012345678901234567890"
+          recipientName="defidevrel.base.eth"
+          cardTitle={previewCard?.title ?? "Greeting Card"}
+          cardImageUrl={previewCard?.paperImage}
+        />
+      ) : null}
     </div>
   );
 }
