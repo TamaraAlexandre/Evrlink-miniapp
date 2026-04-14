@@ -6,7 +6,7 @@ import nftAbi from "@/lib/Abi.json";
 
 export async function POST(req: NextRequest) {
   try {
-    const { uri, recipient, paymentId } = await req.json();
+    const { uri, recipient, paymentId, sender } = await req.json();
 
     if (!uri || !recipient || !paymentId) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -31,11 +31,14 @@ export async function POST(req: NextRequest) {
       transport: http(process.env.NEXT_PUBLIC_PAYMASTER_URL || "https://mainnet.base.org"),
     });
 
+    const recipientAddr = getAddress(recipient);
+    const originalSender = sender != null && String(sender).trim() !== "" ? getAddress(String(sender).trim()) : recipientAddr;
+
     const hash = await client.writeContract({
       address: contractAddress,
       abi: nftAbi.abi,
       functionName: "ownerMint",
-      args: [uri, getAddress(recipient)],
+      args: [uri, recipientAddr, originalSender],
     });
 
     return NextResponse.json({ success: true, hash });

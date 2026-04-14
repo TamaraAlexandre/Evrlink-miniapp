@@ -154,6 +154,7 @@ export default function GenerateMeepPage() {
             uri: ipfsUrl,
             recipient: recipientAddressNormalized,
             paymentId: payment.id,
+            sender: walletAddress,
           }),
         });
 

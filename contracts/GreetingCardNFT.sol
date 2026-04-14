@@ -31,16 +31,16 @@ contract GreetingCardNFT is ERC721, ERC721URIStorage, Pausable, Ownable {
         transferOwnership(initialOwner);
     }
 
-    function ownerMint(string memory uri, address recipient) external onlyOwner returns (uint256) {
+    function ownerMint(string memory uri, address recipient, address originalSender) external onlyOwner returns (uint256) {
         _tokenIds++;
         uint256 tokenId = _tokenIds;
         cardRecipient[tokenId] = recipient;
-        cardSender[tokenId] = msg.sender;
-        cardsSent[msg.sender].push(tokenId);
+        cardSender[tokenId] = originalSender;
+        cardsSent[originalSender].push(tokenId);
         cardsReceived[recipient].push(tokenId);
         _safeMint(recipient, tokenId);
         _setTokenURI(tokenId, uri);
-        emit CardMinted(tokenId, msg.sender, recipient, uri);
+        emit CardMinted(tokenId, originalSender, recipient, uri);
         return tokenId;
     }
 
