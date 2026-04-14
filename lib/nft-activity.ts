@@ -30,6 +30,10 @@ export interface ReceivedCardItem {
   blockNumber: bigint;
   cardTitle: string;
   tags: string[];
+  /** Card template ID — present when minted with the new metadata flow */
+  cardId?: string;
+  /** Personalized message written by sender — empty for pre-designed cards */
+  message?: string;
 }
 
 export interface SentCardItem {
@@ -41,6 +45,50 @@ export interface SentCardItem {
   blockNumber: bigint;
   cardTitle: string;
   tags: string[];
+  /** Card template ID — present when minted with the new metadata flow */
+  cardId?: string;
+  /** Personalized message — empty for pre-designed cards */
+  message?: string;
+}
+
+interface CardMetadata {
+  image: string;
+  cardId?: string;
+  message?: string;
+  name?: string;
+}
+
+/**
+ * Try to load ERC-721 metadata JSON from an IPFS gateway URL.
+ * Falls back gracefully so old cards (raw image URLs) still work.
+ */
+async function resolveMetadata(uri: string): Promise<CardMetadata> {
+  if (!uri || !uri.startsWith("http")) return { image: uri || "/images/meep.png" };
+
+  try {
+    const res = await fetch(uri, {
+      signal: AbortSignal.timeout(8000),
+      headers: { Accept: "application/json, image/*" },
+    });
+
+    const contentType = res.headers.get("content-type") ?? "";
+
+    // New flow: metadata JSON was stored on-chain
+    if (contentType.includes("application/json") || contentType.includes("text/plain")) {
+      const json = (await res.json()) as Record<string, unknown>;
+      return {
+        image: typeof json.image === "string" ? json.image : uri,
+        cardId: typeof json.cardId === "string" ? json.cardId : undefined,
+        message: typeof json.message === "string" ? json.message : undefined,
+        name: typeof json.name === "string" ? json.name : undefined,
+      };
+    }
+  } catch {
+    // Network error / timeout — use URI as direct image URL
+  }
+
+  // Old flow or non-JSON response: treat URI as the card image directly
+  return { image: uri };
 }
 
 function ipfsUriToHttp(uri: string): string {
@@ -178,26 +226,17 @@ export async function fetchReceivedCards(
 
   const zero = "0x0000000000000000000000000000000000000000" as Address;
 
-  type PendingRecv = {
-    tokenId: bigint;
-    sender: Address;
-    rawUri: string;
-  };
-
-  const pending: PendingRecv[] = [];
+  // Collect raw URIs + senders first, then resolve metadata in parallel
+  const rawItems: { tokenId: bigint; uri: string; sender: Address }[] = [];
 
   for (let i = 0; i < results.length; i++) {
     const result = results[i];
     const tokenId = tokenIds[i];
 
     if (result.status === "fulfilled") {
-      // getCardDetails returns tuple: [sender, recipient, currentOwner, uri]
       const d = result.value as readonly [Address, Address, Address, string];
-      const sender = d[0] ?? zero;
-      const uri = (d[3] ?? "").trim();
-      pending.push({ tokenId, sender, rawUri: uri });
+      rawItems.push({ tokenId, uri: (d[3] ?? "").trim(), sender: d[0] ?? zero });
     } else {
-      // Fallback: try tokenURI
       try {
         const uri = await client.readContract({
           address: contractAddress,
@@ -205,32 +244,40 @@ export async function fetchReceivedCards(
           functionName: "tokenURI",
           args: [tokenId],
         });
-        const rawUri = typeof uri === "string" ? uri.trim() : "";
-        pending.push({ tokenId, sender: zero, rawUri });
+        rawItems.push({
+          tokenId,
+          uri: typeof uri === "string" ? uri.trim() : "",
+          sender: zero,
+        });
       } catch {
-        pending.push({ tokenId, sender: zero, rawUri: "" });
+        rawItems.push({ tokenId, uri: "", sender: zero });
       }
     }
   }
 
-  const items = await Promise.all(
-    pending.map(async ({ tokenId, sender, rawUri }) => {
-      const { cardImage, backImage: catalogBack } =
-        await resolveCardDisplayFromTokenUri(rawUri);
-      const backImage = backImageFromTokenUri(rawUri, catalogBack);
-      const item: ReceivedCardItem = {
-        id: `recv-${tokenId}`,
-        tokenId,
-        cardImage,
-        senderAddress: sender,
-        blockNumber: BigInt(0),
-        cardTitle: "Greeting Card",
-        tags: [],
-      };
-      if (backImage) item.backImage = backImage;
-      return item;
-    })
+  // Resolve metadata (JSON or direct image URL) for all cards in parallel
+  const metadataResults = await Promise.allSettled(
+    rawItems.map((r) => resolveMetadata(r.uri))
   );
+
+  const items: ReceivedCardItem[] = rawItems.map((raw, i) => {
+    const meta =
+      metadataResults[i].status === "fulfilled"
+        ? (metadataResults[i] as PromiseFulfilledResult<CardMetadata>).value
+        : { image: raw.uri || "/images/meep.png" };
+
+    return {
+      id: `recv-${raw.tokenId}`,
+      tokenId: raw.tokenId,
+      cardImage: meta.image || "/images/meep.png",
+      senderAddress: raw.sender,
+      blockNumber: BigInt(0),
+      cardTitle: meta.name || "Greeting Card",
+      tags: [],
+      cardId: meta.cardId,
+      message: meta.message,
+    };
+  });
 
   return items;
 }
@@ -281,25 +328,18 @@ export async function fetchSentCards(
     )
   );
 
-  const zeroRecipient = "0x0000000000000000000000000000000000000000" as Address;
+  const zero = "0x0000000000000000000000000000000000000000" as Address;
 
-  type PendingSent = {
-    tokenId: bigint;
-    recipient: Address;
-    rawUri: string;
-  };
-
-  const pending: PendingSent[] = [];
+  // Collect raw URIs + recipients first, then resolve metadata in parallel
+  const rawItems: { tokenId: bigint; uri: string; recipient: Address }[] = [];
 
   for (let i = 0; i < results.length; i++) {
     const result = results[i];
     const tokenId = tokenIds[i];
+
     if (result.status === "fulfilled") {
-      // getCardDetails returns tuple: [sender, recipient, currentOwner, uri]
       const d = result.value as readonly [Address, Address, Address, string];
-      const recipient = d[1] ?? zeroRecipient;
-      const uri = (d[3] ?? "").trim();
-      pending.push({ tokenId, recipient, rawUri: uri });
+      rawItems.push({ tokenId, uri: (d[3] ?? "").trim(), recipient: d[1] ?? zero });
     } else {
       try {
         const uri = await client.readContract({
@@ -308,32 +348,40 @@ export async function fetchSentCards(
           functionName: "tokenURI",
           args: [tokenId],
         });
-        const rawUri = typeof uri === "string" ? uri.trim() : "";
-        pending.push({ tokenId, recipient: zeroRecipient, rawUri });
+        rawItems.push({
+          tokenId,
+          uri: typeof uri === "string" ? uri.trim() : "",
+          recipient: zero,
+        });
       } catch {
-        pending.push({ tokenId, recipient: zeroRecipient, rawUri: "" });
+        rawItems.push({ tokenId, uri: "", recipient: zero });
       }
     }
   }
 
-  const items = await Promise.all(
-    pending.map(async ({ tokenId, recipient, rawUri }) => {
-      const { cardImage, backImage: catalogBack } =
-        await resolveCardDisplayFromTokenUri(rawUri);
-      const backImage = backImageFromTokenUri(rawUri, catalogBack);
-      const item: SentCardItem = {
-        id: `sent-${tokenId}`,
-        tokenId,
-        cardImage,
-        recipientAddress: recipient,
-        blockNumber: BigInt(0),
-        cardTitle: "Greeting Card",
-        tags: [],
-      };
-      if (backImage) item.backImage = backImage;
-      return item;
-    })
+  // Resolve metadata (JSON or direct image URL) for all cards in parallel
+  const metadataResults = await Promise.allSettled(
+    rawItems.map((r) => resolveMetadata(r.uri))
   );
+
+  const items: SentCardItem[] = rawItems.map((raw, i) => {
+    const meta =
+      metadataResults[i].status === "fulfilled"
+        ? (metadataResults[i] as PromiseFulfilledResult<CardMetadata>).value
+        : { image: raw.uri || "/images/meep.png" };
+
+    return {
+      id: `sent-${raw.tokenId}`,
+      tokenId: raw.tokenId,
+      cardImage: meta.image || "/images/meep.png",
+      recipientAddress: raw.recipient,
+      blockNumber: BigInt(0),
+      cardTitle: meta.name || "Greeting Card",
+      tags: [],
+      cardId: meta.cardId,
+      message: meta.message,
+    };
+  });
 
   return items;
 }

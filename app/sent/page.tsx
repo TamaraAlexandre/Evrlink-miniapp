@@ -87,8 +87,8 @@ function SentContent() {
               }
               tags={card.tags}
               cardImage={card.cardImage}
-              backImage={card.backImage}
-              isPreDesignedCard={!!card.backImage}
+              cardId={card.cardId}
+              message={card.message}
               onShare={() => handleShare(card.id)}
             />
           ))}
