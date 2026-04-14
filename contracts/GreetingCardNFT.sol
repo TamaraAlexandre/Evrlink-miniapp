@@ -16,6 +16,9 @@ contract GreetingCardNFT is ERC721, ERC721URIStorage, Pausable, Ownable {
     uint256 public constant ONE_USDC = 1_000_000;
     uint256 private _tokenIds;
     mapping(uint256 => address) public cardRecipient;
+    mapping(address => uint256[]) private cardsSent;
+    mapping(address => uint256[]) private cardsReceived;
+    mapping(uint256 => address) private cardSender;
 
     event CardMinted(uint256 indexed tokenId, address indexed sender, address indexed recipient, string tokenURI);
 
@@ -32,6 +35,9 @@ contract GreetingCardNFT is ERC721, ERC721URIStorage, Pausable, Ownable {
         _tokenIds++;
         uint256 tokenId = _tokenIds;
         cardRecipient[tokenId] = recipient;
+        cardSender[tokenId] = msg.sender;
+        cardsSent[msg.sender].push(tokenId);
+        cardsReceived[recipient].push(tokenId);
         _safeMint(recipient, tokenId);
         _setTokenURI(tokenId, uri);
         emit CardMinted(tokenId, msg.sender, recipient, uri);
@@ -43,10 +49,32 @@ contract GreetingCardNFT is ERC721, ERC721URIStorage, Pausable, Ownable {
         _tokenIds++;
         uint256 tokenId = _tokenIds;
         cardRecipient[tokenId] = recipient;
+        cardSender[tokenId] = msg.sender;
+        cardsSent[msg.sender].push(tokenId);
+        cardsReceived[recipient].push(tokenId);
         _safeMint(recipient, tokenId);
         _setTokenURI(tokenId, uri);
         emit CardMinted(tokenId, msg.sender, recipient, uri);
         return tokenId;
+    }
+
+    function getCardsSent(address sender) external view returns (uint256[] memory) {
+        return cardsSent[sender];
+    }
+
+    function getCardsReceived(address recipient) external view returns (uint256[] memory) {
+        return cardsReceived[recipient];
+    }
+
+    function getCardDetails(uint256 tokenId)
+        external
+        view
+        returns (address sender, address recipient, address currentOwner, string memory uri)
+    {
+        sender = cardSender[tokenId];
+        recipient = cardRecipient[tokenId];
+        currentOwner = ownerOf(tokenId);
+        uri = tokenURI(tokenId);
     }
 
     function setPrice(uint256 newPrice) external onlyOwner { price = newPrice; }
