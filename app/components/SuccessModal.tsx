@@ -78,7 +78,7 @@ export default function SuccessModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="bg-white rounded-3xl overflow-hidden shadow-2xl w-full max-w-sm mx-auto">
-        <div sty=le={{ height: 6, background: "linear-gradient(90deg, #00B2C7, #00D4A8)" }} />
+        <div style={{ height: 6, background: "linear-gradient(90deg, #00B2C7, #00D4A8)" }} />
         <div className="relative px-6 pt-5 pb-0">
           <button type="button" onClick={onClose} className="absolute top-4 right-4 flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
