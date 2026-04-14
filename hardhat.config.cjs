@@ -1,7 +1,6 @@
-// CommonJS config so Hardhat works when package.json has "type": "module".
 require("@nomicfoundation/hardhat-toolbox");
+require("dotenv").config();
 
-/** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
   solidity: {
     version: "0.8.24",
@@ -16,13 +15,9 @@ module.exports = {
     artifacts: "./artifacts",
   },
   networks: {
-    baseSepolia: {
-      url: process.env.BASE_SEPOLIA_RPC_URL || "https://sepolia.base.org",
-      accounts:
-        process.env.DEPLOYER_PRIVATE_KEY &&
-        process.env.DEPLOYER_PRIVATE_KEY.length > 0
-          ? [process.env.DEPLOYER_PRIVATE_KEY]
-          : [],
+    base: {
+      url: "https://mainnet.base.org",
+      accounts: [process.env.DEPLOYER_PRIVATE_KEY],
     },
   },
 };

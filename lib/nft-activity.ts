@@ -7,13 +7,25 @@
 import type { Address } from "viem";
 import { getAddress, type PublicClient } from "viem";
 import nftAbi from "./Abi.json";
+import { getAllCards } from "./greeting-cards-data";
 
 const abi = (nftAbi as { abi: readonly unknown[] }).abi;
+
+const IPFS_GATEWAY_PREFIX = "https://ipfs.io/ipfs/";
+const MIGGLES_BACK_IMAGE = "/images/categories/miggles/miggles2.png";
+
+function backImageFromTokenUri(rawUri: string, resolvedBack?: string): string | undefined {
+  if (rawUri.toLowerCase().includes("miggles")) {
+    return MIGGLES_BACK_IMAGE;
+  }
+  return resolvedBack;
+}
 
 export interface ReceivedCardItem {
   id: string;
   tokenId: bigint;
   cardImage: string;
+  backImage?: string;
   senderAddress: Address;
   blockNumber: bigint;
   cardTitle: string;
@@ -28,6 +40,7 @@ export interface SentCardItem {
   id: string;
   tokenId: bigint;
   cardImage: string;
+  backImage?: string;
   recipientAddress: Address;
   blockNumber: bigint;
   cardTitle: string;
@@ -76,6 +89,99 @@ async function resolveMetadata(uri: string): Promise<CardMetadata> {
 
   // Old flow or non-JSON response: treat URI as the card image directly
   return { image: uri };
+}
+
+function ipfsUriToHttp(uri: string): string {
+  const t = uri.trim();
+  if (t.startsWith("ipfs://")) {
+    return `${IPFS_GATEWAY_PREFIX}${t.slice("ipfs://".length)}`;
+  }
+  return t;
+}
+
+function resolveNftImageField(image: string): string {
+  const i = image.trim();
+  if (i.startsWith("ipfs://")) return ipfsUriToHttp(i);
+  return i;
+}
+
+async function fetchMetadataJson(tokenUri: string): Promise<unknown | null> {
+  const url = ipfsUriToHttp(tokenUri.trim());
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const text = await res.text();
+    const trimmed = text.trim();
+    if (!trimmed.startsWith("{")) return null;
+    return JSON.parse(trimmed) as unknown;
+  } catch {
+    return null;
+  }
+}
+
+function imageUrlMatchesPaperImage(metaImage: string, paperImage: string): boolean {
+  const paper = paperImage.trim();
+  const meta = metaImage.trim();
+  if (!paper || !meta) return false;
+  if (meta === paper) return true;
+  const paperPath = paper.startsWith("/") ? paper.slice(1) : paper;
+  const lowerMeta = meta.toLowerCase();
+  const lowerPaper = paperPath.toLowerCase();
+  if (lowerMeta.endsWith(lowerPaper)) return true;
+  if (lowerMeta.includes(`/${lowerPaper}`)) return true;
+  try {
+    const pathname = new URL(meta).pathname.toLowerCase();
+    if (pathname.endsWith(`/${lowerPaper}`) || pathname.endsWith(lowerPaper)) return true;
+    if (pathname === paper.toLowerCase()) return true;
+  } catch {
+    /* not an absolute URL */
+  }
+  const basePaper = paperPath.split("/").pop() ?? "";
+  const baseMeta = meta.split("/").pop()?.split("?")[0] ?? "";
+  if (basePaper && baseMeta && basePaper.toLowerCase() === baseMeta.toLowerCase()) return true;
+  return false;
+}
+
+function findBackImageForMetadataImage(metaImageRaw: string): string | undefined {
+  const displayResolved = resolveNftImageField(metaImageRaw);
+  for (const card of getAllCards()) {
+    if (
+      (imageUrlMatchesPaperImage(metaImageRaw, card.paperImage) ||
+        imageUrlMatchesPaperImage(displayResolved, card.paperImage)) &&
+      card.backImage
+    ) {
+      return card.backImage;
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Resolves token URI: fetches ERC-721 metadata JSON when possible, uses `image` for card art,
+ * and matches that image to catalog `paperImage` to attach `backImage` for pre-designed cards.
+ */
+async function resolveCardDisplayFromTokenUri(
+  rawUri: string
+): Promise<{ cardImage: string; backImage?: string }> {
+  const trimmed = rawUri.trim();
+  const fallbackImage = trimmed || "/images/meep.png";
+  if (!trimmed) {
+    return { cardImage: "/images/meep.png" };
+  }
+
+  const meta = await fetchMetadataJson(trimmed);
+  if (!meta || typeof meta !== "object" || meta === null || !("image" in meta)) {
+    return { cardImage: fallbackImage };
+  }
+
+  const imageRaw = (meta as { image?: unknown }).image;
+  if (typeof imageRaw !== "string" || !imageRaw.trim()) {
+    return { cardImage: fallbackImage };
+  }
+
+  const cardImage = resolveNftImageField(imageRaw);
+  const backImage = findBackImageForMetadataImage(imageRaw);
+  return backImage ? { cardImage, backImage } : { cardImage };
 }
 
 /**

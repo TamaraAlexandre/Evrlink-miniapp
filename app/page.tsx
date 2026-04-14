@@ -2,21 +2,27 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { LayoutGrid, PenLine, Send } from "lucide-react";
 import StickyAppHeader from "./components/StickyAppHeader";
 import SearchBar from "./components/SearchBar";
 import CategoryPills from "./components/CategoryPills";
 import CardFeed from "./components/CardFeed";
+import SuccessModal from "./components/SuccessModal";
 import {
   greetingCardsData,
   getAllCards,
   type GreetingCardData,
 } from "@/lib/greeting-cards-data";
 
+/** TEMP: set to `false` or remove the SuccessModal block when done previewing. */
+const SHOW_SUCCESS_MODAL_PREVIEW = false;
+
 export default function Home() {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [successPreviewOpen, setSuccessPreviewOpen] = useState(SHOW_SUCCESS_MODAL_PREVIEW);
+
+  const previewCard = useMemo(() => getAllCards()[0], []);
 
   const filteredCards = useMemo(() => {
     let cards: GreetingCardData[];
@@ -68,33 +74,27 @@ export default function Home() {
 
         <div className="mt-5 flex w-full max-w-md items-center justify-center gap-4">
           <div className="flex min-w-0 flex-1 flex-col items-center gap-2">
-            <LayoutGrid
-              className="size-7 shrink-0 text-[#00B2C7]"
-              strokeWidth={2}
-              aria-hidden
-            />
+            <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#00B2C7] text-sm font-semibold text-white">
+              1
+            </div>
             <span className="text-center text-xs leading-tight text-foreground">
               Pick a card
             </span>
           </div>
           <div className="flex min-w-0 flex-1 flex-col items-center gap-2">
-            <PenLine
-              className="size-7 shrink-0 text-[#00B2C7]"
-              strokeWidth={2}
-              aria-hidden
-            />
+            <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#00B2C7] text-sm font-semibold text-white">
+              2
+            </div>
             <span className="text-center text-xs leading-tight text-foreground">
               Write your message
             </span>
           </div>
           <div className="flex min-w-0 flex-1 flex-col items-center gap-2">
-            <Send
-              className="size-7 shrink-0 text-[#00B2C7]"
-              strokeWidth={2}
-              aria-hidden
-            />
+            <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#00B2C7] text-sm font-semibold text-white">
+              3
+            </div>
             <span className="text-center text-xs leading-tight text-foreground">
-              Send for $1
+              Send
             </span>
           </div>
         </div>
@@ -118,6 +118,16 @@ export default function Home() {
         onMint={handleMint}
       />
 
+      {SHOW_SUCCESS_MODAL_PREVIEW ? (
+        <SuccessModal
+          isOpen={successPreviewOpen}
+          onClose={() => setSuccessPreviewOpen(false)}
+          recipientAddress="0x1234567890123456789012345678901234567890"
+          recipientName="defidevrel.base.eth"
+          cardTitle={previewCard?.title ?? "Greeting Card"}
+          cardImageUrl={previewCard?.paperImage}
+        />
+      ) : null}
     </div>
   );
 }

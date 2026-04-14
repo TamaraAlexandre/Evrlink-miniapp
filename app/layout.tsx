@@ -23,20 +23,6 @@ export async function generateMetadata(): Promise<Metadata> {
     description: "Send and recieve greeting cards because some moments should last forever.",
     other: {
       "base:app_id": "699746e0de5d09de18347da4",
-      "fc:miniapp": JSON.stringify({
-        version: "next",
-        imageUrl: embedImageUrl,
-        button: {
-          title: "Open Evrlink",
-          action: {
-            type: "launch_miniapp",
-            name: "Evrlink",
-            url: appUrl,
-            splashImageUrl: `${appUrl}/splash.png`,
-            splashBackgroundColor: "#00B2C7",
-          },
-        },
-      }),
     },
   };
 }

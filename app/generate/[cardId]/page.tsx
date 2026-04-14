@@ -2,9 +2,12 @@
 
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
-import { base } from "wagmi/chains";
-import { parseEther, getAddress, encodeFunctionData } from "viem";
+import {
+  useAccount,
+  useConnect,
+  useWriteContract,
+} from "wagmi";
+import { getAddress } from "viem";
 import PageHeader from "../../components/PageHeader";
 import FlipCard from "../../components/FlipCard";
 import CardBackPreview from "../../components/CardBackPreview";
@@ -20,25 +23,9 @@ import {
 } from "@/lib/greeting-cards-data";
 import nftAbi from "@/lib/Abi.json";
 import { prepareGreetingCardForUpload } from "@/lib/image-composer";
+import { pay } from "@base-org/account";
 
 const MAX_MESSAGE_LENGTH = 280;
-
-// Base chain contract address for USDC
-const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" as const;
-
-// Minimal ABI for USDC approve
-const erc20ApproveAbi = [
-  {
-    type: "function" as const,
-    name: "approve",
-    inputs: [
-      { name: "spender", type: "address" },
-      { name: "amount", type: "uint256" },
-    ],
-    outputs: [{ name: "", type: "bool" }],
-    stateMutability: "nonpayable" as const,
-  },
-] as const;
 
 type ModalState = "none" | "mint" | "success" | "error";
 
@@ -67,15 +54,18 @@ export default function GenerateMeepPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isMinting, setIsMinting] = useState(false);
   const { address: walletAddress, isConnected } = useAccount();
+  const { connect, connectors } = useConnect();
   const {
     writeContractAsync,
-    data: txHash,
     error: writeError,
   } = useWriteContract();
-  const { isSuccess: isTxSuccess } = useWaitForTransactionReceipt({
-    hash: txHash,
-  });
-  const isSuccess = isTxSuccess;
+
+  // Auto-connect wallet when app loads
+  useEffect(() => {
+    if (!isConnected && connectors.length > 0) {
+      connect({ connector: connectors[0] });
+    }
+  }, [isConnected, connect, connectors]);
 
   const lastRecipientRef = useRef<string | null>(null);
 
@@ -106,12 +96,6 @@ export default function GenerateMeepPage() {
 
   const handleMintConfirm = (recipient: string, recipientInput?: string) => {
     if (!card) return;
-
-    if (!isConnected || !walletAddress) {
-      setErrorMessage("Please open Evrlink inside the Base app or connect a wallet to mint.");
-      setModalState("error");
-      return;
-    }
 
     const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as
       | `0x${string}`
@@ -169,32 +153,39 @@ export default function GenerateMeepPage() {
         // The on-chain URI points to the metadata JSON (ERC-721 standard)
         const ipfsUrl = (await metaRes.json()) as string;
 
-        // Normalize recipient to checksummed address for the contract
+        // `recipient` is already a resolved 0x address from MintModal; checksum for the contract call only.
         const recipientAddressNormalized = getAddress(recipient);
 
         lastRecipientRef.current = recipient;
         setRecipientAddress(recipient);
         setRecipientName(recipientInput || "");
 
-        // 3) Approve 1 USDC for the NFT contract
-        const usdcAmount = 1_000_000n; // 1 USDC (6 decimals)
+        const payment = await pay({
+          amount: "1.00",
+          to: "0x393b57b89c67349e0fc184b7b57E44e28eF3b29C",
+        });
 
-        await writeContractAsync({
-          address: USDC_ADDRESS,
-          abi: erc20ApproveAbi,
-          functionName: "approve",
-          args: [contractAddress, usdcAmount],
-          chainId: base.id,
-        } as unknown as Parameters<typeof writeContractAsync>[0]);
+        if (!payment || !payment.id) {
+          throw new Error("Payment failed");
+        }
 
-        // 4) Mint the greeting card paying with USDC
-        await writeContractAsync({
-          address: contractAddress,
-          abi: (nftAbi as { abi: readonly unknown[] }).abi,
-          functionName: "mintGreetingCard",
-          args: [ipfsUrl, recipientAddressNormalized, usdcAmount],
-          chainId: base.id,
-        } as unknown as Parameters<typeof writeContractAsync>[0]);
+        const mintRes = await fetch("/api/owner-mint", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            uri: ipfsUrl,
+            recipient: recipientAddressNormalized,
+            paymentId: payment.id,
+            sender: walletAddress,
+          }),
+        });
+
+        if (!mintRes.ok) {
+          const data = await mintRes.json().catch(() => null);
+          throw new Error(data?.error || "Minting failed after payment");
+        }
+        setIsMinting(false);
+        setModalState("success");
       } catch (error) {
         console.error("Mint flow error:", error);
         setErrorMessage(
@@ -232,16 +223,6 @@ export default function GenerateMeepPage() {
     setModalState("error");
     setIsMinting(false);
   }, [writeError]);
-
-  // When transaction confirms, show success modal
-  useEffect(() => {
-    if (!isSuccess) return;
-    if (!txHash) return;
-
-    console.log("Mint confirmed:", `tx=${txHash}`);
-    setIsMinting(false);
-    setModalState("success");
-  }, [isSuccess, txHash]);
 
   const handleCloseModal = () => {
     setModalState("none");
@@ -397,6 +378,8 @@ export default function GenerateMeepPage() {
         recipientAddress={recipientAddress}
         recipientName={recipientName}
         cardTitle={card?.title || "Greeting Card"}
+        cardImageUrl={card?.paperImage}
+        cardBackImageUrl={card?.backImage}
       />
 
       <ErrorModal
