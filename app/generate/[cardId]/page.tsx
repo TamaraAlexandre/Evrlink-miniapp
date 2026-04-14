@@ -357,6 +357,7 @@ export default function GenerateMeepPage() {
         recipientName={recipientName}
         cardTitle={card?.title || "Greeting Card"}
         cardImageUrl={card?.paperImage}
+        cardBackImageUrl={card?.backImage}
       />
 
       <ErrorModal

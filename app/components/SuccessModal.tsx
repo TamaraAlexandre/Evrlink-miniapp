@@ -11,6 +11,7 @@ interface SuccessModalProps {
   recipientName?: string;
   cardTitle?: string;
   cardImageUrl?: string;
+  cardBackImageUrl?: string;
   cardMessage?: string;
 }
 
@@ -23,6 +24,7 @@ export default function SuccessModal({
   recipientName,
   cardTitle,
   cardImageUrl,
+  cardBackImageUrl,
   cardMessage,
 }: SuccessModalProps) {
   const router = useRouter();
@@ -100,15 +102,21 @@ export default function SuccessModal({
                   </div>
                 )}
               </div>
-              <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", backfaceVisibility: "hidden", transform: "rotateY(180deg)", background: "linear-gradient(145deg, #E6F8FB, #ffffff)", border: "0.5px solid #B3EBF2", borderRadius: 14, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, boxSizing: "border-box", gap: 10 }}>
-                <div style={{ width: 36, height: 3, background: "linear-gradient(90deg, #00B2C7, #00D4A8)", borderRadius: 2 }} />
-                <p style={{ fontSize: 11, color: "#0F6E56", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600, margin: 0 }}>To</p>
-                <p style={{ fontSize: 16, fontWeight: 600, color: "#085041", margin: 0 }}>{displayName}</p>
-                {cardMessage && (
-                  <p style={{ fontSize: 13, color: "#444", textAlign: "center", lineHeight: 1.6, fontStyle: "italic", margin: 0 }}>"{cardMessage}"</p>
+              <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", backfaceVisibility: "hidden", transform: "rotateY(180deg)", background: "linear-gradient(145deg, #E6F8FB, #ffffff)", border: "0.5px solid #B3EBF2", borderRadius: 14, overflow: "hidden" }}>
+                {cardBackImageUrl ? (
+                  <img src={cardBackImageUrl} alt={cardTitle ? `${cardTitle} back` : "Card back preview"} style={{ width: "100%", height: "100%", display: "block", objectFit: "cover" }} />
+                ) : (
+                  <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, boxSizing: "border-box", gap: 10 }}>
+                    <div style={{ width: 36, height: 3, background: "linear-gradient(90deg, #00B2C7, #00D4A8)", borderRadius: 2 }} />
+                    <p style={{ fontSize: 11, color: "#0F6E56", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600, margin: 0 }}>To</p>
+                    <p style={{ fontSize: 16, fontWeight: 600, color: "#085041", margin: 0 }}>{displayName}</p>
+                    {cardMessage && (
+                      <p style={{ fontSize: 13, color: "#444", textAlign: "center", lineHeight: 1.6, fontStyle: "italic", margin: 0 }}>"{cardMessage}"</p>
+                    )}
+                    <div style={{ width: 36, height: 3, background: "linear-gradient(90deg, #00B2C7, #00D4A8)", borderRadius: 2 }} />
+                    <p style={{ fontSize: 10, color: "#0F6E56", letterSpacing: "0.06em", textTransform: "uppercase", margin: 0 }}>Sent via Evrlink</p>
+                  </div>
                 )}
-                <div style={{ width: 36, height: 3, background: "linear-gradient(90deg, #00B2C7, #00D4A8)", borderRadius: 2 }} />
-                <p style={{ fontSize: 10, color: "#0F6E56", letterSpacing: "0.06em", textTransform: "uppercase", margin: 0 }}>Sent via Evrlink</p>
               </div>
             </div>
           </div>
