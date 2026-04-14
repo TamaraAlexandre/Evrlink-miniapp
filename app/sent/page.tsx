@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import StickyAppHeader from "../components/StickyAppHeader";
 import TransactionCardItem from "../components/TransactionCardItem";
 import AddressDisplay from "../components/AddressDisplay";
+import { useAccount as useBaseAccount } from "@base-org/account";
 import { useAccount } from "wagmi";
 import { isAddress } from "viem";
 import type { Address } from "viem";
@@ -23,7 +24,8 @@ function SentContent() {
     error,
     isConfigured,
   } = useSentCards(overrideAddress);
-  const { address: connectedAddress } = useAccount();
+  const { address: baseAddress } = useBaseAccount();
+  const connectedAddress = useAccount().address ?? baseAddress;
 
   const handleShare = (cardId: string) => {
     if (navigator.share) {

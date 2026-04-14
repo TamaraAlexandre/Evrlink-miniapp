@@ -3,6 +3,7 @@
 import StickyAppHeader from "../components/StickyAppHeader";
 import TransactionCardItem from "../components/TransactionCardItem";
 import AddressDisplay from "../components/AddressDisplay";
+import { useAccount as useBaseAccount } from "@base-org/account";
 import { useAccount } from "wagmi";
 import { useReceivedCards } from "@/lib/use-nft-activity";
 
@@ -13,7 +14,8 @@ export default function ReceivedPage() {
     error,
     isConfigured,
   } = useReceivedCards();
-  const { address: connectedAddress } = useAccount();
+  const { address: baseAddress } = useBaseAccount();
+  const connectedAddress = useAccount().address ?? baseAddress;
 
   const handleShare = (cardId: string) => {
     if (navigator.share) {
