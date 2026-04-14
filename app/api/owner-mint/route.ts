@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     const client = createWalletClient({
       account,
       chain: base,
-      transport: http("https://mainnet.base.org"),
+      transport: http(process.env.NEXT_PUBLIC_PAYMASTER_URL || "https://mainnet.base.org"),
     });
 
     const hash = await client.writeContract({
