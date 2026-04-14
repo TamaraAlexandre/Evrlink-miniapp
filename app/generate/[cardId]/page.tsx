@@ -131,21 +131,43 @@ export default function GenerateMeepPage() {
         // 1) Compose greeting card image with message
         const file = await prepareGreetingCardForUpload(card, message);
 
-        // 2) Upload to IPFS via server route
+        // 2) Upload composed image to IPFS
         const formData = new FormData();
         formData.append("file", file);
 
-        const res = await fetch("/api/files", {
+        const imgRes = await fetch("/api/files", {
           method: "POST",
           body: formData,
         });
 
-        if (!res.ok) {
-          const data = await res.json().catch(() => null);
+        if (!imgRes.ok) {
+          const data = await imgRes.json().catch(() => null);
           throw new Error(data?.error || "Failed to upload card image to IPFS");
         }
 
-        const ipfsUrl = (await res.json()) as string;
+        const imageIpfsUrl = (await imgRes.json()) as string;
+
+        // 3) Upload ERC-721 metadata JSON to IPFS so sent/received pages
+        //    can recover the cardId, message, and back image later.
+        const metaRes = await fetch("/api/metadata", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: card.title,
+            description: card.description || "An Evrlink greeting card",
+            image: imageIpfsUrl,
+            cardId: card.id,
+            message: isPreDesignedCard ? "" : message,
+          }),
+        });
+
+        if (!metaRes.ok) {
+          const data = await metaRes.json().catch(() => null);
+          throw new Error(data?.error || "Failed to upload card metadata to IPFS");
+        }
+
+        // The on-chain URI points to the metadata JSON (ERC-721 standard)
+        const ipfsUrl = (await metaRes.json()) as string;
 
         // Normalize recipient to checksummed address for the contract
         const recipientAddressNormalized = getAddress(recipient);

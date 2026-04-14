@@ -87,6 +87,8 @@ function SentContent() {
               }
               tags={card.tags}
               cardImage={card.cardImage}
+              cardId={card.cardId}
+              message={card.message}
               onShare={() => handleShare(card.id)}
             />
           ))}

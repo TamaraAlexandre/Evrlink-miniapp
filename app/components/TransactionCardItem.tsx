@@ -2,28 +2,70 @@
 
 import FlipCard from "./FlipCard";
 import CardBackPreview from "./CardBackPreview";
+import { greetingCardsData } from "@/lib/greeting-cards-data";
 
 interface TransactionCardItemProps {
-  /** The header line — rendered as JSX so parent can bold names, etc. */
   headerContent: React.ReactNode;
   tags: string[];
   cardImage: string;
-  /** Optional message to display on the back of the card */
+  /**
+   * Card template ID stored in the NFT metadata.
+   * Used to look up the local card (e.g. Miggles backImage).
+   */
+  cardId?: string;
+  /**
+   * Personalized message written by the sender.
+   * Empty for pre-designed cards (Miggles, etc.).
+   */
   message?: string;
   onShare?: () => void;
+}
+
+/** Look up a card template by its ID across all categories. */
+function findLocalCard(cardId: string) {
+  for (const category of Object.values(greetingCardsData)) {
+    const found = category.cards.find((c) => c.id === cardId);
+    if (found) return found;
+  }
+  return null;
 }
 
 /**
  * Shared card component used on both Sent and Received pages.
  * Shows a header line, tags, a flippable card, and a Share button.
+ *
+ * Flip-back priority:
+ *   1. Pre-designed card  → shows local backImage from greetingCardsData
+ *   2. User-message card  → shows CardBackPreview with the real message
+ *   3. Old card (no meta) → shows CardBackPreview with empty placeholder
  */
 export default function TransactionCardItem({
   headerContent,
   tags,
   cardImage,
+  cardId,
   message = "",
   onShare,
 }: TransactionCardItemProps) {
+  // Resolve the local card template so we can get backImage
+  const localCard = cardId ? findLocalCard(cardId) : null;
+  const backImage = localCard?.backImage ?? null;
+
+  const backContent = backImage ? (
+    // Pre-designed card: show the pre-made back image
+    <div className="h-full w-full overflow-hidden rounded-2xl">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={backImage}
+        alt="Card back"
+        className="block h-full w-full object-cover"
+      />
+    </div>
+  ) : (
+    // User-message card or old card: show message preview
+    <CardBackPreview message={message} maxLength={280} embedded />
+  );
+
   return (
     <div className="px-4 py-3">
       {/* Header + Tags */}
@@ -42,13 +84,7 @@ export default function TransactionCardItem({
       <FlipCard
         cardImage={cardImage}
         cardTitle="Greeting card"
-        backContent={
-          <CardBackPreview
-            message={message}
-            maxLength={280}
-            embedded
-          />
-        }
+        backContent={backContent}
       />
 
       {/* Share Button */}
