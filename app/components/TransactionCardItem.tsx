@@ -8,6 +8,8 @@ interface TransactionCardItemProps {
   headerContent: React.ReactNode;
   tags: string[];
   cardImage: string;
+  backImage?: string;
+  isPreDesignedCard?: boolean;
   /** Optional message to display on the back of the card */
   message?: string;
   onShare?: () => void;
@@ -21,6 +23,8 @@ export default function TransactionCardItem({
   headerContent,
   tags,
   cardImage,
+  backImage,
+  isPreDesignedCard,
   message = "",
   onShare,
 }: TransactionCardItemProps) {
@@ -43,11 +47,15 @@ export default function TransactionCardItem({
         cardImage={cardImage}
         cardTitle="Greeting card"
         backContent={
-          <CardBackPreview
-            message={message}
-            maxLength={280}
-            embedded
-          />
+          isPreDesignedCard && backImage ? (
+            <img src={backImage} style={{ width: "100%", height: "auto", display: "block" }} alt="Card back" />
+          ) : (
+            <CardBackPreview
+              message={message}
+              maxLength={280}
+              embedded
+            />
+          )
         }
       />
 

@@ -87,6 +87,12 @@ function SentContent() {
               }
               tags={card.tags}
               cardImage={card.cardImage}
+              backImage={"backImage" in card ? (card.backImage as string | undefined) : undefined}
+              isPreDesignedCard={
+                "isPreDesignedCard" in card
+                  ? (card.isPreDesignedCard as boolean | undefined)
+                  : undefined
+              }
               onShare={() => handleShare(card.id)}
             />
           ))}
