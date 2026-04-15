@@ -58,7 +58,7 @@ export default function SuccessModal({
     router.push("/");
   };
 
-  const handleShare = async () => {
+  const handleShare = () => {
     let mention = displayAddress;
     if (recipientName) {
       const name = recipientName.trim();
@@ -68,13 +68,7 @@ export default function SuccessModal({
     }
     const label = cardTitle || "a greeting card";
     const text = `I just sent ${mention} "${label}" on @evrlink! 💌\n\nSend yours onchain 👇`;
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: "Evrlink Greeting Card", text, url: APP_URL });
-      } catch (err) {
-        console.warn("navigator.share failed", err);
-      }
-    }
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(APP_URL)}`, '_blank');
   };
 
   return (
