@@ -15,8 +15,6 @@ interface SuccessModalProps {
   cardMessage?: string;
 }
 
-const APP_URL = process.env.NEXT_PUBLIC_URL || "https://evrlinkapp.com";
-
 export default function SuccessModal({
   isOpen,
   onClose,
@@ -67,8 +65,8 @@ export default function SuccessModal({
       }
     }
     const label = cardTitle || "a greeting card";
-    const text = `I just sent ${mention} "${label}" on @evrlink! 💌\n\nSend yours onchain 👇`;
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(APP_URL)}`, '_blank');
+    const text = `I just sent ${mention} a greeting card on Evrlink! Send yours at https://evrlinkapp.com 💌`;
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
   };
 
   return (
