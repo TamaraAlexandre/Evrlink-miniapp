@@ -66,7 +66,7 @@ export default function SuccessModal({
     }
     const label = cardTitle || "a greeting card";
     const text = `I just sent ${mention} a greeting card on Evrlink! Send yours at https://evrlinkapp.com 💌`;
-    window.open(`https://x.com/intent/post?text=${encodeURIComponent(text)}`, '_blank');
+    window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
   };
 
   return (
