@@ -25,9 +25,14 @@ function SentContent() {
   } = useSentCards(overrideAddress);
   const { address: connectedAddress } = useAccount();
 
-  const handleShare = (recipientAddress: string) => {
+  const handleShare = async (recipientAddress: string) => {
     const text = `I just sent a greeting card on Evrlink! Send yours at https://evrlinkapp.com 💌`;
-    window.open(`https://x.com/intent/post?text=${encodeURIComponent(text)}`, '_blank');
+    try {
+      await navigator.clipboard.writeText(text);
+      alert('Copied! Open X and paste to share 💌');
+    } catch {
+      alert(text);
+    }
   };
 
   return (
@@ -84,7 +89,7 @@ function SentContent() {
               cardImage={card.cardImage}
               cardId={card.cardId}
               message={card.message}
-              onShare={() => handleShare(card.recipientAddress)}
+              onShare={() => void handleShare(card.recipientAddress)}
             />
           ))}
         </div>
