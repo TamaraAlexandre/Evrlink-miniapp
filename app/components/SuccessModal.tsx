@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Modal from "./Modal";
-import { useOpenUrl } from "@coinbase/onchainkit/minikit";
 
 interface SuccessModalProps {
   isOpen: boolean;
@@ -26,7 +25,6 @@ export default function SuccessModal({
   cardBackImageUrl,
   cardMessage,
 }: SuccessModalProps) {
-  const openUrl = useOpenUrl();
   const router = useRouter();
   const [isFlipped, setIsFlipped] = useState(false);
 
@@ -68,9 +66,7 @@ export default function SuccessModal({
     }
     const label = cardTitle || "a greeting card";
     const text = `I just sent ${mention} a greeting card on Evrlink! Send yours at https://evrlinkapp.com 💌`;
-    if (typeof window !== 'undefined') {
-      openUrl(`https://x.com/intent/post?text=${encodeURIComponent(text)}`);
-    }
+    window.open(`https://x.com/intent/post?text=${encodeURIComponent(text)}`, '_blank');
   };
 
   return (
