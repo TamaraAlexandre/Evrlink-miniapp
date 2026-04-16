@@ -6,12 +6,12 @@ import { OnchainKitProvider } from "@coinbase/onchainkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { base } from "wagmi/chains";
 import { createConfig, WagmiProvider } from "wagmi";
-import { injected } from "wagmi/connectors";
+import { injected, baseAccount } from "wagmi/connectors";
 import { http, cookieStorage, createStorage } from "wagmi";
 
 const wagmiConfig = createConfig({
   chains: [base],
-  connectors: [injected()],
+  connectors: [injected(), baseAccount({ appName: "Evrlink" })],
   storage: createStorage({ storage: cookieStorage }),
   ssr: true,
   transports: {
