@@ -25,14 +25,9 @@ function SentContent() {
   } = useSentCards(overrideAddress);
   const { address: connectedAddress } = useAccount();
 
-  const handleShare = (cardId: string) => {
-    if (navigator.share) {
-      navigator.share({
-        title: "Evrlink Greeting Card",
-        text: "Check out this greeting card I sent on Evrlink!",
-      });
-    }
-    console.log("Share sent card:", cardId);
+  const handleShare = (recipientAddress: string) => {
+    const text = `I just sent a greeting card on Evrlink! Send yours at https://evrlinkapp.com 💌`;
+    window.open(`https://x.com/intent/post?text=${encodeURIComponent(text)}`, '_blank');
   };
 
   return (
@@ -89,7 +84,7 @@ function SentContent() {
               cardImage={card.cardImage}
               cardId={card.cardId}
               message={card.message}
-              onShare={() => handleShare(card.id)}
+              onShare={() => handleShare(card.recipientAddress)}
             />
           ))}
         </div>
