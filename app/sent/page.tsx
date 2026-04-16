@@ -9,8 +9,10 @@ import { useAccount } from "wagmi";
 import { isAddress } from "viem";
 import type { Address } from "viem";
 import { useSentCards } from "@/lib/use-nft-activity";
+import { useOpenUrl } from "@coinbase/onchainkit/minikit";
 
 function SentContent() {
+  const openUrl = useOpenUrl();
   const searchParams = useSearchParams();
   const addressParam = searchParams.get("address")?.trim() ?? "";
 
@@ -26,13 +28,11 @@ function SentContent() {
   const { address: connectedAddress } = useAccount();
 
   const handleShare = async (recipientAddress: string) => {
-    const text = `I just sent a greeting card on Evrlink! Send yours at https://evrlinkapp.com 💌`;
+    const text = `I just sent a greeting card on Evrlink! Send yours 👉 https://base.app/invite/friends/GBCKC3T3 💌`;
     try {
       await navigator.clipboard.writeText(text);
-      alert('Copied! Open X and paste to share 💌');
-    } catch {
-      alert(text);
-    }
+    } catch {}
+    openUrl(`https://x.com/intent/post?text=${encodeURIComponent(text)}`);
   };
 
   return (
