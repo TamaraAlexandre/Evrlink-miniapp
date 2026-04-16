@@ -29,7 +29,9 @@ function SentContent() {
 
   const handleShare = (recipientAddress: string) => {
     const text = `I just sent a greeting card on Evrlink! Send yours 👉 https://base.app/invite/friends/GBCKC3T3 💌`;
-    openUrl(`https://x.com/intent/post?text=${encodeURIComponent(text)}`);
+    if (typeof window !== 'undefined') {
+      openUrl(`https://x.com/intent/post?text=${encodeURIComponent(text)}`);
+    }
   };
 
   return (
