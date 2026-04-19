@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: "Evrlink – Digital Greeting Cards",
-    description: "Send and recieve greeting cards because some moments should last forever.",
+    description: "Send and receive greeting cards because some moments should last forever.",
     other: {
       "base:app_id": "699746e0de5d09de18347da4",
     },
