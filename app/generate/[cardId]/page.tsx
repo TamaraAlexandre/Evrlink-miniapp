@@ -142,6 +142,7 @@ export default function GenerateMeepPage() {
             image: imageIpfsUrl,
             cardId: card.id,
             message: isPreDesignedCard ? "" : message,
+            backImage: card.backImage || "",
           }),
         });
 
