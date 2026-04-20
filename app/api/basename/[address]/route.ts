@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { reverseResolveAddress } from "@/lib/basename-resolver";
+import { getName } from "@coinbase/onchainkit/identity";
+import { base } from "viem/chains";
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
@@ -14,8 +15,8 @@ export async function GET(
   }
 
   try {
-    const name = await reverseResolveAddress(address);
-    return NextResponse.json({ name });
+    const name = await getName({ address: address as `0x${string}`, chain: base });
+    return NextResponse.json({ name: name ?? null });
   } catch {
     return NextResponse.json({ name: null });
   }
