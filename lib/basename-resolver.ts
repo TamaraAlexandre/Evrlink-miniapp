@@ -142,3 +142,34 @@ export async function resolveBasenameWithCache(
   return address;
 }
 
+
+// Reverse resolution: wallet address → basename
+const REVERSE_RESOLVER_ABI = [
+  {
+    inputs: [{ name: "node", type: "bytes32" }],
+    name: "name",
+    outputs: [{ name: "", type: "string" }],
+    stateMutability: "view",
+    type: "function",
+  },
+] as const;
+
+export async function reverseResolveAddress(address: string): Promise<string | null> {
+  try {
+    if (!isValidAddress(address)) return null;
+    const client = createPublicClient({ chain: base, transport: http() });
+    // Build the reverse node: lowercase address + ".addr.reverse"
+    const reverseName = `${address.toLowerCase().slice(2)}.addr.reverse`;
+    const node = namehash(reverseName);
+    const basename = await client.readContract({
+      address: L2_RESOLVER_ADDRESS,
+      abi: REVERSE_RESOLVER_ABI,
+      functionName: "name",
+      args: [node],
+    });
+    if (basename && basename.length > 0) return basename;
+    return null;
+  } catch {
+    return null;
+  }
+}
