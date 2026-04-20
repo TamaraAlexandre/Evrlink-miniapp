@@ -15,7 +15,11 @@ export async function GET(
   }
 
   try {
-    const name = await getName({ address: address as `0x${string}`, chain: base });
+    const name = await getName({
+      address: address as `0x${string}`,
+      chain: base,
+      apiKey: process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY,
+    });
     return NextResponse.json({ name: name ?? null });
   } catch {
     return NextResponse.json({ name: null });
