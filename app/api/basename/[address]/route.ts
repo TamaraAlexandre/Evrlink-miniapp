@@ -1,26 +1,22 @@
 import { NextResponse } from "next/server";
-import { getName } from "@coinbase/onchainkit/identity";
-import { base } from "viem/chains";
+import { getBasename } from "@/lib/basenames";
+import type { Address } from "viem";
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+
+export const dynamic = "force-dynamic";
 
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ address: string }> }
 ) {
   const { address } = await params;
-
   if (!address || address.toLowerCase() === ZERO_ADDRESS) {
     return NextResponse.json({ name: null });
   }
-
   try {
-    const name = await getName({
-      address: address as `0x${string}`,
-      chain: base,
-      apiKey: process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY,
-    });
-    return NextResponse.json({ name: name ?? null });
+    const name = await getBasename(address as Address);
+    return NextResponse.json({ name });
   } catch {
     return NextResponse.json({ name: null });
   }
