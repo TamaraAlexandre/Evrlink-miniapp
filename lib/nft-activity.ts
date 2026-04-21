@@ -82,6 +82,7 @@ async function resolveMetadata(uri: string): Promise<CardMetadata> {
         message: typeof json.message === "string" ? json.message : undefined,
         name: typeof json.name === "string" ? json.name : undefined,
         backImage: typeof json.backImage === "string" && json.backImage ? json.backImage : undefined,
+        recipientName: typeof json.recipientName === "string" && json.recipientName ? json.recipientName : undefined,
       };
     }
   } catch {

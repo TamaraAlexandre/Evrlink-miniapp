@@ -80,6 +80,7 @@ function SentContent() {
                   Sent to:{" "}
                   <AddressDisplay
                     address={card.recipientAddress}
+                    name={card.recipientName}
                     className="font-semibold text-primary"
                   />
                 </>
