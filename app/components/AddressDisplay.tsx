@@ -15,9 +15,10 @@ function shortAddress(addr: string | undefined | null): string {
 }
 
 export default function AddressDisplay({ address, className }: AddressDisplayProps) {
-  const { data: name } = useEnsName({
+  const { data: name, status, error } = useEnsName({
     address: address as Address,
     chainId: mainnet.id,
   });
+  console.log("[AddressDisplay]", address, "=>", name, status, error?.message);
   return <span className={className}>{name ?? shortAddress(address as string)}</span>;
 }

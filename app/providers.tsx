@@ -16,7 +16,7 @@ const wagmiConfig = createConfig({
   ssr: true,
   transports: {
     [base.id]: http(),
-    [mainnet.id]: http(),
+    [mainnet.id]: http("https://cloudflare-eth.com"),
   },
 });
 
