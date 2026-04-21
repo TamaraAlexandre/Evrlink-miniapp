@@ -143,7 +143,7 @@ export default function GenerateMeepPage() {
             cardId: card.id,
             message: isPreDesignedCard ? "" : message,
             backImage: card.backImage || "",
-            recipientName: recipientName || "",
+            recipientName: recipientInput || "",
           }),
         });
 
