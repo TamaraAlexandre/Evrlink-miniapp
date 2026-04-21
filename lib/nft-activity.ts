@@ -34,6 +34,8 @@ export interface ReceivedCardItem {
   cardId?: string;
   /** Personalized message written by sender — empty for pre-designed cards */
   message?: string;
+  /** Recipient basename or input name */
+  recipientName?: string;
 }
 
 export interface SentCardItem {
@@ -49,12 +51,16 @@ export interface SentCardItem {
   cardId?: string;
   /** Personalized message — empty for pre-designed cards */
   message?: string;
+  /** Recipient basename or input name */
+  recipientName?: string;
 }
 
 interface CardMetadata {
   image: string;
   cardId?: string;
   message?: string;
+  /** Recipient basename or input name */
+  recipientName?: string;
   name?: string;
 }
 
