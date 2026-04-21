@@ -1,36 +1,37 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { getName } from "@coinbase/onchainkit/identity";
+import { base } from "viem/chains";
 import type { Address } from "viem";
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+const cache = new Map<string, string | null>();
 
 export function useBasename(address: Address | string | undefined | null): {
   name: string | null;
   isLoading: boolean;
 } {
-  const query = useQuery({
-    queryKey: ["basename", address],
-    queryFn: async (): Promise<string | null> => {
-      if (!address || address === ZERO_ADDRESS) return null;
-      try {
-        const res = await fetch(`/api/basename/${address}`);
-        if (!res.ok) return null;
-        const data = await res.json();
-        return data.name ?? null;
-      } catch {
-        return null;
-      }
-    },
-    enabled: Boolean(address && address !== ZERO_ADDRESS),
-    staleTime: 5 * 60 * 1000,
-    retry: false,
-  });
+  const [name, setName] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  return {
-    name: query.data ?? null,
-    isLoading: query.isLoading,
-  };
+  useEffect(() => {
+    if (!address || address === ZERO_ADDRESS) return;
+    if (cache.has(address)) {
+      setName(cache.get(address) ?? null);
+      return;
+    }
+    setIsLoading(true);
+    getName({ address: address as Address, chain: base })
+      .then((n) => {
+        cache.set(address, n ?? null);
+        setName(n ?? null);
+      })
+      .catch(() => setName(null))
+      .finally(() => setIsLoading(false));
+  }, [address]);
+
+  return { name, isLoading };
 }
 
 export function shortAddress(addr: string | undefined | null): string {
