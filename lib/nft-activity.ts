@@ -284,6 +284,7 @@ export async function fetchReceivedCards(
       tags: [],
       cardId: meta.cardId,
       message: meta.message,
+      recipientName: meta.recipientName,
     };
   });
 
@@ -388,6 +389,7 @@ export async function fetchSentCards(
       tags: [],
       cardId: meta.cardId,
       message: meta.message,
+      recipientName: meta.recipientName,
     };
   });
 
