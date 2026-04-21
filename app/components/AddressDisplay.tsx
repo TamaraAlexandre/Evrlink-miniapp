@@ -1,9 +1,8 @@
 "use client";
 
 import type { Address } from "viem";
-import { toCoinType } from "viem";
 import { useEnsName } from "wagmi";
-import { base, mainnet } from "wagmi/chains";
+import { mainnet } from "wagmi/chains";
 
 interface AddressDisplayProps {
   address: Address | string | undefined | null;
@@ -15,11 +14,14 @@ function shortAddress(addr: string | undefined | null): string {
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
 }
 
+// Base chain coinType = 0x80000000 | 8453 = 2147491781
+const BASE_COIN_TYPE = 2147491781;
+
 export default function AddressDisplay({ address, className }: AddressDisplayProps) {
   const { data: name } = useEnsName({
     address: address as Address,
     chainId: mainnet.id,
-    coinType: toCoinType(base.id),
+    coinType: BASE_COIN_TYPE,
   });
   return <span className={className}>{name ?? shortAddress(address as string)}</span>;
 }
