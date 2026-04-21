@@ -16,8 +16,9 @@ export async function GET(
   }
   try {
     const name = await getBasename(address as Address);
-    return NextResponse.json({ name });
-  } catch {
-    return NextResponse.json({ name: null });
+    return NextResponse.json({ name, debug: "success" });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ name: null, debug: msg });
   }
 }
