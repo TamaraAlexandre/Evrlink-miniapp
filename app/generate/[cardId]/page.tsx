@@ -24,6 +24,7 @@ import {
 import nftAbi from "@/lib/Abi.json";
 import { prepareGreetingCardForUpload } from "@/lib/image-composer";
 import { pay } from "@base-org/account";
+import { useIsInMiniApp } from "@coinbase/onchainkit/minikit";
 
 const MAX_MESSAGE_LENGTH = 280;
 
@@ -53,6 +54,7 @@ export default function GenerateMeepPage() {
   const [recipientName, setRecipientName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isMinting, setIsMinting] = useState(false);
+  const { isInMiniApp } = useIsInMiniApp();
   const { address: walletAddress, isConnected } = useAccount();
   const { connect, connectors } = useConnect();
   const {
@@ -60,12 +62,12 @@ export default function GenerateMeepPage() {
     error: writeError,
   } = useWriteContract();
 
-  // Auto-connect wallet when app loads
+  // Auto-connect wallet when app loads (Base App only)
   useEffect(() => {
-    if (!isConnected && connectors.length > 0) {
+    if (isInMiniApp && !isConnected && connectors.length > 0) {
       connect({ connector: connectors[0] });
     }
-  }, [isConnected, connect, connectors]);
+  }, [isInMiniApp, isConnected, connect, connectors]);
 
   const lastRecipientRef = useRef<string | null>(null);
 
@@ -162,13 +164,26 @@ export default function GenerateMeepPage() {
         setRecipientAddress(recipient);
         setRecipientName(recipientInput || "");
 
-        const payment = await pay({
-          amount: "1.00",
-          to: "0x393b57b89c67349e0fc184b7b57E44e28eF3b29C",
-        });
+        let paymentId: string;
 
-        if (!payment || !payment.id) {
-          throw new Error("Payment failed");
+        if (isInMiniApp) {
+          const payment = await pay({
+            amount: "1.00",
+            to: "0x393b57b89c67349e0fc184b7b57E44e28eF3b29C",
+          });
+          if (!payment || !payment.id) throw new Error("Payment failed");
+          paymentId = payment.id;
+        } else {
+          if (!isConnected || !walletAddress) throw new Error("Please connect your wallet first");
+          const USDC = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+          const OWNER = "0x393b57b89c67349e0fc184b7b57E44e28eF3b29C";
+          const hash = await writeContractAsync({
+            address: USDC,
+            abi: [{ name: "transfer", type: "function", stateMutability: "nonpayable", inputs: [{ name: "to", type: "address" }, { name: "amount", type: "uint256" }], outputs: [{ name: "", type: "bool" }] }],
+            functionName: "transfer",
+            args: [OWNER, BigInt(1_000_000)],
+          });
+          paymentId = hash;
         }
 
         const mintRes = await fetch("/api/owner-mint", {
@@ -177,7 +192,7 @@ export default function GenerateMeepPage() {
           body: JSON.stringify({
             uri: ipfsUrl,
             recipient: recipientAddressNormalized,
-            paymentId: payment.id,
+            paymentId: paymentId,
             sender: walletAddress,
           }),
         });
