@@ -15,6 +15,8 @@ interface MintModalProps {
   card: GreetingCardData;
   onMint: (recipient: string, recipientInput: string) => void;
   isMinting?: boolean;
+  isConnected?: boolean;
+  onConnect?: () => void;
 }
 
 export default function MintModal({
@@ -23,6 +25,8 @@ export default function MintModal({
   card,
   onMint,
   isMinting = false,
+  isConnected = false,
+  onConnect,
 }: MintModalProps) {
   const [recipient, setRecipient] = useState("");
   const [resolution, setResolution] = useState<RecipientResolutionResult | null>(
@@ -203,43 +207,54 @@ export default function MintModal({
             )}
           </div>
 
-          {/* Mint Button */}
-          <button
-            type="button"
-            onClick={handleMint}
-            disabled={!recipient.trim() || isMinting}
-            className="w-full rounded-md btn-primary text-white text-base font-bold leading-[140%] transition-colors active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            style={{ fontFamily: "'Satoshi', sans-serif", height: 46, paddingTop: 12, paddingBottom: 12, paddingLeft: 16, paddingRight: 16 }}
-          >
-            {isMinting ? (
-              <>
-                <svg
-                  className="animate-spin h-5 w-5 text-white shrink-0"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  aria-hidden
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                <span>Minting…</span>
-              </>
-            ) : (
-              <>Mint for {displayPrice}</>
-            )}
-          </button>
+          {/* Connect Wallet or Mint Button */}
+          {!isConnected && onConnect ? (
+            <button
+              type="button"
+              onClick={onConnect}
+              className="w-full rounded-md btn-primary text-white text-base font-bold leading-[140%] transition-colors active:scale-[0.98] flex items-center justify-center gap-2"
+              style={{ fontFamily: "'Satoshi', sans-serif", height: 46, paddingTop: 12, paddingBottom: 12, paddingLeft: 16, paddingRight: 16 }}
+            >
+              Connect Wallet to Pay
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleMint}
+              disabled={!recipient.trim() || isMinting}
+              className="w-full rounded-md btn-primary text-white text-base font-bold leading-[140%] transition-colors active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              style={{ fontFamily: "'Satoshi', sans-serif", height: 46, paddingTop: 12, paddingBottom: 12, paddingLeft: 16, paddingRight: 16 }}
+            >
+              {isMinting ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5 text-white shrink-0"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    aria-hidden
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  <span>Minting…</span>
+                </>
+              ) : (
+                <>Mint for {displayPrice}</>
+              )}
+            </button>
+          )}
         </div>
       </div>
     </Modal>
