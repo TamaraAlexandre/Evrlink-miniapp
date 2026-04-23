@@ -114,6 +114,7 @@ export default function MintModal({
   }, [recipient]);
 
   return (
+    <>
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="bg-white rounded-3xl overflow-hidden shadow-2xl">
         {/* Header */}
@@ -261,5 +262,6 @@ export default function MintModal({
       </div>
     </Modal>
     <WalletModal isOpen={showWalletModal} onClose={() => setShowWalletModal(false)} />
+  </>
   );
 }
