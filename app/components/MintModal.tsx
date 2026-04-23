@@ -136,7 +136,7 @@ export default function MintModal({
                 Sign in with your wallet to pay with USDC on Base.
               </p>
               <div className="space-y-3">
-                {connectors.map((connector) => (
+                {connectors.filter((connector) => connector.name !== "Injected").map((connector) => (
                   <button
                     key={connector.uid}
                     type="button"
