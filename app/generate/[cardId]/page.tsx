@@ -386,8 +386,6 @@ export default function GenerateMeepPage() {
         onClose={handleCloseModal}
         card={card}
         onMint={handleMintConfirm}
-        isConnected={isInMiniApp ? true : isConnected}
-        onConnect={isInMiniApp ? undefined : () => connect({ connector: connectors[0] })}
         isMinting={isMinting}
       />
 

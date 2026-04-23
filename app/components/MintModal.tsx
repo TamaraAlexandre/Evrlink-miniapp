@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useAccount, useConnect } from "wagmi";
 import Modal from "./Modal";
-import { WalletModal } from "@coinbase/onchainkit/wallet";
 import type { GreetingCardData } from "@/lib/greeting-cards-data";
 import {
   validateAndResolveRecipient,
@@ -16,8 +16,6 @@ interface MintModalProps {
   card: GreetingCardData;
   onMint: (recipient: string, recipientInput: string) => void;
   isMinting?: boolean;
-  isConnected?: boolean;
-  onConnect?: () => void;
 }
 
 export default function MintModal({
@@ -26,8 +24,6 @@ export default function MintModal({
   card,
   onMint,
   isMinting = false,
-  isConnected = false,
-  onConnect,
 }: MintModalProps) {
   const [recipient, setRecipient] = useState("");
   const [resolution, setResolution] = useState<RecipientResolutionResult | null>(
@@ -35,7 +31,6 @@ export default function MintModal({
   );
   const [isResolving, setIsResolving] = useState(false);
   const [errorText, setErrorText] = useState<string | null>(null);
-  const [showWalletModal, setShowWalletModal] = useState(false);
 
   const handleMint = () => {
     const input = recipient.trim();
@@ -114,7 +109,6 @@ export default function MintModal({
   }, [recipient]);
 
   return (
-    <>
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="bg-white rounded-3xl overflow-hidden shadow-2xl">
         {/* Header */}
@@ -214,7 +208,7 @@ export default function MintModal({
           {!isConnected ? (
             <button
               type="button"
-              onClick={() => { onClose(); setShowWalletModal(true); }}
+              onClick={() => setShowWalletPicker(true)}
               className="w-full rounded-md btn-primary text-white text-base font-bold leading-[140%] transition-colors active:scale-[0.98] flex items-center justify-center gap-2"
               style={{ fontFamily: "'Satoshi', sans-serif", height: 46, paddingTop: 12, paddingBottom: 12, paddingLeft: 16, paddingRight: 16 }}
             >
@@ -261,7 +255,6 @@ export default function MintModal({
         </div>
       </div>
     </Modal>
-    {showWalletModal && <WalletModal isOpen={showWalletModal} onClose={() => setShowWalletModal(false)} />}
-  </>
+
   );
 }
