@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Modal from "./Modal";
+import { WalletModal } from "@coinbase/onchainkit/wallet";
 import type { GreetingCardData } from "@/lib/greeting-cards-data";
 import {
   validateAndResolveRecipient,
@@ -34,6 +35,7 @@ export default function MintModal({
   );
   const [isResolving, setIsResolving] = useState(false);
   const [errorText, setErrorText] = useState<string | null>(null);
+  const [showWalletModal, setShowWalletModal] = useState(false);
 
   const handleMint = () => {
     const input = recipient.trim();
@@ -207,11 +209,14 @@ export default function MintModal({
             )}
           </div>
 
+          {/* WalletModal for wallet selection */}
+          <WalletModal isOpen={showWalletModal} onClose={() => setShowWalletModal(false)} />
+
           {/* Connect Wallet or Mint Button */}
-          {!isConnected && onConnect ? (
+          {!isConnected ? (
             <button
               type="button"
-              onClick={onConnect}
+              onClick={() => setShowWalletModal(true)}
               className="w-full rounded-md btn-primary text-white text-base font-bold leading-[140%] transition-colors active:scale-[0.98] flex items-center justify-center gap-2"
               style={{ fontFamily: "'Satoshi', sans-serif", height: 46, paddingTop: 12, paddingBottom: 12, paddingLeft: 16, paddingRight: 16 }}
             >
