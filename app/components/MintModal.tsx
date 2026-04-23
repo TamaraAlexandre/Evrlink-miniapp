@@ -214,7 +214,7 @@ export default function MintModal({
           {!isConnected ? (
             <button
               type="button"
-              onClick={() => setShowWalletModal(true)}
+              onClick={() => { onClose(); setShowWalletModal(true); }}
               className="w-full rounded-md btn-primary text-white text-base font-bold leading-[140%] transition-colors active:scale-[0.98] flex items-center justify-center gap-2"
               style={{ fontFamily: "'Satoshi', sans-serif", height: 46, paddingTop: 12, paddingBottom: 12, paddingLeft: 16, paddingRight: 16 }}
             >

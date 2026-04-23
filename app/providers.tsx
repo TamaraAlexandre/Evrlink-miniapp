@@ -27,7 +27,7 @@ export function Providers({ children }: { children: ReactNode }) {
       chain={base}
       apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
       miniKit={{ enabled: true }}
-      config={{ appearance: { mode: "auto" } }}
+      config={{ appearance: { mode: "auto", name: "Evrlink" }, wallet: { display: "modal" } }}
     >
       <WagmiProvider config={wagmiConfig}>
         <QueryClientProvider client={queryClient}>
