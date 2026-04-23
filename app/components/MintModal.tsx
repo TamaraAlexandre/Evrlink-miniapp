@@ -261,7 +261,9 @@ export default function MintModal({
         </div>
       </div>
     </Modal>
-    <WalletModal isOpen={showWalletModal} onClose={() => setShowWalletModal(false)} />
+    <div style={{ position: "relative", zIndex: 200 }}>
+      <WalletModal isOpen={showWalletModal} onClose={() => setShowWalletModal(false)} />
+    </div>
   </>
   );
 }
