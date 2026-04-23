@@ -209,9 +209,6 @@ export default function MintModal({
             )}
           </div>
 
-          {/* WalletModal for wallet selection */}
-          <WalletModal isOpen={showWalletModal} onClose={() => setShowWalletModal(false)} />
-
           {/* Connect Wallet or Mint Button */}
           {!isConnected ? (
             <button
@@ -263,5 +260,6 @@ export default function MintModal({
         </div>
       </div>
     </Modal>
+    <WalletModal isOpen={showWalletModal} onClose={() => setShowWalletModal(false)} />
   );
 }
