@@ -2,18 +2,24 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useAccount, useDisconnect } from "wagmi";
-import { useMiniKit } from "@coinbase/onchainkit/minikit";
+import { useIsInMiniApp } from "@coinbase/onchainkit/minikit";
 
 interface HeaderProps {
   onOpenWalletPicker?: () => void;
 }
 
 export default function Header({ onOpenWalletPicker }: HeaderProps) {
+  const [mounted, setMounted] = useState(false);
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
-  const { context } = useMiniKit();
+  const { isInMiniApp } = useIsInMiniApp();
   const shortenedAddress = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "";
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <header className="relative flex items-center justify-center px-4 pt-2.5 pb-0.5">
@@ -32,7 +38,7 @@ export default function Header({ onOpenWalletPicker }: HeaderProps) {
       </div>
 
       <div className="absolute right-4 flex items-center gap-3">
-        {context === null &&
+        {mounted && !isInMiniApp &&
           (isConnected ? (
             <div className="flex flex-col items-end">
               <span className="text-xs font-semibold text-black">{shortenedAddress}</span>
