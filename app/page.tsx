@@ -7,6 +7,7 @@ import SearchBar from "./components/SearchBar";
 import CategoryPills from "./components/CategoryPills";
 import CardFeed from "./components/CardFeed";
 import SuccessModal from "./components/SuccessModal";
+import WalletPickerModal from "./components/WalletPickerModal";
 import {
   greetingCardsData,
   getAllCards,
@@ -21,6 +22,7 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [successPreviewOpen, setSuccessPreviewOpen] = useState(SHOW_SUCCESS_MODAL_PREVIEW);
+  const [showWalletPicker, setShowWalletPicker] = useState(false);
 
   const previewCard = useMemo(() => getAllCards()[0], []);
 
@@ -61,7 +63,7 @@ export default function Home() {
   return (
     <div className="mx-auto max-w-lg bg-white pb-8 pt-0">
       {/* Sticky: logo + tab nav */}
-      <StickyAppHeader />
+      <StickyAppHeader onOpenWalletPicker={() => setShowWalletPicker(true)} />
 
       {/* Tagline + steps */}
       <div className="flex flex-col items-center px-4 pb-4 pt-3 text-center">
@@ -128,6 +130,7 @@ export default function Home() {
           cardImageUrl={previewCard?.paperImage}
         />
       ) : null}
+      <WalletPickerModal isOpen={showWalletPicker} onClose={() => setShowWalletPicker(false)} />
     </div>
   );
 }
