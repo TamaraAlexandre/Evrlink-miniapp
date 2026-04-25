@@ -2,10 +2,18 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { useIsInMiniApp } from "@coinbase/onchainkit/minikit";
 
 export default function Header() {
+  const { address, isConnected } = useAccount();
+  const { connect, connectors } = useConnect();
+  const { disconnect } = useDisconnect();
+  const { isInMiniApp } = useIsInMiniApp();
+  const shortenedAddress = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "";
+
   return (
-    <header className="flex items-center justify-center px-4 pt-2.5 pb-0.5">
+    <header className="relative flex items-center justify-center px-4 pt-2.5 pb-0.5">
       {/* Evrlink Logo */}
       <div className="flex items-center">
         <Link href="/">
@@ -20,7 +28,24 @@ export default function Header() {
         </Link>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="absolute right-4 flex items-center gap-3">
+        {!isInMiniApp &&
+          (isConnected ? (
+            <div className="flex flex-col items-end">
+              <span className="text-xs font-semibold text-black">{shortenedAddress}</span>
+              <button type="button" onClick={() => disconnect()} className="text-[10px] text-gray-500">
+                Disconnect
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => connect({ connector: connectors[0] })}
+              className="rounded-lg bg-[#00B2C7] px-3 py-2 text-xs font-semibold text-white"
+            >
+              Connect Wallet
+            </button>
+          ))}
         {/* Notification Bell */}
         {/* <button
           type="button"
