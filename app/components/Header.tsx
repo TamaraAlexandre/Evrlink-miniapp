@@ -48,7 +48,6 @@ export default function Header() {
               >
                 Connect Wallet
               </button>
-              <WalletPickerModal isOpen={showPicker} onClose={() => setShowPicker(false)} />
             </div>
           ))}
         {/* Notification Bell */}
@@ -83,6 +82,7 @@ export default function Header() {
           <span className="absolute top-1.5 right-1.5 h-2.5 w-2.5 rounded-full bg-primary border-2 border-white" />
         </button> */}
       </div>
+      <WalletPickerModal isOpen={showPicker} onClose={() => setShowPicker(false)} />
     </header>
   );
 }
