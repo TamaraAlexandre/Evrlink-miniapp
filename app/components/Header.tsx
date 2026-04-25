@@ -40,13 +40,16 @@ export default function Header() {
               </button>
             </div>
           ) : (
-            <button
-              type="button"
-              onClick={() => setShowPicker(true)}
-              className="rounded-lg bg-[#00B2C7] px-3 py-2 text-xs font-semibold text-white"
-            >
-              Connect Wallet
-            </button>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setShowPicker(true)}
+                className="rounded-lg bg-[#00B2C7] px-3 py-2 text-xs font-semibold text-white"
+              >
+                Connect Wallet
+              </button>
+              <WalletPickerModal isOpen={showPicker} onClose={() => setShowPicker(false)} />
+            </div>
           ))}
         {/* Notification Bell */}
         {/* <button
@@ -80,7 +83,6 @@ export default function Header() {
           <span className="absolute top-1.5 right-1.5 h-2.5 w-2.5 rounded-full bg-primary border-2 border-white" />
         </button> */}
       </div>
-      <WalletPickerModal isOpen={showPicker} onClose={() => setShowPicker(false)} />
     </header>
   );
 }

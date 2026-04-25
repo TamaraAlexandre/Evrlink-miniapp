@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { useAccount, useConnect } from "wagmi";
-import Modal from "./Modal";
 
 interface WalletPickerModalProps {
   isOpen: boolean;
@@ -17,19 +16,30 @@ export default function WalletPickerModal({ isOpen, onClose }: WalletPickerModal
     if (isConnected) onClose();
   }, [isConnected, onClose]);
 
+  if (!isOpen) return null;
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white rounded-3xl overflow-hidden shadow-2xl">
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center"
+      style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+      onClick={onClose}
+    >
+      <div
+        className="bg-white overflow-hidden"
+        style={{
+          width: "360px",
+          backgroundColor: "white",
+          borderRadius: "24px",
+          overflow: "hidden",
+          boxShadow: "0 8px 40px rgba(0,0,0,0.18)",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div
           className="flex items-center justify-between px-5 py-4"
           style={{ background: "linear-gradient(135deg, #00C4D9 0%, #00B2C7 50%, #009AB0 100%)" }}
         >
-          <button type="button" onClick={onClose} className="flex items-center gap-2 text-white font-bold text-lg">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-              <path d="M11 14L6 9l5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            Connect Wallet
-          </button>
+          <span className="text-white text-lg font-bold">Connect Wallet</span>
           <button
             type="button"
             onClick={onClose}
@@ -76,6 +86,6 @@ export default function WalletPickerModal({ isOpen, onClose }: WalletPickerModal
           </p>
         </div>
       </div>
-    </Modal>
+    </div>
   );
 }
