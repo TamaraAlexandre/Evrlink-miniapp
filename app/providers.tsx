@@ -6,15 +6,14 @@ import { OnchainKitProvider } from "@coinbase/onchainkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { base, mainnet } from "wagmi/chains";
 import { createConfig, WagmiProvider } from "wagmi";
-import { injected, coinbaseWallet, baseAccount } from "wagmi/connectors";
+import { injected, coinbaseWallet } from "wagmi/connectors";
 import { http, cookieStorage, createStorage } from "wagmi";
 
 const wagmiConfig = createConfig({
   chains: [base, mainnet],
   connectors: [
     injected(),
-    coinbaseWallet({ appName: "Evrlink" }),
-    baseAccount({ appName: "Evrlink" }),
+    coinbaseWallet({ appName: "Evrlink", preference: "smartWalletOnly" }),
   ],
   storage: createStorage({ storage: cookieStorage }),
   ssr: true,
