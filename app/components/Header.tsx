@@ -12,7 +12,7 @@ interface HeaderProps {
 export default function Header({ onOpenWalletPicker }: HeaderProps) {
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
-  const { isInMiniApp } = useIsInMiniApp();
+  const { isInMiniApp, isLoading } = useIsInMiniApp();
   const shortenedAddress = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "";
 
   return (
@@ -32,7 +32,7 @@ export default function Header({ onOpenWalletPicker }: HeaderProps) {
       </div>
 
       <div className="absolute right-4 flex items-center gap-3">
-        {!isInMiniApp &&
+        {!isInMiniApp && !isLoading &&
           (isConnected ? (
             <div className="flex flex-col items-end">
               <span className="text-xs font-semibold text-black">{shortenedAddress}</span>
