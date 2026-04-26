@@ -1,16 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAccount } from "wagmi";
-import { useMiniKit } from "@coinbase/onchainkit/minikit";
 import WalletPickerModal from "./WalletPickerModal";
 
 export default function Header() {
+  const [isWebBrowser, setIsWebBrowser] = useState(false);
   const { isConnected } = useAccount();
-  const { context, isFrameReady } = useMiniKit();
   const [showPicker, setShowPicker] = useState(false);
+
+  useEffect(() => {
+    if (!navigator.userAgent.toLowerCase().includes("coinbasebrowser")) {
+      setIsWebBrowser(true);
+    }
+  }, []);
 
   return (
     <>
@@ -28,7 +33,7 @@ export default function Header() {
           />
           </Link>
         </div>
-        {isFrameReady && context === null && !isConnected && (
+        {isWebBrowser && !isConnected && (
           <button
             className="absolute right-4 rounded-lg bg-[#00B2C7] px-3 py-2 text-xs font-semibold text-white"
             onClick={() => setShowPicker(true)}
