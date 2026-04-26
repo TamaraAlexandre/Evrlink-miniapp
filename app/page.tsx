@@ -8,6 +8,7 @@ import CategoryPills from "./components/CategoryPills";
 import CardFeed from "./components/CardFeed";
 import SuccessModal from "./components/SuccessModal";
 import WalletPickerModal from "./components/WalletPickerModal";
+import WebConnectButton from "./components/WebConnectButton";
 import {
   greetingCardsData,
   getAllCards,
@@ -64,6 +65,9 @@ export default function Home() {
     <div className="mx-auto max-w-lg bg-white pb-8 pt-0">
       {/* Sticky: logo + tab nav */}
       <StickyAppHeader onOpenWalletPicker={() => setShowWalletPicker(true)} />
+      <div className="absolute right-4 top-2 z-50">
+        <WebConnectButton />
+      </div>
 
       {/* Tagline + steps */}
       <div className="flex flex-col items-center px-4 pb-4 pt-3 text-center">
