@@ -7,7 +7,6 @@ import SearchBar from "./components/SearchBar";
 import CategoryPills from "./components/CategoryPills";
 import CardFeed from "./components/CardFeed";
 import SuccessModal from "./components/SuccessModal";
-import WalletPickerModal from "./components/WalletPickerModal";
 import {
   greetingCardsData,
   getAllCards,
@@ -130,7 +129,6 @@ export default function Home() {
           cardImageUrl={previewCard?.paperImage}
         />
       ) : null}
-      <WalletPickerModal isOpen={showWalletPicker} onClose={() => setShowWalletPicker(false)} />
     </div>
   );
 }
